@@ -5,7 +5,10 @@
 //
 // Scope is implied by role: SUPERVISOR permissions apply only to their
 // approved sites, EMPLOYEE permissions only to their own record.
-// ACCOUNTS is not in the matrix; it gets the Auditor's read set (confirm).
+// ACCOUNTS (9 Oct): the Auditor's read set + run cost summary, and writes on
+// payment batch status/UTR, cash returns, challan payment entry and advances
+// (still maker-checker). Never: compute/lock runs, salary structures or
+// rules, Aadhaar reveal.
 import type { Role } from './roles.ts';
 
 export const PERMISSIONS = [
@@ -41,6 +44,13 @@ export const PERMISSIONS = [
   'compliance.write',
   'compliance.export',
   'audit.read',
+  'run_cost.read',
+  'payments.read',
+  'payments.write',
+  'cash_returns.write',
+  'challans.write',
+  'advances.read',
+  'advances.write',
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -59,6 +69,17 @@ const AUDITOR: Permission[] = [
   'compliance.read',
   'compliance.export',
   'audit.read',
+  'run_cost.read',
+];
+
+const ACCOUNTS: Permission[] = [
+  ...AUDITOR,
+  'payments.read',
+  'payments.write',
+  'cash_returns.write',
+  'challans.write',
+  'advances.read',
+  'advances.write',
 ];
 
 const PAYROLL_HR: Permission[] = [
@@ -90,13 +111,17 @@ const PAYROLL_HR: Permission[] = [
   'compliance.write',
   'compliance.export',
   'audit.read',
+  'run_cost.read',
+  'payments.read',
+  'advances.read',
+  'advances.write',
 ];
 
 const MATRIX: Record<Role, readonly Permission[]> = {
   ADMIN: PERMISSIONS.filter((p) => p !== 'payslips.write'),
   PAYROLL: PAYROLL_HR,
   HR: PAYROLL_HR,
-  ACCOUNTS: AUDITOR,
+  ACCOUNTS,
   AUDITOR,
   SUPERVISOR: [
     'sites.read',

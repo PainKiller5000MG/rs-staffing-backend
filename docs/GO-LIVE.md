@@ -15,6 +15,10 @@ Work that must land before the first production payroll. Each item becomes an is
 
 ## Rules and data
 
+- [ ] **M8 blocker:** the payroll run-lock service must call `assertRulesVerified()`
+      (`src/lib/rules-verified.ts`). `test/todo/m8-lock-verify-guard.test.ts` is a `test.fails`
+      reminder that turns red once it's wired — then delete it.
+
 - [ ] Replace every rule row whose note starts `VERIFY` (MP PT, LWF, minimum wages) with
       CA-confirmed figures. A production payroll lock refuses while any is used (`RULES_UNVERIFIED`).
 - [ ] CA confirmation: EPFO Sep-2026 split method (`PF_SPLIT_METHOD`), OT base, electronic wage
