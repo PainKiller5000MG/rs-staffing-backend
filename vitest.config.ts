@@ -7,6 +7,6 @@ export default defineConfig({
     testTimeout: 20_000,
     hookTimeout: 60_000,
     // The suite logs in many times; the real limits are tested in test/api/otp-limits.test.ts.
-    env: { OTP_MAX_PER_PHONE_HOUR: '10000', OTP_MAX_PER_IP_HOUR: '10000' },
+    env: { OTP_MAX_PER_PHONE_HOUR: '10000', OTP_MAX_PER_IP_HOUR: '10000', MSG91_WEBHOOK_SECRET: 'test-webhook-secret-0123456789' },
   },
 });

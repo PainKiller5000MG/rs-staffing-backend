@@ -54,6 +54,11 @@ export class Ctx {
     return this.#executor;
   }
 
+  /** A request header (lower-case name), for callers that authenticate by header. */
+  header(name: string): string | undefined {
+    return this.#c.req.header(name);
+  }
+
   /** Validated JSON body (validated by the route's `body` schema before the handler runs). */
   body<T>(): T {
     return (this.#c.req.valid as (t: 'json') => T)('json');

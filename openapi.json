@@ -523,6 +523,102 @@
           "value",
           "label"
         ]
+      },
+      "DlrResult": {
+        "type": "object",
+        "properties": {
+          "received": {
+            "type": "integer"
+          },
+          "updated": {
+            "type": "integer"
+          },
+          "unmatched": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "received",
+          "updated",
+          "unmatched"
+        ]
+      },
+      "Msg91DlrBody": {
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "requestId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "telNum": {
+                "type": "string",
+                "minLength": 10
+              },
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ]
+              },
+              "failureReason": {
+                "type": "string"
+              },
+              "eventName": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "requestId",
+              "telNum",
+              "status"
+            ],
+            "additionalProperties": {}
+          },
+          {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "requestId": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "telNum": {
+                  "type": "string",
+                  "minLength": 10
+                },
+                "status": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "number"
+                    }
+                  ]
+                },
+                "failureReason": {
+                  "type": "string"
+                },
+                "eventName": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "requestId",
+                "telNum",
+                "status"
+              ],
+              "additionalProperties": {}
+            }
+          }
+        ]
       }
     },
     "parameters": {}
@@ -1700,6 +1796,86 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Lookups"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/webhooks/msg91/dlr": {
+      "post": {
+        "summary": "MSG91 SMS delivery reports (M16-SMS-02). Authenticated by the x-rs-webhook-secret header.",
+        "tags": [
+          "Webhooks"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Msg91DlrBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "MSG91 SMS delivery reports (M16-SMS-02). Authenticated by the x-rs-webhook-secret header.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DlrResult"
                 }
               }
             }

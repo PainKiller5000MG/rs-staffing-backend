@@ -44,6 +44,11 @@ export type RouteDef<C> = {
   status?: 200 | 201;
   /** Audit action tag, e.g. 'user.create'. Required on every write route. */
   audit?: string;
+  /**
+   * Machine callbacks only (e.g. delivery-report webhooks): the handler audits
+   * real changes, and a replay that changes nothing writes no audit row.
+   */
+  auditOnChange?: boolean;
   /** Documents that the action is one half of a maker-checker pair; the service enforces it. */
   makerChecker?: boolean;
   /**
@@ -177,7 +182,7 @@ export function registerRoutes(deps: RegistryDeps, controllerName: string, route
         scope.register({ ctx: asValue(ctx), executor: asValue(executor), events: asValue(events) });
         const controller = scope.resolve<object>(controllerName);
         const body = toJson(await route.handler(controller, ctx));
-        if (isWrite && !ctx.audited) throw new Error(`${label} finished without writing an audit row`);
+        if (isWrite && !route.auditOnChange && !ctx.audited) throw new Error(`${label} finished without writing an audit row`);
         if (idem) {
           await executor.orm.app.IdempotencyKey.create({
             userId: idem.userId,

@@ -27,7 +27,14 @@ Work that must land before the first production payroll. Each item becomes an is
 ## SMS
 
 - [ ] DLT registration and MSG91 templates (OTP, payslip, payslip revised, F&F); set
-      `SMS_PROVIDER=msg91` and the `MSG91_*` variables. Launch blocker.
+      `SMS_PROVIDER=msg91` and the `MSG91_*` variables. Launch blocker. Template variables are
+      case-sensitive and must be: OTP `##otp##`; PAYSLIP and PAYSLIP_REVISED `##name##`
+      `##month##` `##link##`; FNF `##name##` `##link##`.
+- [ ] MSG91 webhook (SMS » Webhook (New) » Report Received) → `POST /webhooks/msg91/dlr` with the
+      custom header `x-rs-webhook-secret: $MSG91_WEBHOOK_SECRET`; include requestId, telNum, status,
+      failureReason. Send one test SMS and check the delivery row moves to DELIVERED.
+- [ ] Product call: a victim's per-phone OTP quota can be spent by someone else (known trade-off of
+      M1-OTP-03). Consider an HQ "reset OTP limit" action or a CAPTCHA on send-otp.
 
 ## Secrets
 
