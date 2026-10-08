@@ -71,3 +71,20 @@ export async function audit(
   });
   ctx.audited = true;
 }
+
+/** An audit row written by the system itself (login bookkeeping, lockouts), outside a request. */
+export async function auditSystem(
+  executor: Pick<Ctx['executor'], 'orm'>,
+  entry: { action: string; entity: string; entityId: string | null; before?: unknown; after?: unknown; reason?: string; ip?: string | null; actorId?: string | null },
+): Promise<void> {
+  await executor.orm.audit.AuditLog.create({
+    actorId: (entry.actorId ?? null) as Row['actorId'],
+    action: entry.action as Row['action'],
+    entity: entry.entity as Row['entity'],
+    entityId: entry.entityId as Row['entityId'],
+    before: (isPlain(entry.before) ? clean(toJson(entry.before) as Plain) : null) as Row['before'],
+    after: (isPlain(entry.after) ? clean(toJson(entry.after) as Plain) : null) as Row['after'],
+    reason: entry.reason ?? null,
+    ip: (entry.ip ?? null) as Row['ip'],
+  });
+}

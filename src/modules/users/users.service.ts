@@ -5,6 +5,7 @@ import type { Ctx } from '../../core/context.ts';
 import { ConflictError, makerChecker, NotFoundError } from '../../core/errors.ts';
 import type { EventBuffer } from '../../core/events.ts';
 import type { Identity } from '../../auth/identity.ts';
+import type { OtpLockout } from '../../auth/lockout.ts';
 import { parseDate, today } from '../../lib/dates.ts';
 import { permissionsOf } from '../../lib/permissions.ts';
 import type { SitesRepository } from '../sites/sites.repository.ts';
@@ -13,6 +14,7 @@ import type { SiteScope, User, UsersRepository } from './users.repository.ts';
 import type { AssignScopeBody, ChangeRoleBody, CreateUserBody, ListUsersQuery } from './users.schemas.ts';
 
 type Deps = {
+  otpLockout: Pick<OtpLockout, 'clear'>;
   usersRepository: UsersRepository;
   sitesRepository: SitesRepository;
   identity: Identity;
@@ -46,8 +48,10 @@ export class UsersService {
   readonly #identity: Identity;
   readonly #ctx: Ctx;
   readonly #events: EventBuffer;
+  readonly #lockout: Pick<OtpLockout, 'clear'>;
 
-  constructor({ usersRepository, sitesRepository, identity, ctx, events }: Deps) {
+  constructor({ usersRepository, sitesRepository, identity, ctx, events, otpLockout }: Deps) {
+    this.#lockout = otpLockout;
     this.#users = usersRepository;
     this.#sites = sitesRepository;
     this.#identity = identity;
@@ -125,9 +129,11 @@ export class UsersService {
     return publicUser(updated);
   }
 
+  /** Re-enables a DISABLED or LOCKED user; for LOCKED it also clears the failed-OTP count (M1-SEC-06). */
   async enable(id: string) {
     const user = await this.#mustFind(id);
     const updated = await this.#users.update(id, { status: 'ACTIVE', updatedBy: this.#ctx.user.id });
+    if (user.status === 'LOCKED') await this.#lockout.clear(id, user.mobile, this.#ctx.executor);
     await audit(this.#ctx, 'user.enable', 'user', publicUser(user), publicUser(updated));
     return publicUser(updated);
   }

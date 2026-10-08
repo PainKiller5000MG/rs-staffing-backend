@@ -85,7 +85,8 @@ function setup(actor: Partial<SessionUser> = {}) {
     audited: false,
     executor: { orm: { audit: { AuditLog: { create: async (r: unknown) => auditRows.push(r) } } } },
   } as unknown as Ctx;
-  const service = new UsersService({ usersRepository: repo as unknown as UsersRepository, sitesRepository: sites, identity, ctx, events: new EventBuffer() });
+  const otpLockout = { clear: vi.fn(async () => {}) };
+  const service = new UsersService({ usersRepository: repo as unknown as UsersRepository, sitesRepository: sites, identity, ctx, events: new EventBuffer(), otpLockout });
   return { repo, identity, ctx, me, service, auditRows };
 }
 

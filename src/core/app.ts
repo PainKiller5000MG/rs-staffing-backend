@@ -19,7 +19,7 @@ export const openApiInfo = {
 } as const;
 
 export function createApp({ modules, container }: { modules: readonly Module[]; container: AwilixContainer<RootCradle> }) {
-  const { config, logger, auth, db, bus } = container.cradle;
+  const { config, logger, auth, db, bus, otpLockout } = container.cradle;
   const app = new OpenAPIHono({ defaultHook: validationHook });
 
   app.use(requestId({ headerName: 'x-request-id' }));
@@ -43,6 +43,20 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
       { requestId: c.get('requestId'), method: c.req.method, path: c.req.path, status: c.res.status, ms: Math.round(performance.now() - started) },
       'request',
     );
+  });
+
+  // M1-SEC-06: wrong OTPs lock the number (and IP) out; see src/auth/lockout.ts.
+  // Answers in Better Auth's error format like the rest of /api/auth/*.
+  app.post('/api/auth/phone-number/verify', async (c) => {
+    const ip = c.get('clientIp');
+    const body = (await c.req.raw.clone().json().catch(() => null)) as { phoneNumber?: unknown } | null;
+    const mobile = typeof body?.phoneNumber === 'string' ? body.phoneNumber : null;
+    if (mobile && (await otpLockout.blocked(mobile, ip))) {
+      return c.json({ code: 'TOO_MANY_ATTEMPTS', message: 'Too many attempts. Try again later or contact HQ.' }, 429);
+    }
+    const res = await auth.handler(withClientIp(c.req.raw, ip));
+    if (mobile && res.status >= 400 && res.status < 500 && res.status !== 429) await otpLockout.recordFailure(mobile, ip);
+    return res;
   });
 
   // Better Auth owns identity: OTP send/verify, sessions, sign-out.
