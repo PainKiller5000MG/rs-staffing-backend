@@ -7,6 +7,7 @@ import { cors } from 'hono/cors';
 import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import pkg from '../../package.json' with { type: 'json' };
+import { clientIp, withClientIp } from './client-ip.ts';
 import type { RootCradle } from './container.ts';
 import { createErrorHandler, notFoundHandler, validationHook } from './error-handler.ts';
 import type { Module } from './module.ts';
@@ -22,6 +23,10 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
   const app = new OpenAPIHono({ defaultHook: validationHook });
 
   app.use(requestId({ headerName: 'x-request-id' }));
+  app.use(async (c, next) => {
+    c.set('clientIp', clientIp(c, config.TRUST_PROXY));
+    await next();
+  });
   app.use(secureHeaders());
   app.use(
     cors({
@@ -41,7 +46,8 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
   });
 
   // Better Auth owns identity: OTP send/verify, sessions, sign-out.
-  app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw));
+  // Its rate limiter keys on our client-IP header, not on anything the caller sent.
+  app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(withClientIp(c.req.raw, c.get('clientIp'))));
 
   app.openapi(
     createRoute({

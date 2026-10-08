@@ -20,6 +20,8 @@ const schema = z
     DATA_KEY: base64Key.optional(),
     HMAC_KEY: base64Key.optional(),
     SMS_PROVIDER: z.enum(['mock']).default('mock'),
+    /** true only behind our own reverse proxy: then the last X-Forwarded-For hop is the client. */
+    TRUST_PROXY: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
   })
   .superRefine((env, ctx) => {
     if (env.NODE_ENV !== 'production') return;

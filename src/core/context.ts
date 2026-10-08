@@ -35,7 +35,8 @@ export class Ctx {
     this.#user = user;
     this.#executor = executor;
     this.requestId = c.get('requestId');
-    this.ip = c.req.header('x-forwarded-for')?.split(',')[0]?.trim() ?? null;
+    // Computed once per request in core/app.ts (core/client-ip.ts); never a raw client header.
+    this.ip = c.get('clientIp');
     this.userAgent = c.req.header('user-agent') ?? null;
   }
 

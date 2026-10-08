@@ -11,6 +11,7 @@ import pg from 'pg';
 import type { Config } from '../core/config.ts';
 import type { Logger } from '../core/logger.ts';
 import type { SmsProvider } from '../lib/sms.ts';
+import { CLIENT_IP_HEADER } from '../core/client-ip.ts';
 
 export type AuthDeps = {
   config: Config;
@@ -67,6 +68,9 @@ export function createAuth({ config, logger, sms, isActiveMobile, onLogin, pool 
     },
     advanced: {
       database: { generateId: 'uuid' },
+      // Rate limits key on the IP the app computed (core/client-ip.ts), so a
+      // spoofed X-Forwarded-For can't mint fresh limits.
+      ipAddress: { ipAddressHeaders: [CLIENT_IP_HEADER] },
       useSecureCookies: config.NODE_ENV === 'production',
     },
     plugins: [

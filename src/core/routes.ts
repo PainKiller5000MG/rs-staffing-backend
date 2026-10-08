@@ -19,6 +19,7 @@ import { requireRole, requireSession, requireSiteScope } from './guards.ts';
 declare module 'hono' {
   interface ContextVariableMap {
     user: SessionUser | null;
+    clientIp: string | null;
   }
 }
 
