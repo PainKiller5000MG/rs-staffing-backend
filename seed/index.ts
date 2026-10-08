@@ -48,7 +48,7 @@ export async function seed(): Promise<SeedResult> {
     config: cfg,
     logger: { error: console.error } as never,
     sms: { sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
-    isActiveMobile: async () => false,
+    otpGate: { decide: async () => 'UNKNOWN' as const },
     pool,
   });
   const identity = new BetterAuthIdentity({ auth });

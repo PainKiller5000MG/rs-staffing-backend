@@ -7,5 +7,5 @@ export const auth = createAuth({
   config: config(),
   logger: console as never,
   sms: { sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
-  isActiveMobile: async () => false,
+  otpGate: { decide: async () => 'UNKNOWN' as const },
 });

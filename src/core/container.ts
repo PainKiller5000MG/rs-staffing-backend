@@ -5,6 +5,7 @@
 import { asClass, asFunction, asValue, createContainer, InjectionMode, type AwilixContainer } from 'awilix';
 import type pg from 'pg';
 import { createAuth, createAuthPool, type Auth } from '../auth/auth.ts';
+import { OtpGate } from '../auth/otp-gate.ts';
 import { MockSms, Msg91Sms, type SmsProvider } from '../lib/sms.ts';
 import { db } from '../prisma/db.ts';
 import type { Models } from '../prisma/contract.d.ts';
@@ -21,16 +22,10 @@ export type RootCradle = {
   sms: SmsProvider;
   authPool: pg.Pool;
   auth: Auth;
+  otpGate: OtpGate;
   bus: EventBus;
   events: EventBuffer;
 };
-
-async function isActiveMobile(mobile: string): Promise<boolean> {
-  const user = await db.orm.app.User.select('id')
-    .where({ mobile: mobile as Models.app_User['mobile'], status: 'ACTIVE' })
-    .first();
-  return user !== null;
-}
 
 async function onLogin(authUserId: string, ip: string | null): Promise<void> {
   type U = Models.app_User;
@@ -72,8 +67,9 @@ export function createRootContainer(overrides: Partial<Record<keyof RootCradle, 
     authPool: asFunction(() => createAuthPool(cfg.DATABASE_URL))
       .singleton()
       .disposer((pool) => pool.end()),
-    auth: asFunction(({ config, logger, sms, authPool }: RootCradle) =>
-      createAuth({ config, logger, sms, pool: authPool, isActiveMobile, onLogin }),
+    otpGate: asClass(OtpGate).singleton(),
+    auth: asFunction(({ config, logger, sms, authPool, otpGate }: RootCradle) =>
+      createAuth({ config, logger, sms, pool: authPool, otpGate, onLogin }),
     ).singleton(),
     bus: asClass(EventBus).singleton(),
     events: asClass(EventBuffer).scoped(),

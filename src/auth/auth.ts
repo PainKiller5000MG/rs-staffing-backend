@@ -17,8 +17,8 @@ export type AuthDeps = {
   config: Config;
   logger: Logger;
   sms: SmsProvider;
-  /** True when the mobile belongs to an ACTIVE app.users row. */
-  isActiveMobile: (mobile: string) => Promise<boolean>;
+  /** M1-OTP-03: send only to ACTIVE users within the hourly limits (src/auth/otp-gate.ts). */
+  otpGate: { decide(mobile: string, ip: string | null): Promise<'SEND' | 'UNKNOWN' | 'THROTTLED'> };
   /** After a session is created: last-login time, login event, audit row (M1-AUD-02). */
   onLogin?: (authUserId: string, ip: string | null) => Promise<void>;
   pool?: pg.Pool;
@@ -33,7 +33,7 @@ export function createAuthPool(databaseUrl: string): pg.Pool {
   return new pg.Pool({ connectionString: databaseUrl, options: '-c search_path=auth' });
 }
 
-export function createAuth({ config, logger, sms, isActiveMobile, onLogin, pool }: AuthDeps) {
+export function createAuth({ config, logger, sms, otpGate, onLogin, pool }: AuthDeps) {
   return betterAuth({
     appName: 'RS Staffing',
     baseURL: config.BETTER_AUTH_URL,
@@ -51,7 +51,9 @@ export function createAuth({ config, logger, sms, isActiveMobile, onLogin, pool 
       window: 60,
       max: 60,
       customRules: {
-        '/phone-number/send-otp': { window: 600, max: 3 },
+        // send-otp is limited by otpGate instead, so an over-limit caller gets the
+        // same 200 and no SMS rather than a 429 that reveals the limit.
+        '/phone-number/send-otp': false,
         '/phone-number/verify': { window: 300, max: 10 },
       },
     },
@@ -84,9 +86,11 @@ export function createAuth({ config, logger, sms, isActiveMobile, onLogin, pool 
         phoneNumberValidator: (n) => E164_INDIA.test(n),
         // Not awaited: the response must not reveal (by content or timing)
         // whether the number belongs to anyone.
-        sendOTP: ({ phoneNumber: mobile, code }) => {
-          void isActiveMobile(mobile)
-            .then((active) => (active ? sms.sendOtp(mobile, code) : undefined))
+        sendOTP: ({ phoneNumber: mobile, code }, ctx) => {
+          const ip = ctx?.request?.headers.get(CLIENT_IP_HEADER) ?? ctx?.headers?.get(CLIENT_IP_HEADER) ?? null;
+          void otpGate
+            .decide(mobile, ip)
+            .then((decision) => (decision === 'SEND' ? sms.sendOtp(mobile, code) : undefined))
             .catch((err: unknown) => logger.error({ err }, 'sendOTP failed'));
         },
       }),
