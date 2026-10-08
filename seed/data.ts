@@ -242,7 +242,18 @@ export const RULES: Rule[] = [
   { code: R.ESI_ER_RATE, value: { percent: '3.25' }, from: '2019-07-01' },
   { code: R.ESI_COVERAGE_CEILING, value: { paise: '2100000' }, from: '2017-01-01' },
   { code: R.ESI_COVERAGE_CEILING_PWD, value: { paise: '2500000' }, from: '2017-01-01' },
+  { code: R.ESI_EE_EXEMPT_DAILY_WAGE, value: { paise: '17600' }, from: '2019-07-01', note: '≤ ₹176/day pays no employee share' },
+  { code: R.ESI_CONTRIBUTION_PERIOD_START_MONTHS, value: { months: [4, 10] }, from: '2017-01-01', note: 'Apr–Sep and Oct–Mar' },
   { code: R.WAGE_RULE_EXCLUSION_CAP, value: { percent: '50' }, from: '2025-11-21' },
+  { code: R.DEDUCTION_LIMIT, value: { percent: '50' }, from: '2025-11-21', note: 'Code on Wages s.18' },
+  { code: R.FNF_DUE_WORKING_DAYS, value: { days: '2' }, from: '2025-11-21', note: 'Code on Wages s.17(2)' },
+  { code: R.OT_MULTIPLIER, value: { factor: '2' }, from: '2025-11-21', note: 'OSH Code: twice the ordinary rate' },
+  { code: R.NORMAL_HOURS_PER_DAY, value: { hours: '8' }, from: '2025-11-21' },
+  { code: R.NORMAL_HOURS_PER_WEEK, value: { hours: '48' }, from: '2025-11-21' },
+  { code: R.DAILY_HOURS_CAP, value: { hours: '12' }, from: '2025-11-21', note: 'VERIFY: 12 h incl. OT per the stories (M13); confirm with the CA' },
+  { code: R.OT_QUARTER_CAP_HOURS, value: { hours: '144' }, from: '2025-11-21', note: 'VERIFY: pending final OSH rules (M13)' },
+  { code: R.GRATUITY_CEILING, value: { paise: '200000000' }, from: '2018-03-29', note: '₹20,00,000' },
+  { code: R.GRATUITY_DUE_DAYS, value: { days: '30' }, from: '2025-11-21' },
 ];
 
 /** Note on every placeholder rule row; blocks a production payroll lock (A7). */
