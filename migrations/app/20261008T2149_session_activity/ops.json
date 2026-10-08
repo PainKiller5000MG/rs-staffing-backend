@@ -1,0 +1,80 @@
+[
+  {
+    "id": "table.session_activity",
+    "label": "Create table \"session_activity\"",
+    "summary": "Creates table \"session_activity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "session_activity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"session_activity\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"session_activity\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"session_activity\"",
+        "sql": "CREATE TABLE \"app\".\"session_activity\" (\n  \"last_seen_at\" timestamptz(6) NOT NULL,\n  \"session_id\" character varying(64) NOT NULL,\n  \"user_id\" uuid NOT NULL,\n  PRIMARY KEY (\"session_id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"session_activity\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"session_activity\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.session_activity.session_activity_user_id_idx_6c952402",
+    "label": "Create index \"session_activity_user_id_idx_6c952402\" on \"session_activity\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "session_activity_user_id_idx_6c952402",
+        "table": "session_activity"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"session_activity_user_id_idx_6c952402\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"session_activity_user_id_idx_6c952402\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"session_activity_user_id_idx_6c952402\"",
+        "sql": "CREATE INDEX \"session_activity_user_id_idx_6c952402\" ON \"app\".\"session_activity\" (\"user_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"session_activity_user_id_idx_6c952402\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"session_activity_user_id_idx_6c952402\""
+        ]
+      }
+    ]
+  }
+]

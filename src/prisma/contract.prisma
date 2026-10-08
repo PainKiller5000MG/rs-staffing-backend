@@ -427,6 +427,17 @@ namespace app {
   }
 
 
+  /// Last API activity per Better Auth session, for the idle timeout (M1-LOG-06).
+  /// Written at most once a minute per session.
+  model SessionActivity {
+    sessionId  VarChar(64)    @id @map("session_id") // auth.session.id
+    userId     Uuid           @map("user_id")
+    lastSeenAt Timestamptz(6) @map("last_seen_at")
+
+    @@index([userId])
+    @@map("session_activity")
+  }
+
   model LoginEvent {
     id     Uuid           @id @default(uuid(7))
     userId Uuid?          @map("user_id")

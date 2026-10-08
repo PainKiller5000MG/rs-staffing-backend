@@ -248,6 +248,10 @@
       "model": "SalaryTemplate",
       "namespace": "app"
     },
+    "session_activity": {
+      "model": "SessionActivity",
+      "namespace": "app"
+    },
     "sites": {
       "model": "Site",
       "namespace": "app"
@@ -10486,6 +10490,53 @@
               },
               "namespaceId": "app",
               "table": "salary_template_lines"
+            }
+          },
+          "SessionActivity": {
+            "fields": {
+              "lastSeenAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "sessionId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 64
+                  }
+                }
+              },
+              "userId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "lastSeenAt": {
+                  "column": "last_seen_at"
+                },
+                "sessionId": {
+                  "column": "session_id"
+                },
+                "userId": {
+                  "column": "user_id"
+                }
+              },
+              "namespaceId": "app",
+              "table": "session_activity"
             }
           },
           "Site": {
@@ -21533,6 +21584,48 @@
                 }
               ]
             },
+            "session_activity": {
+              "columns": {
+                "last_seen_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "session_id": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 64
+                  }
+                },
+                "user_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [
+                {
+                  "columns": [
+                    "user_id"
+                  ],
+                  "name": "session_activity_user_id_idx_6c952402",
+                  "prefix": "session_activity_user_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "session_id"
+                ]
+              },
+              "uniques": []
+            },
             "sites": {
               "checks": [
                 {
@@ -23382,7 +23475,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "5698b565a20802657df773d0786ba4b418eed52b5499e4dc9a79bd0ad3b2663c"
+    "storageHash": "0d5b643b1717f7b621577426a668d366a68d19a6a8899065b714e12da0ce6849"
   },
   "execution": {
     "executionHash": "035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505",

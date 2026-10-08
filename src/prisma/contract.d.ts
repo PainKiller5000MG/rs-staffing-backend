@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'5698b565a20802657df773d0786ba4b418eed52b5499e4dc9a79bd0ad3b2663c'>;
+  StorageHashBase<'0d5b643b1717f7b621577426a668d366a68d19a6a8899065b714e12da0ce6849'>;
 export type ExecutionHash =
   ExecutionHashBase<'035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505'>;
 export type ProfileHash =
@@ -972,6 +972,11 @@ export type FieldOutputTypes = {
       readonly templateId: CodecTypes['pg/uuid@1']['output'];
       readonly value: Numeric<14, 4> | null;
     };
+    readonly SessionActivity: {
+      readonly lastSeenAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly sessionId: Varchar<64>;
+      readonly userId: CodecTypes['pg/uuid@1']['output'];
+    };
     readonly Site: {
       readonly address: CodecTypes['pg/text@1']['output'];
       readonly clientId: CodecTypes['pg/uuid@1']['output'];
@@ -1832,6 +1837,11 @@ export type FieldInputTypes = {
       readonly order: CodecTypes['pg/int2@1']['input'];
       readonly templateId: CodecTypes['pg/uuid@1']['input'];
       readonly value: CodecTypes['pg/numeric@1']['input'] | null;
+    };
+    readonly SessionActivity: {
+      readonly lastSeenAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly sessionId: CodecTypes['sql/varchar@1']['input'];
+      readonly userId: CodecTypes['pg/uuid@1']['input'];
     };
     readonly Site: {
       readonly address: CodecTypes['pg/text@1']['input'];
@@ -2694,6 +2704,11 @@ export type StorageColumnTypes = {
       readonly name: Varchar<120>;
       readonly status: 'ACTIVE' | 'INACTIVE';
     };
+    readonly session_activity: {
+      readonly last_seen_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly session_id: Varchar<64>;
+      readonly user_id: CodecTypes['pg/uuid@1']['output'];
+    };
     readonly sites: {
       readonly address: CodecTypes['pg/text@1']['output'];
       readonly client_id: CodecTypes['pg/uuid@1']['output'];
@@ -3554,6 +3569,11 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
+    };
+    readonly session_activity: {
+      readonly last_seen_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly session_id: CodecTypes['sql/varchar@1']['input'];
+      readonly user_id: CodecTypes['pg/uuid@1']['input'];
     };
     readonly sites: {
       readonly address: CodecTypes['pg/text@1']['input'];
@@ -4683,6 +4703,12 @@ export namespace Models {
     template: app_SalaryTemplate;
     readonly [RelationKeys]?: 'baseComponent' | 'component' | 'template';
   };
+  export type app_SessionActivity = {
+    lastSeenAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    sessionId: Varchar<64>;
+    userId: CodecTypes['pg/uuid@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
   export type app_Site = {
     address: CodecTypes['pg/text@1']['output'];
     clientId: CodecTypes['pg/uuid@1']['output'];
@@ -4933,6 +4959,7 @@ export declare const models: {
     SalaryComponent: Models.app_SalaryComponent;
     SalaryTemplate: Models.app_SalaryTemplate;
     SalaryTemplateLine: Models.app_SalaryTemplateLine;
+    SessionActivity: Models.app_SessionActivity;
     Site: Models.app_Site;
     SmsOutbox: Models.app_SmsOutbox;
     State: Models.app_State;
@@ -10740,6 +10767,38 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly session_activity: {
+              columns: {
+                readonly last_seen_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly session_id: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 64 };
+                };
+                readonly user_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['session_id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'session_activity_user_id_idx_6c952402';
+                  readonly prefix: 'session_activity_user_id_idx';
+                  readonly columns: readonly ['user_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
             readonly sites: {
               columns: {
                 readonly address: {
@@ -12197,6 +12256,10 @@ type ContractBase = Omit<
     readonly salary_templates: {
       readonly namespace: 'app' & NamespaceId;
       readonly model: 'SalaryTemplate';
+    };
+    readonly session_activity: {
+      readonly namespace: 'app' & NamespaceId;
+      readonly model: 'SessionActivity';
     };
     readonly sites: { readonly namespace: 'app' & NamespaceId; readonly model: 'Site' };
     readonly sms_outbox: { readonly namespace: 'app' & NamespaceId; readonly model: 'SmsOutbox' };
@@ -18434,6 +18497,40 @@ type ContractBase = Omit<
                 readonly order: { readonly column: 'order' };
                 readonly templateId: { readonly column: 'template_id' };
                 readonly value: { readonly column: 'value' };
+              };
+            };
+          };
+          readonly SessionActivity: {
+            readonly fields: {
+              readonly lastSeenAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly sessionId: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 64 };
+                };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'session_activity';
+              readonly namespaceId: 'app';
+              readonly fields: {
+                readonly lastSeenAt: { readonly column: 'last_seen_at' };
+                readonly sessionId: { readonly column: 'session_id' };
+                readonly userId: { readonly column: 'user_id' };
               };
             };
           };
