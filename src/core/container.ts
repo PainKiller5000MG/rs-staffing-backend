@@ -5,7 +5,7 @@
 import { asClass, asFunction, asValue, createContainer, InjectionMode, type AwilixContainer } from 'awilix';
 import type pg from 'pg';
 import { createAuth, createAuthPool, type Auth } from '../auth/auth.ts';
-import { MockSms, type SmsProvider } from '../lib/sms.ts';
+import { MockSms, Msg91Sms, type SmsProvider } from '../lib/sms.ts';
 import { db } from '../prisma/db.ts';
 import type { Models } from '../prisma/contract.d.ts';
 import { config, type Config } from './config.ts';
@@ -68,7 +68,7 @@ export function createRootContainer(overrides: Partial<Record<keyof RootCradle, 
     logger: asValue(createLogger()),
     db: asValue(db),
     executor: asValue(db),
-    sms: asClass(MockSms).singleton(),
+    sms: (cfg.SMS_PROVIDER === 'msg91' ? asClass(Msg91Sms) : asClass(MockSms)).singleton(),
     authPool: asFunction(() => createAuthPool(cfg.DATABASE_URL))
       .singleton()
       .disposer((pool) => pool.end()),

@@ -6,6 +6,6 @@ import { createAuth } from './auth.ts';
 export const auth = createAuth({
   config: config(),
   logger: console as never,
-  sms: { sendOtp: async () => {}, send: async () => {} },
+  sms: { sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
   isActiveMobile: async () => false,
 });

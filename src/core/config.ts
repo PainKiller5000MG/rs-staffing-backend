@@ -24,11 +24,32 @@ const schema = z
       .pipe(z.array(z.url()).min(1)),
     DATA_KEY: base64Key.optional(),
     HMAC_KEY: base64Key.optional(),
-    SMS_PROVIDER: z.enum(['mock']).default('mock'),
+    SMS_PROVIDER: z.enum(['mock', 'msg91']).default('mock'),
+    MSG91_AUTH_KEY: z.string().min(10).optional(),
+    MSG91_SENDER_ID: z.string().regex(/^[A-Z]{6}$/, 'a 6-letter DLT sender id').optional(),
+    MSG91_TPL_OTP: z.string().min(1).optional(),
+    MSG91_TPL_PAYSLIP: z.string().min(1).optional(),
+    MSG91_TPL_PAYSLIP_REVISED: z.string().min(1).optional(),
+    MSG91_TPL_FNF: z.string().min(1).optional(),
+    /** Sent by MSG91 as the x-rs-webhook-secret header (a custom header set on the webhook). */
+    MSG91_WEBHOOK_SECRET: z.string().min(24).optional(),
+    /** Optional comma-separated IP allow-list for the delivery-report webhook. */
+    MSG91_WEBHOOK_IPS: z
+      .string()
+      .optional()
+      .transform((v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : [])),
+    /** OTP sends allowed per phone and per IP per hour (M1-OTP-03); over the limit the reply is the same, no SMS. */
+    OTP_MAX_PER_PHONE_HOUR: z.coerce.number().int().positive().default(5),
+    OTP_MAX_PER_IP_HOUR: z.coerce.number().int().positive().default(20),
     /** true only behind our own reverse proxy: then the last X-Forwarded-For hop is the client. */
     TRUST_PROXY: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
   })
   .superRefine((env, ctx) => {
+    if (env.SMS_PROVIDER === 'msg91') {
+      for (const key of ['MSG91_AUTH_KEY', 'MSG91_SENDER_ID', 'MSG91_TPL_OTP', 'MSG91_TPL_PAYSLIP', 'MSG91_TPL_PAYSLIP_REVISED', 'MSG91_TPL_FNF', 'MSG91_WEBHOOK_SECRET'] as const) {
+        if (!env[key]) ctx.addIssue({ code: 'custom', path: [key], message: 'required when SMS_PROVIDER=msg91' });
+      }
+    }
     if (env.NODE_ENV !== 'production') return;
     for (const key of ['BETTER_AUTH_SECRET', 'DATA_KEY', 'HMAC_KEY'] as const) {
       if (!env[key]) ctx.addIssue({ code: 'custom', path: [key], message: 'required in production' });
