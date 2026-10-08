@@ -42,6 +42,8 @@ const schema = z
     /** M1-LOG-06: minutes without API activity before a session ends; 0 = never. */
     IDLE_TIMEOUT_MIN_HQ: z.coerce.number().int().min(0).default(30),
     IDLE_TIMEOUT_MIN_FIELD: z.coerce.number().int().min(0).default(0),
+    /** Where uploaded files live: a local directory in dev/test; an S3-compatible bucket in an Indian region in production. */
+    STORAGE_DIR: z.string().default('./.storage'),
     OTP_MAX_PER_PHONE_HOUR: z.coerce.number().int().positive().default(5),
     OTP_MAX_PER_IP_HOUR: z.coerce.number().int().positive().default(20),
     /** true only behind our own reverse proxy: then the last X-Forwarded-For hop is the client. */

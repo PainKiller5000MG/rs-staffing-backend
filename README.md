@@ -169,4 +169,4 @@ branches via PRs.
 - **DLT**: a DLT-registered OTP template and SMS provider are a production launch blocker.
 - Pre-launch work is tracked in [docs/GO-LIVE.md](docs/GO-LIVE.md) (audit-log partitioning,
   VERIFY rule rows, DLT, secrets).
-- Not built yet: idle timeout (M1-LOG-06), lockout (M1-SEC-06), `lib/storage.ts`.
+- Storage: `LocalStorage` only; the S3-compatible production adapter (Indian region, encrypted) is a go-live task.

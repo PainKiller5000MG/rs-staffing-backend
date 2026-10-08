@@ -40,3 +40,8 @@ Work that must land before the first production payroll. Each item becomes an is
 
 - [ ] `BETTER_AUTH_SECRET`, `DATA_KEY`, `HMAC_KEY` from the secrets manager (the app refuses to
       start in production without them). Key rotation plan for `KEY_VERSION`.
+
+## Storage
+
+- [ ] Implement the S3-compatible `FileStorage` adapter (Indian region, private bucket, server-side
+      encryption, signed short-lived URLs); `LocalStorage` is dev/test only (M12-ENC-02).
