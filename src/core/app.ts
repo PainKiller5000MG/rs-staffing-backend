@@ -12,6 +12,7 @@ import type { RootCradle } from './container.ts';
 import { createErrorHandler, notFoundHandler, validationHook } from './error-handler.ts';
 import type { Module } from './module.ts';
 import { registerRoutes } from './routes.ts';
+import { HQ, type Role } from '../lib/roles.ts';
 
 export const openApiInfo = {
   openapi: '3.1.0',
@@ -96,11 +97,15 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
     },
   );
 
+  const session = {
+    idleTimeoutMinutes: (role: Role) => ((HQ as readonly Role[]).includes(role) ? config.IDLE_TIMEOUT_MIN_HQ : config.IDLE_TIMEOUT_MIN_FIELD),
+  };
+
   for (const module of modules) {
     for (const [name, resolver] of Object.entries(module.providers)) container.register(name, resolver);
     for (const Controller of module.controllers) {
       container.register(Controller.name, asClass(Controller as never).scoped());
-      registerRoutes({ app, container, auth, db, bus }, Controller.name, Controller.routes);
+      registerRoutes({ app, container, auth, db, bus, session }, Controller.name, Controller.routes);
     }
   }
 

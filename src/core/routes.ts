@@ -14,7 +14,7 @@ import type { Auth } from '../auth/auth.ts';
 import type { Role } from '../lib/roles.ts';
 import { Ctx, type Db, type Executor, type SessionUser } from './context.ts';
 import { EventBuffer, type EventBus } from './events.ts';
-import { requireRole, requireSession, requireSiteScope } from './guards.ts';
+import { requireRole, requireSession, requireSiteScope, type SessionOptions } from './guards.ts';
 import { AppError, RuleError } from './errors.ts';
 import { createHash } from 'node:crypto';
 
@@ -95,6 +95,7 @@ function idempotencyRequest(c: Parameters<MiddlewareHandler>[0], user: SessionUs
 
 export type RegistryDeps = {
   app: OpenAPIHono;
+  session?: SessionOptions;
   container: AwilixContainer;
   auth: Auth;
   db: Db;
@@ -102,7 +103,7 @@ export type RegistryDeps = {
 };
 
 export function registerRoutes(deps: RegistryDeps, controllerName: string, routes: readonly RouteDef<never>[]): void {
-  const { app, container, auth, db, bus } = deps;
+  const { app, container, auth, db, bus, session } = deps;
 
   for (const route of routes as readonly RouteDef<object>[]) {
     const label = `${route.method.toUpperCase()} ${route.path}`;
@@ -122,7 +123,7 @@ export function registerRoutes(deps: RegistryDeps, controllerName: string, route
         c.set('user', null);
         return next();
       }
-      const user = await requireSession(auth, db, c.req.raw.headers);
+      const user = await requireSession(auth, db, c.req.raw.headers, session);
       if (route.roles !== 'authenticated') requireRole(user, route.roles);
       if (route.scope) requireSiteScope(user, route.scope({ params: c.req.param(), query: c.req.query() }));
       c.set('user', user);

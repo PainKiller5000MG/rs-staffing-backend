@@ -39,6 +39,9 @@ const schema = z
       .optional()
       .transform((v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : [])),
     /** OTP sends allowed per phone and per IP per hour (M1-OTP-03); over the limit the reply is the same, no SMS. */
+    /** M1-LOG-06: minutes without API activity before a session ends; 0 = never. */
+    IDLE_TIMEOUT_MIN_HQ: z.coerce.number().int().min(0).default(30),
+    IDLE_TIMEOUT_MIN_FIELD: z.coerce.number().int().min(0).default(0),
     OTP_MAX_PER_PHONE_HOUR: z.coerce.number().int().positive().default(5),
     OTP_MAX_PER_IP_HOUR: z.coerce.number().int().positive().default(20),
     /** true only behind our own reverse proxy: then the last X-Forwarded-For hop is the client. */
