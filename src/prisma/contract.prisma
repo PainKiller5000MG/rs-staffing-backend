@@ -1778,6 +1778,8 @@ namespace app {
     kind          DeliveryKind
     language      VarChar(5)     @default("en")
     dltTemplateId VarChar(40)?   @map("dlt_template_id")
+    /// The SMS provider's template id (MSG91 template_id); overrides the MSG91_TPL_* default.
+    providerTemplateId VarChar(40)? @map("provider_template_id")
     body          String
     segments      SmallInt
     status        TemplateStatus @default(DRAFT)

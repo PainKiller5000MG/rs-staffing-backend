@@ -7738,6 +7738,16 @@
                   }
                 }
               },
+              "providerTemplateId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 40
+                  }
+                }
+              },
               "segments": {
                 "nullable": false,
                 "type": {
@@ -7801,6 +7811,9 @@
                 },
                 "language": {
                   "column": "language"
+                },
+                "providerTemplateId": {
+                  "column": "provider_template_id"
                 },
                 "segments": {
                   "column": "segments"
@@ -19325,6 +19338,14 @@
                     "length": 5
                   }
                 },
+                "provider_template_id": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 40
+                  }
+                },
                 "segments": {
                   "codecId": "pg/int2@1",
                   "nativeType": "int2",
@@ -23361,7 +23382,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "fbdb70c9c517031dd1ce2535c63a4c2e82795a406c66eec939c10c3b16a243b8"
+    "storageHash": "5698b565a20802657df773d0786ba4b418eed52b5499e4dc9a79bd0ad3b2663c"
   },
   "execution": {
     "executionHash": "035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505",

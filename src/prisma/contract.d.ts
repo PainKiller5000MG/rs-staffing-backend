@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'fbdb70c9c517031dd1ce2535c63a4c2e82795a406c66eec939c10c3b16a243b8'>;
+  StorageHashBase<'5698b565a20802657df773d0786ba4b418eed52b5499e4dc9a79bd0ad3b2663c'>;
 export type ExecutionHash =
   ExecutionHashBase<'035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505'>;
 export type ProfileHash =
@@ -787,6 +787,7 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly kind: 'PUBLISH' | 'REVISED' | 'RESEND' | 'FNF';
       readonly language: Varchar<5>;
+      readonly providerTemplateId: Varchar<40> | null;
       readonly segments: CodecTypes['pg/int2@1']['output'];
       readonly status: 'DRAFT' | 'APPROVED' | 'RETIRED';
     };
@@ -1647,6 +1648,7 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly kind: 'PUBLISH' | 'REVISED' | 'RESEND' | 'FNF';
       readonly language: CodecTypes['sql/varchar@1']['input'];
+      readonly providerTemplateId: CodecTypes['sql/varchar@1']['input'] | null;
       readonly segments: CodecTypes['pg/int2@1']['input'];
       readonly status: 'DRAFT' | 'APPROVED' | 'RETIRED';
     };
@@ -2507,6 +2509,7 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly kind: 'PUBLISH' | 'REVISED' | 'RESEND' | 'FNF';
       readonly language: Varchar<5>;
+      readonly provider_template_id: Varchar<40> | null;
       readonly segments: CodecTypes['pg/int2@1']['output'];
       readonly status: 'DRAFT' | 'APPROVED' | 'RETIRED';
     };
@@ -3367,6 +3370,7 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly kind: 'PUBLISH' | 'REVISED' | 'RESEND' | 'FNF';
       readonly language: CodecTypes['sql/varchar@1']['input'];
+      readonly provider_template_id: CodecTypes['sql/varchar@1']['input'] | null;
       readonly segments: CodecTypes['pg/int2@1']['input'];
       readonly status: 'DRAFT' | 'APPROVED' | 'RETIRED';
     };
@@ -4419,6 +4423,7 @@ export namespace Models {
     id: CodecTypes['pg/uuid@1']['output'];
     kind: 'PUBLISH' | 'REVISED' | 'RESEND' | 'FNF';
     language: Varchar<5>;
+    providerTemplateId: Varchar<40> | null;
     segments: CodecTypes['pg/int2@1']['output'];
     status: 'DRAFT' | 'APPROVED' | 'RETIRED';
     deliveries: app_Delivery[];
@@ -9220,6 +9225,12 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'sql/varchar@1', 'en'>;
                   };
                   readonly typeParams: { readonly length: 5 };
+                };
+                readonly provider_template_id: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 40 };
                 };
                 readonly segments: {
                   readonly nativeType: 'int2';
@@ -16793,6 +16804,14 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 5 };
                 };
               };
+              readonly providerTemplateId: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 40 };
+                };
+              };
               readonly segments: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int2@1' };
@@ -16827,6 +16846,7 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly kind: { readonly column: 'kind' };
                 readonly language: { readonly column: 'language' };
+                readonly providerTemplateId: { readonly column: 'provider_template_id' };
                 readonly segments: { readonly column: 'segments' };
                 readonly status: { readonly column: 'status' };
               };
