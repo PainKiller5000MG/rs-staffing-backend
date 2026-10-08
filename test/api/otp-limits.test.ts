@@ -18,6 +18,14 @@ test('per phone: the 6th send in an hour is dropped', async () => {
   expect(decisions).toEqual(['SEND', 'SEND', 'SEND', 'SEND', 'SEND', 'THROTTLED']);
 });
 
+test('concurrent sends for one phone still stop at the cap (no race)', async () => {
+  const mobile = freshMobile();
+  await db.orm.app.User.create({ name: 'Race Test', mobile, role: 'HR', status: 'ACTIVE' } as never);
+  const gate = new OtpGate({ db, config: { OTP_MAX_PER_PHONE_HOUR: 5, OTP_MAX_PER_IP_HOUR: 1000 } });
+  const decisions = await Promise.all(Array.from({ length: 12 }, () => gate.decide(mobile, randomIp())));
+  expect(decisions.filter((d) => d === 'SEND')).toHaveLength(5);
+});
+
 test('per IP: attempts on unknown numbers count too', async () => {
   const gate = new OtpGate({ db, config: { OTP_MAX_PER_PHONE_HOUR: 5, OTP_MAX_PER_IP_HOUR: 20 } });
   const ip = randomIp();
