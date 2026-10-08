@@ -6,6 +6,7 @@ import { today } from '../lib/dates.ts';
 import type { Role } from '../lib/roles.ts';
 import type { Models } from '../prisma/contract.d.ts';
 import type { Db, SessionUser } from './context.ts';
+import { findPgError } from './error-handler.ts';
 import { ForbiddenError, NotFoundError, UnauthorizedError } from './errors.ts';
 
 type UserRow = Models.app_User;
@@ -15,23 +16,44 @@ export type SessionOptions = { idleTimeoutMinutes: (role: Role) => number };
 const ACTIVITY_WRITE_EVERY_MS = 60_000;
 
 /**
- * M1-LOG-06: a session idle longer than its role's limit is revoked. Activity
- * is written at most once a minute per session (app.session_activity).
+ * M1-LOG-06: a session idle longer than its role's limit is revoked. Fails
+ * closed: a session with no activity row counts as last seen when it was
+ * created, and a failed activity write is an error, not a skipped check.
+ * Activity is written at most once a minute per session (app.session_activity).
  */
-async function checkIdle(auth: Auth, db: Db, session: { id: string; token: string }, userId: string, limitMinutes: number) {
+async function checkIdle(auth: Auth, db: Db, session: { id: string; token: string; createdAt: Date | string }, userId: string, limitMinutes: number) {
   type A = Models.app_SessionActivity;
   const now = Temporal.Now.instant();
   const activity = await db.orm.app.SessionActivity.first({ sessionId: session.id as A['sessionId'] });
-  if (activity && limitMinutes > 0 && Temporal.Instant.compare(activity.lastSeenAt.add({ minutes: limitMinutes }), now) < 0) {
+  const lastSeen = activity?.lastSeenAt ?? Temporal.Instant.fromEpochMilliseconds(new Date(session.createdAt).getTime());
+  if (limitMinutes > 0 && Temporal.Instant.compare(lastSeen.add({ minutes: limitMinutes }), now) < 0) {
     const { internalAdapter } = await auth.$context;
     await internalAdapter.deleteSession(session.token);
     throw new UnauthorizedError(`Signed out after ${limitMinutes} minutes without activity`);
   }
   if (!activity) {
-    await db.orm.app.SessionActivity.create({ sessionId: session.id as A['sessionId'], userId: userId as A['userId'], lastSeenAt: now as A['lastSeenAt'] }).catch(() => {});
+    try {
+      await db.orm.app.SessionActivity.create({ sessionId: session.id as A['sessionId'], userId: userId as A['userId'], lastSeenAt: now as A['lastSeenAt'] });
+    } catch (err) {
+      if (findPgError(err)?.code !== '23505') throw err; // a concurrent first request created it
+    }
   } else if (Temporal.Instant.compare(activity.lastSeenAt.add({ milliseconds: ACTIVITY_WRITE_EVERY_MS }), now) < 0) {
     await db.orm.app.SessionActivity.where({ sessionId: session.id as A['sessionId'] }).update({ lastSeenAt: now as A['lastSeenAt'] });
   }
+}
+
+/**
+ * For Better Auth's own endpoints (/api/auth/*): a session that is idle past
+ * its limit can't be used there either (get-session, update-user…). No-op
+ * without credentials.
+ */
+export async function enforceIdle(auth: Auth, db: Db, headers: Headers, opts: SessionOptions): Promise<void> {
+  const hasCredentials = /session_token/.test(headers.get('cookie') ?? '') || /^Bearer \S+/i.test(headers.get('authorization') ?? '');
+  if (!hasCredentials) return;
+  const session = await auth.api.getSession({ headers });
+  if (!session) return;
+  const user = await db.orm.app.User.select('id', 'role').where({ authUserId: session.user.id as UserRow['authUserId'] }).first();
+  if (user) await checkIdle(auth, db, session.session, user.id, opts.idleTimeoutMinutes(user.role));
 }
 
 /** Better Auth session → the app.users row → the caller's role and site reach. */

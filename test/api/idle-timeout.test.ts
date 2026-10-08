@@ -33,3 +33,21 @@ test('supervisors have no idle timeout by default', async () => {
   await idleFor(cookie, 600);
   expect((await request('GET', '/me', { cookie })).status).toBe(200);
 });
+
+test('an idle session is dead on Better Auth endpoints too', async () => {
+  const cookie = await login(mobileOf('hr'));
+  await idleFor(cookie, 31);
+  const res = await request('GET', '/api/auth/get-session', { cookie });
+  expect(res.status).toBe(401);
+  expect((await request('GET', '/me', { cookie })).status).toBe(401);
+});
+
+test('a session with no activity row yet still times out (counted from its creation)', async () => {
+  const cookie = await login(mobileOf('payroll'));
+  const session = await container.cradle.auth.api.getSession({ headers: new Headers({ cookie }) });
+  await db.orm.app.SessionActivity.where({ sessionId: session!.session.id as never }).delete();
+  await container.cradle.db.orm.app.SessionActivity.select('sessionId').first(); // no row for this session
+  const { internalAdapter } = await container.cradle.auth.$context;
+  await internalAdapter.updateSession(session!.session.token, { createdAt: new Date(Date.now() - 45 * 60_000) } as never);
+  expect((await request('GET', '/me', { cookie })).status).toBe(401);
+});

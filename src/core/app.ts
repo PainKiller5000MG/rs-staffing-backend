@@ -8,6 +8,7 @@ import { requestId } from 'hono/request-id';
 import { secureHeaders } from 'hono/secure-headers';
 import pkg from '../../package.json' with { type: 'json' };
 import { clientIp, withClientIp } from './client-ip.ts';
+import { enforceIdle } from './guards.ts';
 import type { RootCradle } from './container.ts';
 import { createErrorHandler, notFoundHandler, validationHook } from './error-handler.ts';
 import type { Module } from './module.ts';
@@ -44,6 +45,18 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
       { requestId: c.get('requestId'), method: c.req.method, path: c.req.path, status: c.res.status, ms: Math.round(performance.now() - started) },
       'request',
     );
+  });
+
+  const session = {
+    idleTimeoutMinutes: (role: Role) => ((HQ as readonly Role[]).includes(role) ? config.IDLE_TIMEOUT_MIN_HQ : config.IDLE_TIMEOUT_MIN_FIELD),
+  };
+
+  // Idle sessions are dead everywhere, including Better Auth's own endpoints
+  // (sign-out stays allowed so a client can always end its session).
+  app.use('/api/auth/*', async (c, next) => {
+    const path = c.req.path;
+    if (!path.endsWith('/sign-out') && !path.includes('/phone-number/')) await enforceIdle(auth, db, c.req.raw.headers, session);
+    await next();
   });
 
   // M1-SEC-06: wrong OTPs lock the number (and IP) out; see src/auth/lockout.ts.
@@ -98,10 +111,6 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
       }
     },
   );
-
-  const session = {
-    idleTimeoutMinutes: (role: Role) => ((HQ as readonly Role[]).includes(role) ? config.IDLE_TIMEOUT_MIN_HQ : config.IDLE_TIMEOUT_MIN_FIELD),
-  };
 
   for (const module of modules) {
     for (const [name, resolver] of Object.entries(module.providers)) container.register(name, resolver);
