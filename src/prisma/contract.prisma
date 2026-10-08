@@ -442,6 +442,24 @@ namespace app {
     @@map("login_events")
   }
 
+  /// Replay store for POSTs that create money records (Idempotency-Key header).
+  /// Written in the same transaction as the write it describes.
+  model IdempotencyKey {
+    id          Uuid           @id @default(uuid(7))
+    userId      Uuid           @map("user_id")
+    key         VarChar(100)
+    method      VarChar(10)
+    path        VarChar(300)
+    requestHash Char(64)       @map("request_hash")
+    status      SmallInt
+    response    Jsonb
+    createdAt   Timestamptz(6) @default(now()) @map("created_at")
+
+    @@unique([userId, key])
+    @@index([createdAt])
+    @@map("idempotency_keys")
+  }
+
   model Company {
     id        Uuid                 @id @default(uuid(7))
     legalName VarChar(200)         @map("legal_name")

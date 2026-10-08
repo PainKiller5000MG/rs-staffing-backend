@@ -6,7 +6,7 @@
 // HQ creates users, and sendOTP only sends to a number that belongs to an
 // ACTIVE app user, while the endpoint answers the same either way.
 import { betterAuth } from 'better-auth';
-import { phoneNumber } from 'better-auth/plugins';
+import { bearer, phoneNumber } from 'better-auth/plugins';
 import pg from 'pg';
 import type { Config } from '../core/config.ts';
 import type { Logger } from '../core/logger.ts';
@@ -40,7 +40,7 @@ export function createAuth({ config, logger, sms, isActiveMobile, onLogin, pool 
     basePath: '/api/auth',
     secret: config.BETTER_AUTH_SECRET,
     database: pool ?? createAuthPool(config.DATABASE_URL),
-    trustedOrigins: [config.WEB_ORIGIN],
+    trustedOrigins: config.WEB_ORIGINS,
     emailAndPassword: { enabled: false },
     session: {
       expiresIn: 60 * 60 * 12, // 12 h
@@ -74,6 +74,9 @@ export function createAuth({ config, logger, sms, isActiveMobile, onLogin, pool 
       useSecureCookies: config.NODE_ENV === 'production',
     },
     plugins: [
+      // A frontend on another domain sends `Authorization: Bearer <token>`; the token
+      // comes back in the `set-auth-token` header of the verify response. Cookies still work.
+      bearer(),
       phoneNumber({
         otpLength: 6,
         expiresIn: 300,

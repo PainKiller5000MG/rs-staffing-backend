@@ -21,7 +21,12 @@ jobs:
       - run: npm run migration:check
       # Generated files must be committed in sync with their sources.
       - run: npm run contract:emit && git diff --exit-code src/prisma
+      # Fails if any route lacks a schema; the committed spec must be current.
       - run: npm run gen:openapi && git diff --exit-code openapi.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openapi
+          path: openapi.json
 
   # The definition of done: a throwaway Postgres, seed:reset (all migrations +
   # Better Auth tables + seed), db verify, then every test including API tests.

@@ -105,5 +105,9 @@ export const MeSchema = z
     role: RoleSchema,
     employeeId: z.uuid().nullable(),
     siteIds: z.array(z.uuid()),
+    permissions: z.array(z.string()).openapi({ description: 'Permission keys (see GET /lookups); supervisors: own sites only, employees: own record only' }),
+    siteScopes: z.array(
+      z.object({ siteId: z.uuid(), siteCode: z.string(), siteName: z.string(), effectiveFrom: z.string(), effectiveTo: z.string().nullable() }),
+    ),
   })
   .openapi('Me');

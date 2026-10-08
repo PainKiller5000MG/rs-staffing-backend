@@ -1,7 +1,7 @@
 // HTTP only: each route declares who may call it, its schemas and audit tag,
 // and calls one service method.
 import { defineRoutes } from '../../core/routes.ts';
-import { HQ_WRITERS } from '../../lib/roles.ts';
+import { rolesWith } from '../../lib/permissions.ts';
 import {
   AssignScopeBody,
   ChangeRoleBody,
@@ -17,7 +17,10 @@ import {
 } from './users.schemas.ts';
 import type { UsersService } from './users.service.ts';
 
-const USER_READERS = ['ADMIN', 'PAYROLL', 'HR'] as const;
+const USER_READERS = rolesWith('users.read');
+const USER_WRITERS = rolesWith('users.write');
+/** M1-USR-07: assigning sites is site administration (Admin, Payroll/HR). */
+const SCOPE_WRITERS = rolesWith('sites.write');
 
 export class UsersController {
   readonly service: UsersService;
@@ -33,7 +36,7 @@ export class UsersController {
       summary: 'Who is signed in (M1-LOG-07)',
       roles: 'authenticated',
       response: MeSchema,
-      handler: async (c) => c.service.me(),
+      handler: (c) => c.service.me(),
     },
     {
       method: 'get',
@@ -57,7 +60,7 @@ export class UsersController {
       method: 'post',
       path: '/users',
       summary: 'Create a user (M1-USR-01)',
-      roles: ['ADMIN'],
+      roles: USER_WRITERS,
       body: CreateUserBody,
       response: UserSchema,
       status: 201,
@@ -68,7 +71,7 @@ export class UsersController {
       method: 'patch',
       path: '/users/{id}/role',
       summary: 'Change a user role (M1-USR-05)',
-      roles: ['ADMIN'],
+      roles: USER_WRITERS,
       params: IdParam,
       body: ChangeRoleBody,
       response: UserSchema,
@@ -79,7 +82,7 @@ export class UsersController {
       method: 'post',
       path: '/users/{id}/disable',
       summary: 'Disable a user and end their sessions (M1-USR-06)',
-      roles: ['ADMIN'],
+      roles: USER_WRITERS,
       params: IdParam,
       response: UserSchema,
       audit: 'user.disable',
@@ -89,7 +92,7 @@ export class UsersController {
       method: 'post',
       path: '/users/{id}/enable',
       summary: 'Re-enable a user (M1-USR-06)',
-      roles: ['ADMIN'],
+      roles: USER_WRITERS,
       params: IdParam,
       response: UserSchema,
       audit: 'user.enable',
@@ -99,7 +102,7 @@ export class UsersController {
       method: 'post',
       path: '/users/{id}/site-scopes',
       summary: 'Assign a site to a supervisor — pending until approved (M1-USR-07)',
-      roles: HQ_WRITERS,
+      roles: SCOPE_WRITERS,
       params: IdParam,
       body: AssignScopeBody,
       response: SiteScopeSchema,
@@ -112,7 +115,7 @@ export class UsersController {
       method: 'post',
       path: '/site-scopes/{scopeId}/approve',
       summary: 'Approve a pending site scope (someone other than its creator)',
-      roles: HQ_WRITERS,
+      roles: SCOPE_WRITERS,
       params: ScopeIdParam,
       response: SiteScopeSchema,
       audit: 'user_site_scope.approve',
@@ -123,7 +126,7 @@ export class UsersController {
       method: 'post',
       path: '/site-scopes/{scopeId}/revoke',
       summary: 'End a site scope now',
-      roles: HQ_WRITERS,
+      roles: SCOPE_WRITERS,
       params: ScopeIdParam,
       response: SiteScopeSchema,
       audit: 'user_site_scope.revoke',

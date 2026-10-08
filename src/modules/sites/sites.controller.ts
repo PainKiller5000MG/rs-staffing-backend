@@ -1,7 +1,9 @@
 import { z } from '@hono/zod-openapi';
 import { defineRoutes } from '../../core/routes.ts';
-import { HQ } from '../../lib/roles.ts';
+import { rolesWith } from '../../lib/permissions.ts';
 import type { SitesService } from './sites.service.ts';
+
+const SITE_READERS = rolesWith('sites.read');
 
 const SiteSchema = z
   .object({
@@ -29,7 +31,7 @@ export class SitesController {
       method: 'get',
       path: '/sites',
       summary: 'List sites (supervisors: only their own)',
-      roles: [...HQ, 'SUPERVISOR'],
+      roles: SITE_READERS,
       response: z.object({ items: z.array(SiteSchema) }),
       handler: (c) => c.service.list(),
     },
@@ -37,7 +39,7 @@ export class SitesController {
       method: 'get',
       path: '/sites/{siteId}',
       summary: 'Get a site (supervisors: only their own)',
-      roles: [...HQ, 'SUPERVISOR'],
+      roles: SITE_READERS,
       scope: ({ params }) => [params['siteId'] ?? ''],
       params: SiteIdParam,
       response: SiteSchema,

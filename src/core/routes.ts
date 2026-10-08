@@ -15,6 +15,8 @@ import type { Role } from '../lib/roles.ts';
 import { Ctx, type Db, type Executor, type SessionUser } from './context.ts';
 import { EventBuffer, type EventBus } from './events.ts';
 import { requireRole, requireSession, requireSiteScope } from './guards.ts';
+import { AppError, RuleError } from './errors.ts';
+import { createHash } from 'node:crypto';
 
 declare module 'hono' {
   interface ContextVariableMap {
@@ -44,6 +46,11 @@ export type RouteDef<C> = {
   audit?: string;
   /** Documents that the action is one half of a maker-checker pair; the service enforces it. */
   makerChecker?: boolean;
+  /**
+   * POSTs that create money records: the client sends an Idempotency-Key header;
+   * a retry with the same key and body replays the first response and writes nothing.
+   */
+  idempotent?: boolean;
   handler: (controller: C, ctx: Ctx) => Promise<unknown>;
 };
 
@@ -69,6 +76,18 @@ function toJson(value: unknown): unknown {
   return value === undefined ? null : JSON.parse(JSON.stringify(value, (_k, v: unknown) => (typeof v === 'bigint' ? v.toString() : v)));
 }
 
+/** The Idempotency-Key and a hash of what it was sent with (method, path, body). */
+function idempotencyRequest(c: Parameters<MiddlewareHandler>[0], user: SessionUser | null) {
+  const key = c.req.header('idempotency-key');
+  if (!key || key.length < 8 || key.length > 100) {
+    throw new AppError(422, 'IDEMPOTENCY_KEY_REQUIRED', 'Send an Idempotency-Key header (8–100 characters) with this request');
+  }
+  if (!user) throw new Error('idempotent routes need a signed-in user');
+  const body = (c.req.valid as (t: 'json') => unknown)('json') ?? null;
+  const requestHash = createHash('sha256').update(JSON.stringify([c.req.method, c.req.path, toJson(body)])).digest('hex');
+  return { key, userId: user.id, requestHash };
+}
+
 export type RegistryDeps = {
   app: OpenAPIHono;
   container: AwilixContainer;
@@ -85,6 +104,13 @@ export function registerRoutes(deps: RegistryDeps, controllerName: string, route
     if (!route.roles) throw new Error(`${label}: every route must declare roles`);
     const isWrite = route.method !== 'get';
     if (isWrite && !route.audit) throw new Error(`${label}: write routes must declare an audit tag`);
+    // Every route is fully described in openapi.json: a zod response schema, and a
+    // params schema naming each {param} in the path.
+    if (!(route.response instanceof z.ZodType)) throw new Error(`${label}: every route must declare a response schema`);
+    for (const [, name] of route.path.matchAll(/\{(\w+)\}/g)) {
+      if (!route.params?.shape[name!]) throw new Error(`${label}: path param {${name}} has no params schema`);
+    }
+    if (route.idempotent && route.method !== 'post') throw new Error(`${label}: only POST routes can be idempotent`);
 
     const guard: MiddlewareHandler = async (c, next) => {
       if (route.roles === 'public') {
@@ -107,6 +133,15 @@ export function registerRoutes(deps: RegistryDeps, controllerName: string, route
       middleware: [guard] as const,
       ...(route.roles === 'public' ? {} : { security: [{ session: [] }] }),
       request: {
+        ...(route.idempotent
+          ? {
+              // Documented here; enforced by idempotencyRequest() so a missing key gets
+              // its own error code (IDEMPOTENCY_KEY_REQUIRED) rather than VALIDATION_FAILED.
+              headers: z.object({
+                'idempotency-key': z.string().optional().openapi({ description: 'Required. 8–100 characters, unique per logical operation; a retry reuses it' }),
+              }),
+            }
+          : {}),
         ...(route.params ? { params: route.params } : {}),
         ...(route.query ? { query: route.query } : {}),
         ...(route.body ? { body: { content: { 'application/json': { schema: route.body } }, required: true } } : {}),
@@ -126,19 +161,42 @@ export function registerRoutes(deps: RegistryDeps, controllerName: string, route
       const scope = container.createScope();
       const events = new EventBuffer();
 
-      const run = async (executor: Executor) => {
+      const idem = route.idempotent ? idempotencyRequest(c, user) : null;
+
+      const run = async (executor: Executor): Promise<{ status: number; body: unknown; replayed: boolean }> => {
+        if (idem) {
+          const prior = await executor.orm.app.IdempotencyKey.where({ userId: idem.userId as never, key: idem.key as never }).first();
+          if (prior) {
+            if (prior.requestHash !== idem.requestHash) {
+              throw new RuleError('IDEMPOTENCY_KEY_REUSED', 'This Idempotency-Key was already used for a different request');
+            }
+            return { status: prior.status, body: prior.response, replayed: true };
+          }
+        }
         const ctx = new Ctx(c, user, executor);
         scope.register({ ctx: asValue(ctx), executor: asValue(executor), events: asValue(events) });
         const controller = scope.resolve<object>(controllerName);
-        const result = await route.handler(controller, ctx);
+        const body = toJson(await route.handler(controller, ctx));
         if (isWrite && !ctx.audited) throw new Error(`${label} finished without writing an audit row`);
-        return result;
+        if (idem) {
+          await executor.orm.app.IdempotencyKey.create({
+            userId: idem.userId,
+            key: idem.key,
+            method: c.req.method,
+            path: c.req.path,
+            requestHash: idem.requestHash,
+            status,
+            response: body,
+          } as never);
+        }
+        return { status, body, replayed: false };
       };
 
       try {
         const result = isWrite ? await db.transaction((tx) => run(tx)) : await run(db);
-        await bus.deliver(events.events);
-        return c.json(toJson(result) as never, status);
+        if (!result.replayed) await bus.deliver(events.events);
+        if (result.replayed) c.header('idempotent-replayed', 'true');
+        return c.json(result.body as never, result.status as 200);
       } finally {
         await scope.dispose();
       }

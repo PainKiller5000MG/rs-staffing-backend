@@ -40,6 +40,47 @@
               "type": "string",
               "format": "uuid"
             }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Permission keys (see GET /lookups); supervisors: own sites only, employees: own record only"
+          },
+          "siteScopes": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "siteId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "siteCode": {
+                  "type": "string"
+                },
+                "siteName": {
+                  "type": "string"
+                },
+                "effectiveFrom": {
+                  "type": "string"
+                },
+                "effectiveTo": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "siteId",
+                "siteCode",
+                "siteName",
+                "effectiveFrom",
+                "effectiveTo"
+              ]
+            }
           }
         },
         "required": [
@@ -47,7 +88,9 @@
           "name",
           "role",
           "employeeId",
-          "siteIds"
+          "siteIds",
+          "permissions",
+          "siteScopes"
         ]
       },
       "Role": {
@@ -398,6 +441,87 @@
           "stateCode",
           "minWageZone",
           "status"
+        ]
+      },
+      "Lookups": {
+        "type": "object",
+        "properties": {
+          "enums": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/LookupOption"
+              }
+            },
+            "description": "Every enum the API uses, by name (Role, DayCode, PaymentMode…)"
+          },
+          "states": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "ptApplies": {
+                  "type": "boolean"
+                },
+                "lwfApplies": {
+                  "type": "boolean"
+                },
+                "rulesCompleteThrough": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "code",
+                "name",
+                "ptApplies",
+                "lwfApplies",
+                "rulesCompleteThrough"
+              ]
+            }
+          },
+          "permissions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "ruleCodes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "enums",
+          "states",
+          "permissions",
+          "ruleCodes"
+        ]
+      },
+      "LookupOption": {
+        "type": "object",
+        "properties": {
+          "value": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "value",
+          "label"
         ]
       }
     },
@@ -1501,6 +1625,81 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/lookups": {
+      "get": {
+        "summary": "Every enum and value list the API uses",
+        "tags": [
+          "Lookups"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every enum and value list the API uses",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Lookups"
                 }
               }
             }

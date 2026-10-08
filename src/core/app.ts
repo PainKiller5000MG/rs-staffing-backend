@@ -30,10 +30,10 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
   app.use(secureHeaders());
   app.use(
     cors({
-      origin: config.WEB_ORIGIN,
+      origin: config.WEB_ORIGINS,
       credentials: true,
-      allowHeaders: ['content-type', 'x-request-id'],
-      exposeHeaders: ['x-request-id'],
+      allowHeaders: ['content-type', 'authorization', 'x-request-id', 'idempotency-key'],
+      exposeHeaders: ['x-request-id', 'set-auth-token'],
     }),
   );
   app.use(async (c, next) => {

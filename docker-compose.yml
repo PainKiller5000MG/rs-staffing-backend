@@ -1,0 +1,45 @@
+# Staging stack: Postgres 16, the API and the worker from one image.
+#   docker compose up --build
+# The API seeds a fresh database on boot when SEED_ON_BOOT=true (staging only:
+# seed:reset wipes it). Secrets here are staging placeholders — never production.
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: rs
+      POSTGRES_PASSWORD: rs-staging
+      POSTGRES_DB: rs_staffing
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rs -d rs_staffing"]
+      interval: 5s
+      retries: 20
+
+  api:
+    build: .
+    depends_on: { postgres: { condition: service_healthy } }
+    ports: ["3000:3000"]
+    environment: &env
+      # development: mock SMS prints OTPs and seed:reset is allowed. Production needs real secrets.
+      NODE_ENV: development
+      DATABASE_URL: postgresql://rs:rs-staging@postgres:5432/rs_staffing
+      BETTER_AUTH_URL: http://localhost:3000
+      WEB_ORIGIN: http://localhost:3001
+      SEED_ON_BOOT: ${SEED_ON_BOOT:-true}
+      ALLOW_DB_RESET: postgres
+      SMS_PROVIDER: mock
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://localhost:3000/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 10s
+      retries: 30
+
+  worker:
+    build: .
+    depends_on: { api: { condition: service_healthy } }
+    environment:
+      <<: *env
+      ROLE: worker
+      SEED_ON_BOOT: "false"
+
+volumes:
+  pgdata:

@@ -16,7 +16,12 @@ const schema = z
     DATABASE_URL: z.url({ protocol: /^postgres(ql)?$/ }),
     BETTER_AUTH_SECRET: z.string().min(32).optional(),
     BETTER_AUTH_URL: z.url().default('http://localhost:3000'),
-    WEB_ORIGIN: z.url().default('http://localhost:3001'),
+    /** The frontend origin(s), comma-separated: CORS + Better Auth trusted origins. */
+    WEB_ORIGIN: z
+      .string()
+      .default('http://localhost:3001')
+      .transform((v) => v.split(',').map((o) => o.trim()).filter(Boolean))
+      .pipe(z.array(z.url()).min(1)),
     DATA_KEY: base64Key.optional(),
     HMAC_KEY: base64Key.optional(),
     SMS_PROVIDER: z.enum(['mock']).default('mock'),
@@ -32,7 +37,11 @@ const schema = z
 
 const DEV_AUTH_SECRET = 'dev-only-better-auth-secret-change-me-0000';
 
-export type Config = Omit<z.infer<typeof schema>, 'BETTER_AUTH_SECRET'> & { BETTER_AUTH_SECRET: string };
+export type Config = Omit<z.infer<typeof schema>, 'BETTER_AUTH_SECRET' | 'WEB_ORIGIN'> & {
+  BETTER_AUTH_SECRET: string;
+  /** Parsed WEB_ORIGIN list. */
+  WEB_ORIGINS: string[];
+};
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
   const parsed = schema.safeParse(env);
@@ -40,7 +49,8 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
     const lines = parsed.error.issues.map((i) => `  ${i.path.join('.')}: ${i.message}`);
     throw new Error(`Invalid configuration:\n${lines.join('\n')}`);
   }
-  return { ...parsed.data, BETTER_AUTH_SECRET: parsed.data.BETTER_AUTH_SECRET ?? DEV_AUTH_SECRET };
+  const { WEB_ORIGIN, ...rest } = parsed.data;
+  return { ...rest, WEB_ORIGINS: WEB_ORIGIN, BETTER_AUTH_SECRET: parsed.data.BETTER_AUTH_SECRET ?? DEV_AUTH_SECRET };
 }
 
 let cached: Config | undefined;

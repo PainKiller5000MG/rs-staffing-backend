@@ -6,6 +6,7 @@ import { ConflictError, makerChecker, NotFoundError } from '../../core/errors.ts
 import type { EventBuffer } from '../../core/events.ts';
 import type { Identity } from '../../auth/identity.ts';
 import { parseDate, today } from '../../lib/dates.ts';
+import { permissionsOf } from '../../lib/permissions.ts';
 import type { SitesRepository } from '../sites/sites.repository.ts';
 import * as errors from './users.errors.ts';
 import type { SiteScope, User, UsersRepository } from './users.repository.ts';
@@ -54,9 +55,11 @@ export class UsersService {
     this.#events = events;
   }
 
-  me() {
+  /** M1-LOG-07: who is signed in, what they may do, and (supervisors) where. */
+  async me() {
     const { id, name, role, employeeId, siteIds } = this.#ctx.user;
-    return { id, name, role, employeeId, siteIds };
+    const siteScopes = role === 'SUPERVISOR' ? await this.#users.activeScopes(id, today()) : [];
+    return { id, name, role, employeeId, siteIds, permissions: permissionsOf(role), siteScopes };
   }
 
   async list(query: ListUsersQuery) {

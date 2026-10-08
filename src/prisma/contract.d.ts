@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'3912b9610501b034f4067c38fad8c1d33675ea21a7f219a195ab250bffab3033'>;
+  StorageHashBase<'fbdb70c9c517031dd1ce2535c63a4c2e82795a406c66eec939c10c3b16a243b8'>;
 export type ExecutionHash =
-  ExecutionHashBase<'8938b50bc4e0ca61a9f2592b68689aa04adf0e2c6889411a6e19b10ede0aa188'>;
+  ExecutionHashBase<'035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -688,6 +688,17 @@ export type FieldOutputTypes = {
       readonly optional: CodecTypes['pg/bool@1']['output'];
       readonly paid: CodecTypes['pg/bool@1']['output'];
       readonly scopeKey: Varchar<40> | null;
+    };
+    readonly IdempotencyKey: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly key: Varchar<100>;
+      readonly method: Varchar<10>;
+      readonly path: Varchar<300>;
+      readonly requestHash: Char<64>;
+      readonly response: CodecTypes['pg/jsonb@1']['output'];
+      readonly status: CodecTypes['pg/int2@1']['output'];
+      readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
     readonly ImportJob: {
       readonly counts: CodecTypes['pg/jsonb@1']['output'] | null;
@@ -1538,6 +1549,17 @@ export type FieldInputTypes = {
       readonly paid: CodecTypes['pg/bool@1']['input'];
       readonly scopeKey: CodecTypes['sql/varchar@1']['input'] | null;
     };
+    readonly IdempotencyKey: {
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly key: CodecTypes['sql/varchar@1']['input'];
+      readonly method: CodecTypes['sql/varchar@1']['input'];
+      readonly path: CodecTypes['sql/varchar@1']['input'];
+      readonly requestHash: CodecTypes['sql/char@1']['input'];
+      readonly response: CodecTypes['pg/jsonb@1']['input'];
+      readonly status: CodecTypes['pg/int2@1']['input'];
+      readonly userId: CodecTypes['pg/uuid@1']['input'];
+    };
     readonly ImportJob: {
       readonly counts: CodecTypes['pg/jsonb@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -2387,6 +2409,17 @@ export type StorageColumnTypes = {
       readonly paid: CodecTypes['pg/bool@1']['output'];
       readonly scope_key: Varchar<40> | null;
     };
+    readonly idempotency_keys: {
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly key: Varchar<100>;
+      readonly method: Varchar<10>;
+      readonly path: Varchar<300>;
+      readonly request_hash: Char<64>;
+      readonly response: CodecTypes['pg/jsonb@1']['output'];
+      readonly status: CodecTypes['pg/int2@1']['output'];
+      readonly user_id: CodecTypes['pg/uuid@1']['output'];
+    };
     readonly import_jobs: {
       readonly counts: CodecTypes['pg/jsonb@1']['output'] | null;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -3235,6 +3268,17 @@ export type StorageColumnInputTypes = {
       readonly optional: CodecTypes['pg/bool@1']['input'];
       readonly paid: CodecTypes['pg/bool@1']['input'];
       readonly scope_key: CodecTypes['sql/varchar@1']['input'] | null;
+    };
+    readonly idempotency_keys: {
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly key: CodecTypes['sql/varchar@1']['input'];
+      readonly method: CodecTypes['sql/varchar@1']['input'];
+      readonly path: CodecTypes['sql/varchar@1']['input'];
+      readonly request_hash: CodecTypes['sql/char@1']['input'];
+      readonly response: CodecTypes['pg/jsonb@1']['input'];
+      readonly status: CodecTypes['pg/int2@1']['input'];
+      readonly user_id: CodecTypes['pg/uuid@1']['input'];
     };
     readonly import_jobs: {
       readonly counts: CodecTypes['pg/jsonb@1']['input'] | null;
@@ -4256,6 +4300,18 @@ export namespace Models {
     scopeKey: Varchar<40> | null;
     readonly [RelationKeys]?: never;
   };
+  export type app_IdempotencyKey = {
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    id: CodecTypes['pg/uuid@1']['output'];
+    key: Varchar<100>;
+    method: Varchar<10>;
+    path: Varchar<300>;
+    requestHash: Char<64>;
+    response: CodecTypes['pg/jsonb@1']['output'];
+    status: CodecTypes['pg/int2@1']['output'];
+    userId: CodecTypes['pg/uuid@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
   export type app_ImportJob = {
     counts: CodecTypes['pg/jsonb@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -4849,6 +4905,7 @@ export declare const models: {
     ExportLayout: Models.app_ExportLayout;
     FnfCase: Models.app_FnfCase;
     Holiday: Models.app_Holiday;
+    IdempotencyKey: Models.app_IdempotencyKey;
     ImportJob: Models.app_ImportJob;
     ImportRow: Models.app_ImportRow;
     LeaveApplication: Models.app_LeaveApplication;
@@ -8409,6 +8466,72 @@ type ContractBase = Omit<
                   readonly name: 'holidays_date_idx_b4ca319c';
                   readonly prefix: 'holidays_date_idx';
                   readonly columns: readonly ['date'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [];
+            };
+            readonly idempotency_keys: {
+              columns: {
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly key: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 100 };
+                };
+                readonly method: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 10 };
+                };
+                readonly path: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 300 };
+                };
+                readonly request_hash: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 64 };
+                };
+                readonly response: {
+                  readonly nativeType: 'jsonb';
+                  readonly codecId: 'pg/jsonb@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'int2';
+                  readonly codecId: 'pg/int2@1';
+                  readonly nullable: false;
+                };
+                readonly user_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['user_id', 'key'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'idempotency_keys_created_at_idx_225d8c0f';
+                  readonly prefix: 'idempotency_keys_created_at_idx';
+                  readonly columns: readonly ['created_at'];
                   readonly unique: false;
                 },
               ];
@@ -11999,6 +12122,10 @@ type ContractBase = Omit<
     };
     readonly fnf_cases: { readonly namespace: 'app' & NamespaceId; readonly model: 'FnfCase' };
     readonly holidays: { readonly namespace: 'app' & NamespaceId; readonly model: 'Holiday' };
+    readonly idempotency_keys: {
+      readonly namespace: 'app' & NamespaceId;
+      readonly model: 'IdempotencyKey';
+    };
     readonly import_jobs: { readonly namespace: 'app' & NamespaceId; readonly model: 'ImportJob' };
     readonly import_rows: { readonly namespace: 'app' & NamespaceId; readonly model: 'ImportRow' };
     readonly leave_applications: {
@@ -15929,6 +16056,82 @@ type ContractBase = Omit<
                 readonly optional: { readonly column: 'optional' };
                 readonly paid: { readonly column: 'paid' };
                 readonly scopeKey: { readonly column: 'scope_key' };
+              };
+            };
+          };
+          readonly IdempotencyKey: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly key: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 100 };
+                };
+              };
+              readonly method: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 10 };
+                };
+              };
+              readonly path: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 300 };
+                };
+              };
+              readonly requestHash: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 64 };
+                };
+              };
+              readonly response: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/jsonb@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int2@1' };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'idempotency_keys';
+              readonly namespaceId: 'app';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly id: { readonly column: 'id' };
+                readonly key: { readonly column: 'key' };
+                readonly method: { readonly column: 'method' };
+                readonly path: { readonly column: 'path' };
+                readonly requestHash: { readonly column: 'request_hash' };
+                readonly response: { readonly column: 'response' };
+                readonly status: { readonly column: 'status' };
+                readonly userId: { readonly column: 'user_id' };
               };
             };
           };
@@ -20155,6 +20358,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'holidays';
+            readonly field: 'id';
+            readonly namespace: 'app';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'idempotency_keys';
             readonly field: 'id';
             readonly namespace: 'app';
           };

@@ -130,11 +130,25 @@ Copy `src/modules/users/` and rename:
 - The init migration creates roles (`rs_app`, `rs_vault`): the migrating user needs `CREATE ROLE`
   (local Postgres, RDS master user, Supabase's postgres user; not Prisma Postgres).
 
+## For the frontend team
+
+[docs/API.md](docs/API.md): the OTP login flow (cookie or bearer), `GET /me` and `GET /lookups`,
+the error shape and the catalog of every error code, pagination, money as paise strings, dates,
+idempotency keys. The contract is `openapi.json`, published by CI as the `openapi` artifact and
+on every release.
+
+## Staging
+
+```bash
+docker compose up --build        # postgres + api + worker; SEED_ON_BOOT=true seeds on boot
+SEED_ON_BOOT=false docker compose up   # keep data: the api only migrates on boot
+```
+
 ## Deploy
 
-One image (`Dockerfile`), two processes on the Mumbai server: the default command is the API;
-run the worker with `node src/worker.ts`; run `npm run db:migrate` and `npm run auth:migrate`
-from the same image before rollout. Branches: `main` (production), `dev` (staging), feature
+One image (`Dockerfile`), two processes on the Mumbai server: `ROLE=api` (default) applies
+migrations and Better Auth's tables, then serves; `ROLE=worker` runs the pg-boss worker
+(`deploy/entrypoint.sh`). Behind our reverse proxy set `TRUST_PROXY=true`. Branches: `main` (production), `dev` (staging), feature
 branches via PRs.
 
 ## Decisions applied (8 Oct 2026)

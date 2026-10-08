@@ -12,8 +12,10 @@ type UserRow = Models.app_User;
 
 /** Better Auth session → the app.users row → the caller's role and site reach. */
 export async function requireSession(auth: Auth, db: Db, headers: Headers): Promise<SessionUser> {
-  // No session cookie: answer 401 without a database round trip.
-  if (!headers.get('cookie')?.includes('session_token')) throw new UnauthorizedError();
+  // No session cookie and no bearer token: answer 401 without a database round trip.
+  const hasCookie = headers.get('cookie')?.includes('session_token') ?? false;
+  const hasBearer = /^Bearer \S+/i.test(headers.get('authorization') ?? '');
+  if (!hasCookie && !hasBearer) throw new UnauthorizedError();
   const session = await auth.api.getSession({ headers });
   if (!session) throw new UnauthorizedError();
 

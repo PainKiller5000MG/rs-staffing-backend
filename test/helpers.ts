@@ -12,11 +12,16 @@ export const mobileOf = (key: (typeof USERS)[number]['key']) => USERS.find((u) =
 export function testApp() {
   const container = createRootContainer();
   const app = createApp({ modules, container });
-  const origin = container.cradle.config.WEB_ORIGIN;
+  const origin = container.cradle.config.WEB_ORIGINS[0]!;
 
-  async function request(method: string, path: string, opts: { cookie?: string; body?: unknown } = {}) {
-    const headers: Record<string, string> = { origin };
+  async function request(
+    method: string,
+    path: string,
+    opts: { cookie?: string; bearer?: string; body?: unknown; headers?: Record<string, string> } = {},
+  ) {
+    const headers: Record<string, string> = { origin, ...opts.headers };
     if (opts.cookie) headers['cookie'] = opts.cookie;
+    if (opts.bearer) headers['authorization'] = `Bearer ${opts.bearer}`;
     if (opts.body !== undefined) headers['content-type'] = 'application/json';
     const res = await app.request(path, { method, headers, body: opts.body === undefined ? undefined : JSON.stringify(opts.body) });
     const text = await res.text();
@@ -35,11 +40,16 @@ export function testApp() {
       body: JSON.stringify({ phoneNumber: mobile, code }),
     });
     if (res.status !== 200) throw new Error(`verify ${res.status}: ${await res.text()}`);
+    lastBearer = res.headers.get('set-auth-token');
     const cookies = res.headers.getSetCookie().map((c) => c.split(';')[0]);
     return cookies.join('; ');
   }
 
-  return { app, container, request, login };
+  /** Bearer token from the most recent login (Better Auth's `set-auth-token` header). */
+  let lastBearer: string | null = null;
+  const bearerToken = () => lastBearer;
+
+  return { app, container, request, login, bearerToken };
 }
 
 export async function waitForOtp(mobile: string, since: Temporal.Instant): Promise<string> {

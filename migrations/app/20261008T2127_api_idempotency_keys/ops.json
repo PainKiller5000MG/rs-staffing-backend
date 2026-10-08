@@ -1,0 +1,122 @@
+[
+  {
+    "id": "table.idempotency_keys",
+    "label": "Create table \"idempotency_keys\"",
+    "summary": "Creates table \"idempotency_keys\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "idempotency_keys"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"idempotency_keys\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"idempotency_keys\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"idempotency_keys\"",
+        "sql": "CREATE TABLE \"app\".\"idempotency_keys\" (\n  \"created_at\" timestamptz(6) DEFAULT (now()) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"key\" character varying(100) NOT NULL,\n  \"method\" character varying(10) NOT NULL,\n  \"path\" character varying(300) NOT NULL,\n  \"request_hash\" character(64) NOT NULL,\n  \"response\" jsonb NOT NULL,\n  \"status\" int2 NOT NULL,\n  \"user_id\" uuid NOT NULL,\n  PRIMARY KEY (\"id\")\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"idempotency_keys\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"idempotency_keys\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.idempotency_keys.idempotency_keys_user_id_key_key",
+    "label": "Add unique constraint on \"idempotency_keys\" (user_id, key)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "idempotency_keys_user_id_key_key",
+        "table": "idempotency_keys"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"idempotency_keys_user_id_key_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "idempotency_keys_user_id_key_key",
+          "app",
+          "\"app\".\"idempotency_keys\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"idempotency_keys_user_id_key_key\"",
+        "sql": "ALTER TABLE \"app\".\"idempotency_keys\" ADD CONSTRAINT \"idempotency_keys_user_id_key_key\" UNIQUE (\"user_id\", \"key\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"idempotency_keys_user_id_key_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "idempotency_keys_user_id_key_key",
+          "app",
+          "\"app\".\"idempotency_keys\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.idempotency_keys.idempotency_keys_created_at_idx_225d8c0f",
+    "label": "Create index \"idempotency_keys_created_at_idx_225d8c0f\" on \"idempotency_keys\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "idempotency_keys_created_at_idx_225d8c0f",
+        "table": "idempotency_keys"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"idempotency_keys_created_at_idx_225d8c0f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"idempotency_keys_created_at_idx_225d8c0f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"idempotency_keys_created_at_idx_225d8c0f\"",
+        "sql": "CREATE INDEX \"idempotency_keys_created_at_idx_225d8c0f\" ON \"app\".\"idempotency_keys\" (\"created_at\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"idempotency_keys_created_at_idx_225d8c0f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"idempotency_keys_created_at_idx_225d8c0f\""
+        ]
+      }
+    ]
+  }
+]

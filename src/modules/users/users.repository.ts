@@ -201,6 +201,28 @@ export class UsersRepository {
     return toScope(row);
   }
 
+  /** Approved, current, un-ended scopes with their site (for GET /me). */
+  async activeScopes(userId: string, day: Temporal.PlainDate) {
+    const rows = await this.#scopes
+      .where((s) =>
+        and(
+          s.userId.eq(userId as ScopeRow['userId']),
+          s.approvedBy.isNotNull(),
+          s.endedAt.isNull(),
+          s.effectiveFrom.lte(day as ScopeRow['effectiveFrom']),
+          or(s.effectiveTo.isNull(), s.effectiveTo.gte(day as ScopeRow['effectiveFrom'])),
+        ),
+      )
+      .include('site', (site) => site.select('id', 'code', 'name'))
+      .orderBy((s) => s.effectiveFrom.asc())
+      .all();
+    return rows.flatMap((r) =>
+      r.site
+        ? [{ siteId: r.siteId, siteCode: r.site.code, siteName: r.site.name, effectiveFrom: r.effectiveFrom.toString(), effectiveTo: iso(r.effectiveTo) }]
+        : [],
+    );
+  }
+
   /** Approved, live scopes for the same user and site (for a clearer error than the DB's OVERLAP). */
   async liveScopeExists(userId: string, siteId: string, exceptId: string): Promise<boolean> {
     const row = await this.#scopes

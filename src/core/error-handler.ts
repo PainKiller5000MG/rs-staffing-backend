@@ -56,6 +56,9 @@ function mapPgError(pg: PgError): Mapped | null {
   const constraint = pg.constraint ? constraintBase(pg.constraint) : undefined;
   switch (pg.code) {
     case '23505': {
+      if (constraint === 'idempotency_keys_user_id_key_key') {
+        return { status: 409, code: 'IDEMPOTENCY_IN_PROGRESS', message: 'A request with this Idempotency-Key is already being processed' };
+      }
       const fields = keyColumns(pg.detail);
       const field = fields.join(', ') || constraint || 'value';
       return {
