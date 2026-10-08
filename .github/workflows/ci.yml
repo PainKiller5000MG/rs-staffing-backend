@@ -1,0 +1,72 @@
+name: ci
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+  release:
+    types: [published]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run migration:check
+      # Generated files must be committed in sync with their sources.
+      - run: npm run contract:emit && git diff --exit-code src/prisma
+      - run: npm run gen:openapi && git diff --exit-code openapi.json
+
+  # The definition of done: a throwaway Postgres, seed:reset (all migrations +
+  # Better Auth tables + seed), db verify, then every test including API tests.
+  db:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: rs_staffing
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/rs_staffing
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run seed:reset
+      - run: npm run db:verify
+      - run: npm test
+
+  # Each release carries the API contract; web and mobile generate their clients from it.
+  publish-openapi:
+    if: github.event_name == 'release'
+    needs: [check, db]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run gen:openapi
+      - run: gh release upload "${{ github.event.release.tag_name }}" openapi.json --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}

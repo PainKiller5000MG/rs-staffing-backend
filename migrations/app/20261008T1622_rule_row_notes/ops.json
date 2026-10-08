@@ -1,0 +1,128 @@
+[
+  {
+    "id": "column.app.lwf_rates.note",
+    "label": "Add column \"note\" to \"lwf_rates\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "note",
+        "table": "lwf_rates"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"note\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "lwf_rates",
+          "note"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"note\"",
+        "sql": "ALTER TABLE \"app\".\"lwf_rates\" ADD COLUMN \"note\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"note\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "lwf_rates",
+          "note"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.min_wages.note",
+    "label": "Add column \"note\" to \"min_wages\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "note",
+        "table": "min_wages"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"note\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "min_wages",
+          "note"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"note\"",
+        "sql": "ALTER TABLE \"app\".\"min_wages\" ADD COLUMN \"note\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"note\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "min_wages",
+          "note"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.pt_slabs.note",
+    "label": "Add column \"note\" to \"pt_slabs\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "note",
+        "table": "pt_slabs"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"note\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "pt_slabs",
+          "note"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"note\"",
+        "sql": "ALTER TABLE \"app\".\"pt_slabs\" ADD COLUMN \"note\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"note\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "pt_slabs",
+          "note"
+        ]
+      }
+    ]
+  }
+]

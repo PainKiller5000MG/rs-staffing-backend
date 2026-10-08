@@ -1,0 +1,451 @@
+[
+  {
+    "id": "dropTable.sessions",
+    "label": "Drop table \"sessions\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "sessions"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"sessions\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"sessions\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop table \"sessions\"",
+        "sql": "DROP TABLE \"app\".\"sessions\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"sessions\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"sessions\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropConstraint.users.users_firebase_uid_key",
+    "label": "Drop constraint \"users_firebase_uid_key\" on \"users\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "users_firebase_uid_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_firebase_uid_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_firebase_uid_key",
+          "app",
+          "\"app\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"users_firebase_uid_key\"",
+        "sql": "ALTER TABLE \"app\".\"users\" DROP CONSTRAINT \"users_firebase_uid_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_firebase_uid_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_firebase_uid_key",
+          "app",
+          "\"app\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dropColumn.users.firebase_uid",
+    "label": "Drop column \"firebase_uid\" from \"users\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "firebase_uid",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"firebase_uid\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "users",
+          "firebase_uid"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop column \"firebase_uid\"",
+        "sql": "ALTER TABLE \"app\".\"users\" DROP COLUMN \"firebase_uid\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"firebase_uid\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "users",
+          "firebase_uid"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.user_site_scopes.approved_at",
+    "label": "Add column \"approved_at\" to \"user_site_scopes\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "approved_at",
+        "table": "user_site_scopes"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"approved_at\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "approved_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"approved_at\"",
+        "sql": "ALTER TABLE \"app\".\"user_site_scopes\" ADD COLUMN \"approved_at\" timestamptz(6)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"approved_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "approved_at"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.user_site_scopes.approved_by",
+    "label": "Add column \"approved_by\" to \"user_site_scopes\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "approved_by",
+        "table": "user_site_scopes"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"approved_by\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "approved_by"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"approved_by\"",
+        "sql": "ALTER TABLE \"app\".\"user_site_scopes\" ADD COLUMN \"approved_by\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"approved_by\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "approved_by"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.user_site_scopes.ended_at",
+    "label": "Add column \"ended_at\" to \"user_site_scopes\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "ended_at",
+        "table": "user_site_scopes"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"ended_at\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "ended_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"ended_at\"",
+        "sql": "ALTER TABLE \"app\".\"user_site_scopes\" ADD COLUMN \"ended_at\" timestamptz(6)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"ended_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "ended_at"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.user_site_scopes.ended_by",
+    "label": "Add column \"ended_by\" to \"user_site_scopes\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "ended_by",
+        "table": "user_site_scopes"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"ended_by\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "ended_by"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"ended_by\"",
+        "sql": "ALTER TABLE \"app\".\"user_site_scopes\" ADD COLUMN \"ended_by\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"ended_by\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "user_site_scopes",
+          "ended_by"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.users.auth_user_id",
+    "label": "Add column \"auth_user_id\" to \"users\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "auth_user_id",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"auth_user_id\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "users",
+          "auth_user_id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"auth_user_id\"",
+        "sql": "ALTER TABLE \"app\".\"users\" ADD COLUMN \"auth_user_id\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"auth_user_id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "users",
+          "auth_user_id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.user_site_scopes.user_site_scopes_maker_checker_49c0af58",
+    "label": "Add check constraint \"user_site_scopes_maker_checker_49c0af58\" on \"user_site_scopes\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "user_site_scopes_maker_checker_49c0af58",
+        "table": "user_site_scopes"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"user_site_scopes_maker_checker_49c0af58\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_site_scopes_maker_checker_49c0af58",
+          "app",
+          "\"app\".\"user_site_scopes\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"user_site_scopes_maker_checker_49c0af58\"",
+        "sql": "ALTER TABLE \"app\".\"user_site_scopes\" ADD CONSTRAINT \"user_site_scopes_maker_checker_49c0af58\" CHECK (approved_by IS NULL OR created_by IS NULL OR approved_by <> created_by)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"user_site_scopes_maker_checker_49c0af58\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "user_site_scopes_maker_checker_49c0af58",
+          "app",
+          "\"app\".\"user_site_scopes\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.users.users_auth_user_id_key",
+    "label": "Add unique constraint on \"users\" (auth_user_id)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "users_auth_user_id_key",
+        "table": "users"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"users_auth_user_id_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_auth_user_id_key",
+          "app",
+          "\"app\".\"users\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"users_auth_user_id_key\"",
+        "sql": "ALTER TABLE \"app\".\"users\" ADD CONSTRAINT \"users_auth_user_id_key\" UNIQUE (\"auth_user_id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"users_auth_user_id_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "users_auth_user_id_key",
+          "app",
+          "\"app\".\"users\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "user_site_scopes.no_overlap_live_only",
+    "label": "no-overlap: supervisor site scopes (approved, not ended)",
+    "operationClass": "widening",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "replace user_site_scopes_no_overlap with a live-scopes-only version",
+        "sql": "ALTER TABLE app.user_site_scopes DROP CONSTRAINT user_site_scopes_no_overlap;\nALTER TABLE app.user_site_scopes\n  ADD CONSTRAINT user_site_scopes_no_overlap\n  EXCLUDE USING gist (\n    user_id WITH =,\n    site_id WITH =,\n    daterange(effective_from, COALESCE(effective_to, 'infinity'::date), '[]') WITH &&\n  ) WHERE (approved_by IS NOT NULL AND ended_at IS NULL);",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "schema.auth",
+    "label": "Create schema \"auth\" for Better Auth",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "create schema auth",
+        "sql": "CREATE SCHEMA IF NOT EXISTS auth;",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  }
+]
