@@ -52,11 +52,13 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
     const ip = c.get('clientIp');
     const body = (await c.req.raw.clone().json().catch(() => null)) as { phoneNumber?: unknown } | null;
     const mobile = typeof body?.phoneNumber === 'string' ? body.phoneNumber : null;
-    if (mobile && (await otpLockout.blocked(mobile, ip))) {
+    const attempt = mobile ? await otpLockout.begin(mobile, ip) : null;
+    if (attempt?.blocked) {
+      await attempt.fail();
       return c.json({ code: 'TOO_MANY_ATTEMPTS', message: 'Too many attempts. Try again later or contact HQ.' }, 429);
     }
     const res = await auth.handler(withClientIp(c.req.raw, ip));
-    if (mobile && res.status >= 400 && res.status < 500 && res.status !== 429) await otpLockout.recordFailure(mobile, ip);
+    if (attempt) await (res.ok ? attempt.succeed() : res.status < 500 ? attempt.fail() : attempt.succeed());
     return res;
   });
 

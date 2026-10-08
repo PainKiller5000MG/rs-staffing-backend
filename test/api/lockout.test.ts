@@ -42,12 +42,18 @@ test('an unregistered number is refused the same way (no hint that it exists)', 
 test(`${LOCKOUT.longMax} failures in a day lock the user until an Admin re-enables them`, async () => {
   const { admin, mobile, id } = await newUser();
   const lockout = container.cradle.otpLockout;
-  for (let i = 0; i < LOCKOUT.longMax; i++) await lockout.recordFailure(mobile, null);
+  for (let i = 0; i < LOCKOUT.longMax; i++) await (await lockout.begin(mobile, null)).fail();
   expect((await db.orm.app.User.first({ id: id as never }))!.status).toBe('LOCKED');
   expect(await db.orm.audit.AuditLog.where({ action: 'auth.lockout' as never, entityId: id as never }).first()).not.toBeNull();
-  expect(await lockout.blocked(mobile, null)).toBe(true);
+  expect((await lockout.begin(mobile, null)).blocked).toBe(true);
 
   expect((await request('POST', `/users/${id}/enable`, { cookie: admin })).body.status).toBe('ACTIVE');
-  expect(await lockout.blocked(mobile, null)).toBe(false); // the counter was cleared
+  expect((await lockout.begin(mobile, null)).blocked).toBe(false); // the counter was cleared
   await login(mobile); // and they can sign in again
+});
+
+test('concurrent wrong guesses cannot all slip under the cap', async () => {
+  const { mobile } = await newUser();
+  const results = await Promise.all(Array.from({ length: 15 }, () => verify(mobile, '000000')));
+  expect(results.filter((r) => r.status === 429).length).toBeGreaterThanOrEqual(15 - LOCKOUT.shortMax);
 });

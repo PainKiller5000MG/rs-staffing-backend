@@ -22,6 +22,8 @@ export const LOCKOUT = {
   ipMax: 30,
 };
 
+export type Attempt = { blocked: boolean; succeed(): Promise<void>; fail(): Promise<void> };
+
 export class OtpLockout {
   readonly #db: Db;
   readonly #logger: Logger;
@@ -31,33 +33,46 @@ export class OtpLockout {
     this.#logger = logger;
   }
 
-  /** True when this number or IP must not try another code right now. */
-  async blocked(mobile: string, ip: string | null): Promise<boolean> {
+  /**
+   * Records the attempt BEFORE the code is checked (result OTP_TRY) and counts it
+   * together with earlier ones, so concurrent guesses can't all slip under the
+   * cap: each sees every attempt inserted before its own count.
+   */
+  async begin(mobile: string, ip: string | null): Promise<Attempt> {
     const user = await this.#user(mobile);
-    if (user?.status === 'LOCKED') return true;
-    if ((await this.#failures(mobile, LOCKOUT.shortWindowMs)) >= LOCKOUT.shortMax) return true;
-    if (ip && (await this.#ipFailures(ip)) >= LOCKOUT.ipMax) return true;
-    return false;
-  }
-
-  async recordFailure(mobile: string, ip: string | null): Promise<void> {
-    const user = await this.#user(mobile);
-    await this.#db.orm.app.LoginEvent.create({
+    const row = await this.#db.orm.app.LoginEvent.create({
       userId: user?.id ?? null,
       mobile: mobile as Event['mobile'],
-      result: 'OTP_FAIL' as Event['result'],
+      result: 'OTP_TRY' as Event['result'],
       ip: ip as Event['ip'],
     });
-    if (!user) return;
+    const blocked =
+      user?.status === 'LOCKED' ||
+      (await this.#tries(mobile, LOCKOUT.shortWindowMs)) > LOCKOUT.shortMax ||
+      (ip !== null && (await this.#ipTries(ip)) > LOCKOUT.ipMax);
+    return {
+      blocked,
+      succeed: () => this.#settle(row.id, 'OTP_OK'),
+      fail: async () => {
+        await this.#settle(row.id, 'OTP_FAIL');
+        if (user) await this.#afterFailure(user, mobile, ip);
+      },
+    };
+  }
 
-    const long = await this.#failures(mobile, LOCKOUT.longWindowMs);
+  async #settle(id: string, result: 'OTP_OK' | 'OTP_FAIL') {
+    await this.#db.orm.app.LoginEvent.where({ id: id as Event['id'] }).update({ result: result as Event['result'] });
+  }
+
+  async #afterFailure(user: { id: string; status: string }, mobile: string, ip: string | null) {
+    const long = await this.#tries(mobile, LOCKOUT.longWindowMs);
     if (long >= LOCKOUT.longMax && user.status === 'ACTIVE') {
       await this.#db.transaction(async (tx) => {
-        await tx.orm.app.User.where({ id: user.id }).update({ status: 'LOCKED' });
+        await tx.orm.app.User.where({ id: user.id as Models.app_User['id'] }).update({ status: 'LOCKED' });
         await auditSystem(tx, { action: 'auth.lockout', entity: 'user', entityId: user.id, after: { status: 'LOCKED' }, reason: `${long} failed OTPs in 24 hours`, ip });
       });
       this.#logger.warn({ userId: user.id }, 'account locked after repeated failed OTPs');
-    } else if ((await this.#failures(mobile, LOCKOUT.shortWindowMs)) === LOCKOUT.shortMax) {
+    } else if ((await this.#tries(mobile, LOCKOUT.shortWindowMs)) === LOCKOUT.shortMax) {
       await auditSystem(this.#db, { action: 'auth.lockout_temporary', entity: 'user', entityId: user.id, reason: `${LOCKOUT.shortMax} failed OTPs in 15 minutes`, ip });
     }
   }
@@ -71,8 +86,8 @@ export class OtpLockout {
     return this.#db.orm.app.User.select('id', 'status').where({ mobile: mobile as Models.app_User['mobile'] }).first();
   }
 
-  /** Failures for a number within the window, ignoring any before the last unlock. */
-  async #failures(mobile: string, windowMs: number): Promise<number> {
+  /** Unsettled and failed tries for a number within the window, ignoring any before the last unlock. */
+  async #tries(mobile: string, windowMs: number): Promise<number> {
     const events = this.#db.orm.app.LoginEvent;
     const windowStart = Temporal.Now.instant().subtract({ milliseconds: windowMs });
     const unlock = await events
@@ -84,16 +99,16 @@ export class OtpLockout {
     const since = unlock && Temporal.Instant.compare(unlock.at, windowStart) > 0 ? unlock.at : windowStart;
     const { n } = await events
       .where((e) => e.mobile.eq(mobile as Event['mobile']))
-      .where((e) => e.result.eq('OTP_FAIL' as Event['result']))
+      .where((e) => e.result.in(['OTP_TRY', 'OTP_FAIL'] as Event['result'][]))
       .where((e) => e.at.gt(since as Event['at']))
       .aggregate((a) => ({ n: a.count() }));
     return n;
   }
 
-  async #ipFailures(ip: string): Promise<number> {
+  async #ipTries(ip: string): Promise<number> {
     const since = Temporal.Now.instant().subtract({ milliseconds: LOCKOUT.ipWindowMs });
     const { n } = await this.#db.orm.app.LoginEvent.where((e) => e.ip.eq(ip as Event['ip']))
-      .where((e) => e.result.eq('OTP_FAIL' as Event['result']))
+      .where((e) => e.result.in(['OTP_TRY', 'OTP_FAIL'] as Event['result'][]))
       .where((e) => e.at.gte(since as Event['at']))
       .aggregate((a) => ({ n: a.count() }));
     return n;
