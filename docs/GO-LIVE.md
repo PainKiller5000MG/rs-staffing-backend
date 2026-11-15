@@ -36,9 +36,19 @@ Work that must land before the first production payroll. Each item becomes an is
 - [ ] Product call: a victim's per-phone OTP quota can be spent by someone else (known trade-off of
       M1-OTP-03). Consider an HQ "reset OTP limit" action or a CAPTCHA on send-otp.
 
+## Attendance AI (M5-AI)
+
+- [ ] Google Gemini (pay as you go): confirm the region and data terms on the paid key (prompts not used for training); worker names and codes are sent in the sample. Masking of Aadhaar-, bank- and phone-like values verified by test.
+- [ ] Golden set of real client sheets passes 100% on the production model + prompt version (M5-AI-06).
+- [ ] Monthly AI cost report reaches Admin, and the provider-down fallback (last layout / manual mapping) is tested. No budget cap (pay as you go).
+
+## Logins
+
+- [ ] The 2 active Admins exist, on different phones (M1-SEC-04); the break-glass restore command documented for the operator.
+
 ## Secrets
 
-- [ ] `BETTER_AUTH_SECRET`, `DATA_KEY`, `HMAC_KEY` from the secrets manager (the app refuses to
+- [ ] `BETTER_AUTH_SECRET`, `DATA_KEY`, `HMAC_KEY` and `GEMINI_API_KEY` from the secrets manager (the app refuses to
       start in production without them). Key rotation plan for `KEY_VERSION`.
 
 ## Storage

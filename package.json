@@ -25,7 +25,11 @@
     "db:verify": "prisma db verify",
     "auth:migrate": "auth migrate --config src/auth/cli.ts --yes",
     "seed": "node seed/index.ts",
-    "seed:reset": "node seed/reset.ts"
+    "seed:reset": "node seed/reset.ts",
+    "check": "node scripts/check.ts",
+    "story": "node scripts/stories.ts",
+    "new-module": "node scripts/new-module.ts",
+    "model": "node scripts/model.ts"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.3",

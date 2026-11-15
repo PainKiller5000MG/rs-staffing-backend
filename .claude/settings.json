@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run check:*)", "Bash(npm run story:*)", "Bash(npm run model:*)", "Bash(npm run new-module:*)",
+      "Bash(npm run typecheck)", "Bash(npm run test:*)", "Bash(npm run contract:emit)", "Bash(npm run migration:plan:*)",
+      "Bash(npm run migration:check)", "Bash(npm run gen:openapi)", "Bash(npm run seed:reset)", "Bash(npm run db:verify)",
+      "Bash(npm run -s:*)", "Bash(npx vitest run:*)", "Bash(docker start rs-staffing-pg)",
+      "Bash(git status:*)", "Bash(git diff:*)", "Bash(git log:*)", "Bash(git show:*)", "Bash(git add:*)", "Bash(git commit:*)"
+    ],
+    "deny": [
+      "Read(./docs/USER-STORIES.md)", "Read(./src/prisma/contract.d.ts)", "Read(./src/prisma/contract.json)",
+      "Read(./package-lock.json)", "Bash(git push:*)"
+    ]
+  }
+}
