@@ -200,6 +200,48 @@ export default class M extends Migration<Start, End> {
           references: { schema: 'app', table: 'states', columns: ['code'] },
         },
       }),
+      rawSql({
+        id: 'clients.code_lock.function',
+        label: 'clients: short code is fixed once payroll has run (M2-CLI-01 AC4)',
+        operationClass: 'additive',
+        target: { id: 'postgres' },
+        precheck: [],
+        execute: [
+          {
+            description: 'function app.forbid_client_code_change',
+            sql: `CREATE OR REPLACE FUNCTION app.forbid_client_code_change() RETURNS trigger
+LANGUAGE plpgsql AS $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM app.payroll_runs r WHERE r.client_id = OLD.id AND r.status <> 'DRAFT') THEN
+    RAISE EXCEPTION 'clients.code cannot change once payroll has run for the client'
+      USING ERRCODE = '23514', CONSTRAINT = 'clients_code_locked';
+  END IF;
+  RETURN NEW;
+END;
+$$`,
+            params: [],
+          },
+        ],
+        postcheck: [],
+      }),
+      rawSql({
+        id: 'clients.code_lock.trigger',
+        label: 'clients: trigger for the short-code lock',
+        operationClass: 'additive',
+        target: { id: 'postgres' },
+        precheck: [],
+        execute: [
+          {
+            description: 'trigger clients_code_lock',
+            sql: `CREATE TRIGGER clients_code_lock
+  BEFORE UPDATE OF code ON app.clients
+  FOR EACH ROW WHEN (OLD.code IS DISTINCT FROM NEW.code)
+  EXECUTE FUNCTION app.forbid_client_code_change()`,
+            params: [],
+          },
+        ],
+        postcheck: [],
+      }),
     ];
   }
 }

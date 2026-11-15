@@ -21,6 +21,7 @@ type PgError = { code: string; constraint?: string; detail?: string; table?: str
 /** Check constraints by name (without Prisma's `_<8 hex>` suffix) → what the user is told. */
 const CHECK_MESSAGES: Record<string, { code: string; message: string }> = {
   cash_payouts_ack_before_paid: { code: 'ACK_REQUIRED', message: 'Upload the acknowledgement photo first' },
+  clients_code_locked: { code: 'CODE_LOCKED', message: 'The short code cannot be changed because payroll has run for this client' },
   payroll_runs_lock_not_computer: {
     code: 'MAKER_CHECKER',
     message: 'The person who computed the run cannot lock it',
