@@ -32,6 +32,14 @@ enum UserStatus {
   DISABLED = "DISABLED"
 }
 
+enum ContactRole {
+  @@type("pg/text@1")
+  HR = "HR"
+  ACCOUNTS = "ACCOUNTS"
+  SITE_INCHARGE = "SITE_INCHARGE"
+  OTHER = "OTHER"
+}
+
 enum RecordStatus {
   @@type("pg/text@1")
   ACTIVE = "ACTIVE"
@@ -511,8 +519,14 @@ namespace app {
     id                 Uuid                       @id @default(uuid(7))
     code               VarChar(30)                @unique
     name               VarChar(200)
-    gstin              Char(15)?
+    gstin              Char(15)?                  @unique
+    pan                Char(10)?
+    stateCode          VarChar(4)                 @map("state_code") // primary state
+    registeredAddress  String?                    @map("registered_address")
     billingAddress     String?                    @map("billing_address")
+    contractStart      Date?                      @map("contract_start")
+    contractEnd        Date?                      @map("contract_end")
+    workOrderNumber    VarChar(60)?               @map("work_order_number")
     pfEstablishmentId  Uuid                       @map("pf_establishment_id")
     esiEstablishmentId Uuid                       @map("esi_establishment_id")
     payPeriodStartDay  SmallInt                   @default(1) @map("pay_period_start_day") // 1 = calendar month
@@ -524,6 +538,8 @@ namespace app {
 
     pfEstablishment    Establishment              @relation("ClientPfEstablishment", fields: [pfEstablishmentId], references: [id])
     esiEstablishment   Establishment              @relation("ClientEsiEstablishment", fields: [esiEstablishmentId], references: [id])
+    state              State                      @relation(fields: [stateCode], references: [code])
+    contacts           ClientContact[]
     sites              Site[]
     attendanceImports  AttendanceImport[]
     payrollRuns        PayrollRun[]
@@ -533,7 +549,32 @@ namespace app {
     workOrders         WorkOrder[]
     exportLayouts      ExportLayout[]
 
+    @@index([stateCode])
+    @@check(expression: "code ~ '^[A-Z0-9][A-Z0-9-]{2,19}$'", name: "clients_code_format")
+    @@check(expression: "gstin IS NULL OR gstin ~ '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$'", name: "clients_gstin_format")
+    @@check(expression: "pan IS NULL OR pan ~ '^[A-Z]{5}[0-9]{4}[A-Z]$'", name: "clients_pan_format")
+    @@check(expression: "contract_end IS NULL OR contract_start IS NULL OR contract_end >= contract_start", name: "clients_contract_order")
     @@map("clients")
+  }
+
+  model ClientContact {
+    id                 Uuid                       @id @default(uuid(7))
+    clientId           Uuid                       @map("client_id")
+    name               VarChar(120)
+    role               ContactRole
+    email              VarChar(254)?
+    phone              VarChar(20)?
+    isAttendanceSender Boolean                    @default(false) @map("is_attendance_sender")
+    status             RecordStatus               @default(ACTIVE)
+    createdAt          Timestamptz(6)             @default(now()) @map("created_at")
+    createdBy          Uuid?                      @map("created_by")
+    updatedAt          temporal.updatedAt()       @map("updated_at")
+    updatedBy          Uuid?                      @map("updated_by")
+
+    client             Client                     @relation(fields: [clientId], references: [id])
+
+    @@index([clientId])
+    @@map("client_contacts")
   }
 
   model State {
@@ -545,6 +586,7 @@ namespace app {
     rulesCompleteThrough Date?               @map("rules_complete_through") // missing-rules gate
 
     sites                Site[]
+    clients              Client[]
     ptSlabs              PtSlab[]
     lwfRates             LwfRate[]
     minWages             MinWage[]

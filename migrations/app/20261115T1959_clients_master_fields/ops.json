@@ -1,0 +1,747 @@
+[
+  {
+    "id": "table.client_contacts",
+    "label": "Create table \"client_contacts\"",
+    "summary": "Creates table \"client_contacts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "client_contacts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"client_contacts\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"client_contacts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"client_contacts\"",
+        "sql": "CREATE TABLE \"app\".\"client_contacts\" (\n  \"client_id\" uuid NOT NULL,\n  \"created_at\" timestamptz(6) DEFAULT (now()) NOT NULL,\n  \"created_by\" uuid,\n  \"email\" character varying(254),\n  \"id\" uuid NOT NULL,\n  \"is_attendance_sender\" bool DEFAULT false NOT NULL,\n  \"name\" character varying(120) NOT NULL,\n  \"phone\" character varying(20),\n  \"role\" text NOT NULL,\n  \"status\" text DEFAULT 'ACTIVE' NOT NULL,\n  \"updated_at\" timestamptz NOT NULL,\n  \"updated_by\" uuid,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"client_contacts_role_check_ee81f616\" CHECK (\"role\" IN ('HR', 'ACCOUNTS', 'SITE_INCHARGE', 'OTHER')),\n  CONSTRAINT \"client_contacts_status_check_ee520df2\" CHECK (\"status\" IN ('ACTIVE', 'INACTIVE'))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"client_contacts\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"client_contacts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.clients.contract_end",
+    "label": "Add column \"contract_end\" to \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "contract_end",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"contract_end\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "contract_end"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"contract_end\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD COLUMN \"contract_end\" date"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"contract_end\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "contract_end"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.clients.contract_start",
+    "label": "Add column \"contract_start\" to \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "contract_start",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"contract_start\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "contract_start"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"contract_start\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD COLUMN \"contract_start\" date"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"contract_start\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "contract_start"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.clients.pan",
+    "label": "Add column \"pan\" to \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "pan",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"pan\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "pan"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"pan\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD COLUMN \"pan\" character(10)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"pan\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "pan"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.clients.registered_address",
+    "label": "Add column \"registered_address\" to \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "registered_address",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"registered_address\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "registered_address"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"registered_address\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD COLUMN \"registered_address\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"registered_address\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "registered_address"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.clients.work_order_number",
+    "label": "Add column \"work_order_number\" to \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "work_order_number",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"work_order_number\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "work_order_number"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"work_order_number\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD COLUMN \"work_order_number\" character varying(60)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"work_order_number\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "work_order_number"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.clients.state_code",
+    "label": "Add column \"state_code\" to \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "state_code",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"state_code\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "state_code"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"state_code\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD COLUMN \"state_code\" character varying(4)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"state_code\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "state_code"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "backfill.clients.state_code",
+    "label": "backfill clients.state_code from the first site, else MP",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "backfill clients.state_code",
+        "sql": "UPDATE app.clients c SET state_code = COALESCE((SELECT s.state_code FROM app.sites s WHERE s.client_id = c.id ORDER BY s.created_at LIMIT 1), 'MP') WHERE c.state_code IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "alterNullability.setNotNull.clients.state_code",
+    "label": "Set NOT NULL on \"clients\".\"state_code\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "state_code",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"state_code\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "state_code"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"state_code\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"app\".\"clients\" WHERE \"state_code\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"state_code\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ALTER COLUMN \"state_code\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"state_code\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "app",
+          "clients",
+          "state_code",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.clients.clients_code_format_1f8023d7",
+    "label": "Add check constraint \"clients_code_format_1f8023d7\" on \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "clients_code_format_1f8023d7",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"clients_code_format_1f8023d7\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_code_format_1f8023d7",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"clients_code_format_1f8023d7\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD CONSTRAINT \"clients_code_format_1f8023d7\" CHECK (code ~ '^[A-Z0-9][A-Z0-9-]{2,19}$')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"clients_code_format_1f8023d7\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_code_format_1f8023d7",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.clients.clients_contract_order_c0da0e19",
+    "label": "Add check constraint \"clients_contract_order_c0da0e19\" on \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "clients_contract_order_c0da0e19",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"clients_contract_order_c0da0e19\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_contract_order_c0da0e19",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"clients_contract_order_c0da0e19\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD CONSTRAINT \"clients_contract_order_c0da0e19\" CHECK (contract_end IS NULL OR contract_start IS NULL OR contract_end >= contract_start)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"clients_contract_order_c0da0e19\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_contract_order_c0da0e19",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.clients.clients_gstin_format_7e7c2c4c",
+    "label": "Add check constraint \"clients_gstin_format_7e7c2c4c\" on \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "clients_gstin_format_7e7c2c4c",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"clients_gstin_format_7e7c2c4c\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_gstin_format_7e7c2c4c",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"clients_gstin_format_7e7c2c4c\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD CONSTRAINT \"clients_gstin_format_7e7c2c4c\" CHECK (gstin IS NULL OR gstin ~ '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"clients_gstin_format_7e7c2c4c\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_gstin_format_7e7c2c4c",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.clients.clients_pan_format_f9588a7c",
+    "label": "Add check constraint \"clients_pan_format_f9588a7c\" on \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "clients_pan_format_f9588a7c",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"clients_pan_format_f9588a7c\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_pan_format_f9588a7c",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"clients_pan_format_f9588a7c\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD CONSTRAINT \"clients_pan_format_f9588a7c\" CHECK (pan IS NULL OR pan ~ '^[A-Z]{5}[0-9]{4}[A-Z]$')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"clients_pan_format_f9588a7c\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_pan_format_f9588a7c",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.clients.clients_gstin_key",
+    "label": "Add unique constraint on \"clients\" (gstin)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "clients_gstin_key",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"clients_gstin_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_gstin_key",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"clients_gstin_key\"",
+        "sql": "ALTER TABLE \"app\".\"clients\" ADD CONSTRAINT \"clients_gstin_key\" UNIQUE (\"gstin\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"clients_gstin_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_gstin_key",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.client_contacts.client_contacts_client_id_idx_1bb5a570",
+    "label": "Create index \"client_contacts_client_id_idx_1bb5a570\" on \"client_contacts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "client_contacts_client_id_idx_1bb5a570",
+        "table": "client_contacts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"client_contacts_client_id_idx_1bb5a570\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"client_contacts_client_id_idx_1bb5a570\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"client_contacts_client_id_idx_1bb5a570\"",
+        "sql": "CREATE INDEX \"client_contacts_client_id_idx_1bb5a570\" ON \"app\".\"client_contacts\" (\"client_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"client_contacts_client_id_idx_1bb5a570\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"client_contacts_client_id_idx_1bb5a570\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.clients.clients_state_code_idx_defea6c7",
+    "label": "Create index \"clients_state_code_idx_defea6c7\" on \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "clients_state_code_idx_defea6c7",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"clients_state_code_idx_defea6c7\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"clients_state_code_idx_defea6c7\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"clients_state_code_idx_defea6c7\"",
+        "sql": "CREATE INDEX \"clients_state_code_idx_defea6c7\" ON \"app\".\"clients\" (\"state_code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"clients_state_code_idx_defea6c7\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"clients_state_code_idx_defea6c7\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "extras.client_contacts_one_sender",
+    "label": "one active attendance sender per client",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "one active attendance sender per client",
+        "sql": "CREATE UNIQUE INDEX client_contacts_one_sender ON app.client_contacts (client_id) WHERE is_attendance_sender AND status = 'ACTIVE'",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "foreignKey.client_contacts.client_contacts_client_id_fkey",
+    "label": "Add foreign key \"client_contacts_client_id_fkey\" on \"client_contacts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "client_contacts_client_id_fkey",
+        "table": "client_contacts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"client_contacts_client_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "client_contacts_client_id_fkey",
+          "app",
+          "\"app\".\"client_contacts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"client_contacts_client_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"client_contacts\"\nADD CONSTRAINT \"client_contacts_client_id_fkey\"\nFOREIGN KEY (\"client_id\")\nREFERENCES \"app\".\"clients\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"client_contacts_client_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "client_contacts_client_id_fkey",
+          "app",
+          "\"app\".\"client_contacts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.clients.clients_state_code_fkey",
+    "label": "Add foreign key \"clients_state_code_fkey\" on \"clients\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "clients_state_code_fkey",
+        "table": "clients"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"clients_state_code_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_state_code_fkey",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"clients_state_code_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"clients\"\nADD CONSTRAINT \"clients_state_code_fkey\"\nFOREIGN KEY (\"state_code\")\nREFERENCES \"app\".\"states\" (\"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"clients_state_code_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "clients_state_code_fkey",
+          "app",
+          "\"app\".\"clients\""
+        ]
+      }
+    ]
+  }
+]

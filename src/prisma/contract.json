@@ -64,6 +64,10 @@
       "model": "Challan",
       "namespace": "app"
     },
+    "client_contacts": {
+      "model": "ClientContact",
+      "namespace": "app"
+    },
     "clients": {
       "model": "Client",
       "namespace": "app"
@@ -2543,6 +2547,20 @@
                   }
                 }
               },
+              "contractEnd": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/date-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "contractStart": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/date-temporal@1",
+                  "kind": "scalar"
+                }
+              },
               "createdAt": {
                 "nullable": false,
                 "type": {
@@ -2594,6 +2612,16 @@
                   }
                 }
               },
+              "pan": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 10
+                  }
+                }
+              },
               "payPeriodStartDay": {
                 "nullable": false,
                 "type": {
@@ -2606,6 +2634,23 @@
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
+                }
+              },
+              "registeredAddress": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "stateCode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 4
+                  }
                 }
               },
               "status": {
@@ -2634,6 +2679,16 @@
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
                 }
+              },
+              "workOrderNumber": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 60
+                  }
+                }
               }
             },
             "relations": {
@@ -2649,6 +2704,21 @@
                 },
                 "to": {
                   "model": "AttendanceImport",
+                  "namespace": "app"
+                }
+              },
+              "contacts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientId"
+                  ]
+                },
+                "to": {
+                  "model": "ClientContact",
                   "namespace": "app"
                 }
               },
@@ -2774,6 +2844,22 @@
                   "namespace": "app"
                 }
               },
+              "state": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "stateCode"
+                  ],
+                  "targetFields": [
+                    "code"
+                  ]
+                },
+                "to": {
+                  "model": "State",
+                  "namespace": "app"
+                }
+              },
               "workOrders": {
                 "cardinality": "1:N",
                 "on": {
@@ -2798,6 +2884,12 @@
                 "code": {
                   "column": "code"
                 },
+                "contractEnd": {
+                  "column": "contract_end"
+                },
+                "contractStart": {
+                  "column": "contract_start"
+                },
                 "createdAt": {
                   "column": "created_at"
                 },
@@ -2816,11 +2908,195 @@
                 "name": {
                   "column": "name"
                 },
+                "pan": {
+                  "column": "pan"
+                },
                 "payPeriodStartDay": {
                   "column": "pay_period_start_day"
                 },
                 "pfEstablishmentId": {
                   "column": "pf_establishment_id"
+                },
+                "registeredAddress": {
+                  "column": "registered_address"
+                },
+                "stateCode": {
+                  "column": "state_code"
+                },
+                "status": {
+                  "column": "status"
+                },
+                "updatedAt": {
+                  "column": "updated_at"
+                },
+                "updatedBy": {
+                  "column": "updated_by"
+                },
+                "workOrderNumber": {
+                  "column": "work_order_number"
+                }
+              },
+              "namespaceId": "app",
+              "table": "clients"
+            }
+          },
+          "ClientContact": {
+            "fields": {
+              "clientId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "createdBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "email": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 254
+                  }
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "isAttendanceSender": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
+                }
+              },
+              "phone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 20
+                  }
+                }
+              },
+              "role": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "ContactRole",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "status": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "RecordStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar"
+                }
+              },
+              "updatedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "app"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientId": {
+                  "column": "client_id"
+                },
+                "createdAt": {
+                  "column": "created_at"
+                },
+                "createdBy": {
+                  "column": "created_by"
+                },
+                "email": {
+                  "column": "email"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "isAttendanceSender": {
+                  "column": "is_attendance_sender"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "phone": {
+                  "column": "phone"
+                },
+                "role": {
+                  "column": "role"
                 },
                 "status": {
                   "column": "status"
@@ -2833,7 +3109,7 @@
                 }
               },
               "namespaceId": "app",
-              "table": "clients"
+              "table": "client_contacts"
             }
           },
           "CodeCounter": {
@@ -11063,6 +11339,21 @@
               }
             },
             "relations": {
+              "clients": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "code"
+                  ],
+                  "targetFields": [
+                    "stateCode"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "app"
+                }
+              },
               "licences": {
                 "cardinality": "1:N",
                 "on": {
@@ -12501,6 +12792,27 @@
               {
                 "name": "REIMBURSEMENT",
                 "value": "REIMBURSEMENT"
+              }
+            ]
+          },
+          "ContactRole": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "HR",
+                "value": "HR"
+              },
+              {
+                "name": "ACCOUNTS",
+                "value": "ACCOUNTS"
+              },
+              {
+                "name": "SITE_INCHARGE",
+                "value": "SITE_INCHARGE"
+              },
+              {
+                "name": "OTHER",
+                "value": "OTHER"
               }
             ]
           },
@@ -15305,8 +15617,174 @@
               },
               "uniques": []
             },
+            "client_contacts": {
+              "checks": [
+                {
+                  "expression": "\"role\" IN ('HR', 'ACCOUNTS', 'SITE_INCHARGE', 'OTHER')",
+                  "name": "client_contacts_role_check_ee81f616",
+                  "prefix": "client_contacts_role_check"
+                },
+                {
+                  "expression": "\"status\" IN ('ACTIVE', 'INACTIVE')",
+                  "name": "client_contacts_status_check_ee520df2",
+                  "prefix": "client_contacts_status_check"
+                }
+              ],
+              "columns": {
+                "client_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "created_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "created_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "email": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 254
+                  }
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "is_attendance_sender": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 120
+                  }
+                },
+                "phone": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 20
+                  }
+                },
+                "role": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "ContactRole",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "ACTIVE"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "RecordStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updated_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": false
+                },
+                "updated_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "client_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "client_contacts"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "clients"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "client_id"
+                  ],
+                  "name": "client_contacts_client_id_idx_1bb5a570",
+                  "prefix": "client_contacts_client_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "clients": {
               "checks": [
+                {
+                  "expression": "code ~ '^[A-Z0-9][A-Z0-9-]{2,19}$'",
+                  "name": "clients_code_format_1f8023d7",
+                  "prefix": "clients_code_format"
+                },
+                {
+                  "expression": "contract_end IS NULL OR contract_start IS NULL OR contract_end >= contract_start",
+                  "name": "clients_contract_order_c0da0e19",
+                  "prefix": "clients_contract_order"
+                },
+                {
+                  "expression": "gstin IS NULL OR gstin ~ '^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$'",
+                  "name": "clients_gstin_format_7e7c2c4c",
+                  "prefix": "clients_gstin_format"
+                },
+                {
+                  "expression": "pan IS NULL OR pan ~ '^[A-Z]{5}[0-9]{4}[A-Z]$'",
+                  "name": "clients_pan_format_f9588a7c",
+                  "prefix": "clients_pan_format"
+                },
                 {
                   "expression": "\"status\" IN ('ACTIVE', 'INACTIVE')",
                   "name": "clients_status_check_ee520df2",
@@ -15326,6 +15804,16 @@
                   "typeParams": {
                     "length": 30
                   }
+                },
+                "contract_end": {
+                  "codecId": "pg/date-temporal@1",
+                  "nativeType": "date",
+                  "nullable": true
+                },
+                "contract_start": {
+                  "codecId": "pg/date-temporal@1",
+                  "nativeType": "date",
+                  "nullable": true
                 },
                 "created_at": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -15370,6 +15858,14 @@
                     "length": 200
                   }
                 },
+                "pan": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 10
+                  }
+                },
                 "pay_period_start_day": {
                   "codecId": "pg/int2@1",
                   "default": {
@@ -15383,6 +15879,19 @@
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": false
+                },
+                "registered_address": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "state_code": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 4
+                  }
                 },
                 "status": {
                   "codecId": "pg/text@1",
@@ -15408,6 +15917,14 @@
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": true
+                },
+                "work_order_number": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 60
+                  }
                 }
               },
               "foreignKeys": [
@@ -15442,6 +15959,22 @@
                     "namespaceId": "app",
                     "tableName": "establishments"
                   }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "state_code"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "clients"
+                  },
+                  "target": {
+                    "columns": [
+                      "code"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "states"
+                  }
                 }
               ],
               "indexes": [
@@ -15460,6 +15993,14 @@
                   "name": "clients_pf_establishment_id_idx_7f37ee03",
                   "prefix": "clients_pf_establishment_id_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "state_code"
+                  ],
+                  "name": "clients_state_code_idx_defea6c7",
+                  "prefix": "clients_state_code_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -15471,6 +16012,11 @@
                 {
                   "columns": [
                     "code"
+                  ]
+                },
+                {
+                  "columns": [
+                    "gstin"
                   ]
                 }
               ]
@@ -23031,6 +23577,15 @@
                 "REIMBURSEMENT"
               ]
             },
+            "ContactRole": {
+              "kind": "valueSet",
+              "values": [
+                "HR",
+                "ACCOUNTS",
+                "SITE_INCHARGE",
+                "OTHER"
+              ]
+            },
             "DayCode": {
               "kind": "valueSet",
               "values": [
@@ -23475,10 +24030,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "0d5b643b1717f7b621577426a668d366a68d19a6a8899065b714e12da0ce6849"
+    "storageHash": "03056ddc505f1f8f1e1ea51a972e157148a510d08c1bef828e272821765aaae6"
   },
   "execution": {
-    "executionHash": "035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505",
+    "executionHash": "0ddeb2f700d9512f88bda082abe50909dc69c89b44d8631f4fb0aafa05c019ad",
     "mutations": {
       "defaults": [
         {
@@ -23636,6 +24191,32 @@
           "ref": {
             "entry": "challans",
             "field": "id",
+            "namespace": "app"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv7",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "client_contacts",
+            "field": "id",
+            "namespace": "app"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "instantNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "client_contacts",
+            "field": "updated_at",
             "namespace": "app"
           }
         },

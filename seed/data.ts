@@ -41,9 +41,9 @@ export const STATES = STATE_NAMES.map(([code, name]) =>
 );
 
 export const CLIENTS = [
-  { code: 'NTX', name: 'Narmada Textiles Pvt Ltd', gstin: '23AABCN1234F1Z5', billingAddress: 'Industrial Area, Govindpura, Bhopal' },
-  { code: 'VHC', name: 'Vindhya Hospital & Care', gstin: '23AACCV5678K1Z2', billingAddress: 'AB Road, Indore' },
-  { code: 'CCW', name: 'Chambal Cement Works Ltd', gstin: '23AADCC9012M1Z8', billingAddress: 'Malanpur Industrial Area, Gwalior' },
+  { code: 'NTX', name: 'Narmada Textiles Pvt Ltd', gstin: '23AABCN1234F1Z5', stateCode: 'MP', billingAddress: 'Industrial Area, Govindpura, Bhopal' },
+  { code: 'VHC', name: 'Vindhya Hospital & Care', gstin: '23AACCV5678K1Z2', stateCode: 'MP', billingAddress: 'AB Road, Indore' },
+  { code: 'CCW', name: 'Chambal Cement Works Ltd', gstin: '23AADCC9012M1Z8', stateCode: 'MP', billingAddress: 'Malanpur Industrial Area, Gwalior' },
 ] as const;
 
 export type ClientCode = (typeof CLIENTS)[number]['code'];

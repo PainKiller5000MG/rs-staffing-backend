@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'0d5b643b1717f7b621577426a668d366a68d19a6a8899065b714e12da0ce6849'>;
+  StorageHashBase<'03056ddc505f1f8f1e1ea51a972e157148a510d08c1bef828e272821765aaae6'>;
 export type ExecutionHash =
-  ExecutionHashBase<'035edcbf42799ba08ae463497b37affffd4df28bf1d49239c855b9cb54623505'>;
+  ExecutionHashBase<'0ddeb2f700d9512f88bda082abe50909dc69c89b44d8631f4fb0aafa05c019ad'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -421,14 +421,34 @@ export type FieldOutputTypes = {
     readonly Client: {
       readonly billingAddress: CodecTypes['pg/text@1']['output'] | null;
       readonly code: Varchar<30>;
+      readonly contractEnd: CodecTypes['pg/date-temporal@1']['output'] | null;
+      readonly contractStart: CodecTypes['pg/date-temporal@1']['output'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
       readonly esiEstablishmentId: CodecTypes['pg/uuid@1']['output'];
       readonly gstin: Char<15> | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly name: Varchar<200>;
+      readonly pan: Char<10> | null;
       readonly payPeriodStartDay: CodecTypes['pg/int2@1']['output'];
       readonly pfEstablishmentId: CodecTypes['pg/uuid@1']['output'];
+      readonly registeredAddress: CodecTypes['pg/text@1']['output'] | null;
+      readonly stateCode: Varchar<4>;
+      readonly status: 'ACTIVE' | 'INACTIVE';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly workOrderNumber: Varchar<60> | null;
+    };
+    readonly ClientContact: {
+      readonly clientId: CodecTypes['pg/uuid@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly email: Varchar<254> | null;
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly isAttendanceSender: CodecTypes['pg/bool@1']['output'];
+      readonly name: Varchar<120>;
+      readonly phone: Varchar<20> | null;
+      readonly role: 'HR' | 'ACCOUNTS' | 'SITE_INCHARGE' | 'OTHER';
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
@@ -1287,14 +1307,34 @@ export type FieldInputTypes = {
     readonly Client: {
       readonly billingAddress: CodecTypes['pg/text@1']['input'] | null;
       readonly code: CodecTypes['sql/varchar@1']['input'];
+      readonly contractEnd: CodecTypes['pg/date-temporal@1']['input'] | null;
+      readonly contractStart: CodecTypes['pg/date-temporal@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
       readonly esiEstablishmentId: CodecTypes['pg/uuid@1']['input'];
       readonly gstin: CodecTypes['sql/char@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly pan: CodecTypes['sql/char@1']['input'] | null;
       readonly payPeriodStartDay: CodecTypes['pg/int2@1']['input'];
       readonly pfEstablishmentId: CodecTypes['pg/uuid@1']['input'];
+      readonly registeredAddress: CodecTypes['pg/text@1']['input'] | null;
+      readonly stateCode: CodecTypes['sql/varchar@1']['input'];
+      readonly status: 'ACTIVE' | 'INACTIVE';
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly updatedBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly workOrderNumber: CodecTypes['sql/varchar@1']['input'] | null;
+    };
+    readonly ClientContact: {
+      readonly clientId: CodecTypes['pg/uuid@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly email: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly isAttendanceSender: CodecTypes['pg/bool@1']['input'];
+      readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly phone: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly role: 'HR' | 'ACCOUNTS' | 'SITE_INCHARGE' | 'OTHER';
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedBy: CodecTypes['pg/uuid@1']['input'] | null;
@@ -2150,20 +2190,40 @@ export type StorageColumnTypes = {
       readonly receipt_key: CodecTypes['pg/text@1']['output'] | null;
       readonly reference: Varchar<60> | null;
     };
+    readonly client_contacts: {
+      readonly client_id: CodecTypes['pg/uuid@1']['output'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly email: Varchar<254> | null;
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly is_attendance_sender: CodecTypes['pg/bool@1']['output'];
+      readonly name: Varchar<120>;
+      readonly phone: Varchar<20> | null;
+      readonly role: 'HR' | 'ACCOUNTS' | 'SITE_INCHARGE' | 'OTHER';
+      readonly status: 'ACTIVE' | 'INACTIVE';
+      readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly updated_by: CodecTypes['pg/uuid@1']['output'] | null;
+    };
     readonly clients: {
       readonly billing_address: CodecTypes['pg/text@1']['output'] | null;
       readonly code: Varchar<30>;
+      readonly contract_end: CodecTypes['pg/date-temporal@1']['output'] | null;
+      readonly contract_start: CodecTypes['pg/date-temporal@1']['output'] | null;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
       readonly esi_establishment_id: CodecTypes['pg/uuid@1']['output'];
       readonly gstin: Char<15> | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly name: Varchar<200>;
+      readonly pan: Char<10> | null;
       readonly pay_period_start_day: CodecTypes['pg/int2@1']['output'];
       readonly pf_establishment_id: CodecTypes['pg/uuid@1']['output'];
+      readonly registered_address: CodecTypes['pg/text@1']['output'] | null;
+      readonly state_code: Varchar<4>;
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updated_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly work_order_number: Varchar<60> | null;
     };
     readonly code_counters: {
       readonly name: Varchar<30>;
@@ -3016,20 +3076,40 @@ export type StorageColumnInputTypes = {
       readonly receipt_key: CodecTypes['pg/text@1']['input'] | null;
       readonly reference: CodecTypes['sql/varchar@1']['input'] | null;
     };
+    readonly client_contacts: {
+      readonly client_id: CodecTypes['pg/uuid@1']['input'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly email: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly is_attendance_sender: CodecTypes['pg/bool@1']['input'];
+      readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly phone: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly role: 'HR' | 'ACCOUNTS' | 'SITE_INCHARGE' | 'OTHER';
+      readonly status: 'ACTIVE' | 'INACTIVE';
+      readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly updated_by: CodecTypes['pg/uuid@1']['input'] | null;
+    };
     readonly clients: {
       readonly billing_address: CodecTypes['pg/text@1']['input'] | null;
       readonly code: CodecTypes['sql/varchar@1']['input'];
+      readonly contract_end: CodecTypes['pg/date-temporal@1']['input'] | null;
+      readonly contract_start: CodecTypes['pg/date-temporal@1']['input'] | null;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
       readonly esi_establishment_id: CodecTypes['pg/uuid@1']['input'];
       readonly gstin: CodecTypes['sql/char@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly pan: CodecTypes['sql/char@1']['input'] | null;
       readonly pay_period_start_day: CodecTypes['pg/int2@1']['input'];
       readonly pf_establishment_id: CodecTypes['pg/uuid@1']['input'];
+      readonly registered_address: CodecTypes['pg/text@1']['input'] | null;
+      readonly state_code: CodecTypes['sql/varchar@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updated_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly work_order_number: CodecTypes['sql/varchar@1']['input'] | null;
     };
     readonly code_counters: {
       readonly name: CodecTypes['sql/varchar@1']['input'];
@@ -3928,18 +4008,25 @@ export namespace Models {
   export type app_Client = {
     billingAddress: CodecTypes['pg/text@1']['output'] | null;
     code: Varchar<30>;
+    contractEnd: CodecTypes['pg/date-temporal@1']['output'] | null;
+    contractStart: CodecTypes['pg/date-temporal@1']['output'] | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdBy: CodecTypes['pg/uuid@1']['output'] | null;
     esiEstablishmentId: CodecTypes['pg/uuid@1']['output'];
     gstin: Char<15> | null;
     id: CodecTypes['pg/uuid@1']['output'];
     name: Varchar<200>;
+    pan: Char<10> | null;
     payPeriodStartDay: CodecTypes['pg/int2@1']['output'];
     pfEstablishmentId: CodecTypes['pg/uuid@1']['output'];
+    registeredAddress: CodecTypes['pg/text@1']['output'] | null;
+    stateCode: Varchar<4>;
     status: 'ACTIVE' | 'INACTIVE';
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    workOrderNumber: Varchar<60> | null;
     attendanceImports: app_AttendanceImport[];
+    contacts: app_ClientContact[];
     costAllocations: app_SupervisorCostAllocation[];
     esiEstablishment: app_Establishment;
     exportLayouts: app_ExportLayout[];
@@ -3948,9 +4035,11 @@ export namespace Models {
     pfEstablishment: app_Establishment;
     salaryTemplates: app_SalaryTemplate[];
     sites: app_Site[];
+    state: app_State;
     workOrders: app_WorkOrder[];
     readonly [RelationKeys]?:
       | 'attendanceImports'
+      | 'contacts'
       | 'costAllocations'
       | 'esiEstablishment'
       | 'exportLayouts'
@@ -3959,7 +4048,24 @@ export namespace Models {
       | 'pfEstablishment'
       | 'salaryTemplates'
       | 'sites'
+      | 'state'
       | 'workOrders';
+  };
+  export type app_ClientContact = {
+    clientId: CodecTypes['pg/uuid@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+    email: Varchar<254> | null;
+    id: CodecTypes['pg/uuid@1']['output'];
+    isAttendanceSender: CodecTypes['pg/bool@1']['output'];
+    name: Varchar<120>;
+    phone: Varchar<20> | null;
+    role: 'HR' | 'ACCOUNTS' | 'SITE_INCHARGE' | 'OTHER';
+    status: 'ACTIVE' | 'INACTIVE';
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    client: app_Client;
+    readonly [RelationKeys]?: 'client';
   };
   export type app_CodeCounter = {
     name: Varchar<30>;
@@ -4769,12 +4875,14 @@ export namespace Models {
     name: Varchar<80>;
     ptApplies: CodecTypes['pg/bool@1']['output'];
     rulesCompleteThrough: CodecTypes['pg/date-temporal@1']['output'] | null;
+    clients: app_Client[];
     licences: app_ContractorLicence[];
     lwfRates: app_LwfRate[];
     minWages: app_MinWage[];
     ptSlabs: app_PtSlab[];
     sites: app_Site[];
-    readonly [RelationKeys]?: 'licences' | 'lwfRates' | 'minWages' | 'ptSlabs' | 'sites';
+    readonly [RelationKeys]?:
+      'clients' | 'licences' | 'lwfRates' | 'minWages' | 'ptSlabs' | 'sites';
   };
   export type app_StatutoryRule = {
     approvedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -4914,6 +5022,7 @@ export declare const models: {
     CashReturn: Models.app_CashReturn;
     Challan: Models.app_Challan;
     Client: Models.app_Client;
+    ClientContact: Models.app_ClientContact;
     CodeCounter: Models.app_CodeCounter;
     Company: Models.app_Company;
     ComplianceFile: Models.app_ComplianceFile;
@@ -6361,6 +6470,107 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly client_contacts: {
+              columns: {
+                readonly client_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly created_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly email: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 254 };
+                };
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly is_attendance_sender: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
+                };
+                readonly name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 120 };
+                };
+                readonly phone: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 20 };
+                };
+                readonly role: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'ACTIVE'>;
+                  };
+                };
+                readonly updated_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                };
+                readonly updated_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'client_contacts_client_id_idx_1bb5a570';
+                  readonly prefix: 'client_contacts_client_id_idx';
+                  readonly columns: readonly ['client_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'client_contacts';
+                    readonly columns: readonly ['client_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'clients';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly clients: {
               columns: {
                 readonly billing_address: {
@@ -6373,6 +6583,16 @@ type ContractBase = Omit<
                   readonly codecId: 'sql/varchar@1';
                   readonly nullable: false;
                   readonly typeParams: { readonly length: 30 };
+                };
+                readonly contract_end: {
+                  readonly nativeType: 'date';
+                  readonly codecId: 'pg/date-temporal@1';
+                  readonly nullable: true;
+                };
+                readonly contract_start: {
+                  readonly nativeType: 'date';
+                  readonly codecId: 'pg/date-temporal@1';
+                  readonly nullable: true;
                 };
                 readonly created_at: {
                   readonly nativeType: 'timestamptz';
@@ -6408,6 +6628,12 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly typeParams: { readonly length: 200 };
                 };
+                readonly pan: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 10 };
+                };
                 readonly pay_period_start_day: {
                   readonly nativeType: 'int2';
                   readonly codecId: 'pg/int2@1';
@@ -6421,6 +6647,17 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
+                };
+                readonly registered_address: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly state_code: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 4 };
                 };
                 readonly status: {
                   readonly nativeType: 'text';
@@ -6441,9 +6678,18 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: true;
                 };
+                readonly work_order_number: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 60 };
+                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['code'] }];
+              uniques: readonly [
+                { readonly columns: readonly ['code'] },
+                { readonly columns: readonly ['gstin'] },
+              ];
               indexes: readonly [
                 {
                   readonly name: 'clients_esi_establishment_id_idx_47180918';
@@ -6455,6 +6701,12 @@ type ContractBase = Omit<
                   readonly name: 'clients_pf_establishment_id_idx_7f37ee03';
                   readonly prefix: 'clients_pf_establishment_id_idx';
                   readonly columns: readonly ['pf_establishment_id'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'clients_state_code_idx_defea6c7';
+                  readonly prefix: 'clients_state_code_idx';
+                  readonly columns: readonly ['state_code'];
                   readonly unique: false;
                 },
               ];
@@ -6481,6 +6733,18 @@ type ContractBase = Omit<
                     readonly namespaceId: 'app' & NamespaceId;
                     readonly tableName: 'establishments';
                     readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'clients';
+                    readonly columns: readonly ['state_code'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'states';
+                    readonly columns: readonly ['code'];
                   };
                 },
               ];
@@ -11795,6 +12059,10 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['EARNING', 'DEDUCTION', 'EMPLOYER', 'REIMBURSEMENT'];
             };
+            readonly ContactRole: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['HR', 'ACCOUNTS', 'SITE_INCHARGE', 'OTHER'];
+            };
             readonly DayCode: {
               readonly kind: 'valueSet';
               readonly values: readonly [
@@ -12127,6 +12395,10 @@ type ContractBase = Omit<
       readonly model: 'CashReturn';
     };
     readonly challans: { readonly namespace: 'app' & NamespaceId; readonly model: 'Challan' };
+    readonly client_contacts: {
+      readonly namespace: 'app' & NamespaceId;
+      readonly model: 'ClientContact';
+    };
     readonly clients: { readonly namespace: 'app' & NamespaceId; readonly model: 'Client' };
     readonly code_counters: {
       readonly namespace: 'app' & NamespaceId;
@@ -13658,6 +13930,14 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 30 };
                 };
               };
+              readonly contractEnd: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/date-temporal@1' };
+              };
+              readonly contractStart: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/date-temporal@1' };
+              };
               readonly createdAt: {
                 readonly nullable: false;
                 readonly type: {
@@ -13694,6 +13974,14 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 200 };
                 };
               };
+              readonly pan: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 10 };
+                };
+              };
               readonly payPeriodStartDay: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int2@1' };
@@ -13701,6 +13989,18 @@ type ContractBase = Omit<
               readonly pfEstablishmentId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly registeredAddress: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly stateCode: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 4 };
+                };
               };
               readonly status: {
                 readonly nullable: false;
@@ -13717,12 +14017,31 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
+              readonly workOrderNumber: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 60 };
+                };
+              };
             };
             readonly relations: {
               readonly attendanceImports: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
                   readonly model: 'AttendanceImport';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['clientId'];
+                };
+              };
+              readonly contacts: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'ClientContact';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -13817,6 +14136,15 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['clientId'];
                 };
               };
+              readonly state: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'State' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['stateCode'];
+                  readonly targetFields: readonly ['code'];
+                };
+              };
               readonly workOrders: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
@@ -13835,14 +14163,120 @@ type ContractBase = Omit<
               readonly fields: {
                 readonly billingAddress: { readonly column: 'billing_address' };
                 readonly code: { readonly column: 'code' };
+                readonly contractEnd: { readonly column: 'contract_end' };
+                readonly contractStart: { readonly column: 'contract_start' };
                 readonly createdAt: { readonly column: 'created_at' };
                 readonly createdBy: { readonly column: 'created_by' };
                 readonly esiEstablishmentId: { readonly column: 'esi_establishment_id' };
                 readonly gstin: { readonly column: 'gstin' };
                 readonly id: { readonly column: 'id' };
                 readonly name: { readonly column: 'name' };
+                readonly pan: { readonly column: 'pan' };
                 readonly payPeriodStartDay: { readonly column: 'pay_period_start_day' };
                 readonly pfEstablishmentId: { readonly column: 'pf_establishment_id' };
+                readonly registeredAddress: { readonly column: 'registered_address' };
+                readonly stateCode: { readonly column: 'state_code' };
+                readonly status: { readonly column: 'status' };
+                readonly updatedAt: { readonly column: 'updated_at' };
+                readonly updatedBy: { readonly column: 'updated_by' };
+                readonly workOrderNumber: { readonly column: 'work_order_number' };
+              };
+            };
+          };
+          readonly ClientContact: {
+            readonly fields: {
+              readonly clientId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly createdBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly email: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 254 };
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly isAttendanceSender: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
+              };
+              readonly phone: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 20 };
+                };
+              };
+              readonly role: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                };
+              };
+              readonly updatedBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+            };
+            readonly relations: {
+              readonly client: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'Client' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['clientId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'client_contacts';
+              readonly namespaceId: 'app';
+              readonly fields: {
+                readonly clientId: { readonly column: 'client_id' };
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly createdBy: { readonly column: 'created_by' };
+                readonly email: { readonly column: 'email' };
+                readonly id: { readonly column: 'id' };
+                readonly isAttendanceSender: { readonly column: 'is_attendance_sender' };
+                readonly name: { readonly column: 'name' };
+                readonly phone: { readonly column: 'phone' };
+                readonly role: { readonly column: 'role' };
                 readonly status: { readonly column: 'status' };
                 readonly updatedAt: { readonly column: 'updated_at' };
                 readonly updatedBy: { readonly column: 'updated_by' };
@@ -18881,6 +19315,14 @@ type ContractBase = Omit<
               };
             };
             readonly relations: {
+              readonly clients: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'Client' };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['code'];
+                  readonly targetFields: readonly ['stateCode'];
+                };
+              };
               readonly licences: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
@@ -19713,6 +20155,15 @@ type ContractBase = Omit<
               { readonly name: 'REIMBURSEMENT'; readonly value: 'REIMBURSEMENT' },
             ];
           };
+          readonly ContactRole: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'HR'; readonly value: 'HR' },
+              { readonly name: 'ACCOUNTS'; readonly value: 'ACCOUNTS' },
+              { readonly name: 'SITE_INCHARGE'; readonly value: 'SITE_INCHARGE' },
+              { readonly name: 'OTHER'; readonly value: 'OTHER' },
+            ];
+          };
           readonly DayCode: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -20254,6 +20705,23 @@ type ContractBase = Omit<
           readonly ref: {
             readonly entry: 'challans';
             readonly field: 'id';
+            readonly namespace: 'app';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'client_contacts';
+            readonly field: 'id';
+            readonly namespace: 'app';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly onUpdate: { readonly id: 'instantNow'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'client_contacts';
+            readonly field: 'updated_at';
             readonly namespace: 'app';
           };
         },
