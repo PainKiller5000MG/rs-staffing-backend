@@ -10858,6 +10858,16 @@
                   "kind": "scalar"
                 }
               },
+              "district": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 80
+                  }
+                }
+              },
               "geofenceM": {
                 "nullable": true,
                 "type": {
@@ -10870,6 +10880,26 @@
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
+                }
+              },
+              "inchargeName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
+                }
+              },
+              "inchargePhone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 20
+                  }
                 }
               },
               "lat": {
@@ -10914,6 +10944,36 @@
                   }
                 }
               },
+              "pincode": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 6
+                  }
+                }
+              },
+              "shiftEnd": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 5
+                  }
+                }
+              },
+              "shiftStart": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 5
+                  }
+                }
+              },
               "stateCode": {
                 "nullable": false,
                 "type": {
@@ -10949,6 +11009,16 @@
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
+                }
+              },
+              "wageSphere": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 7
+                  }
                 }
               }
             },
@@ -11168,11 +11238,20 @@
                 "createdBy": {
                   "column": "created_by"
                 },
+                "district": {
+                  "column": "district"
+                },
                 "geofenceM": {
                   "column": "geofence_m"
                 },
                 "id": {
                   "column": "id"
+                },
+                "inchargeName": {
+                  "column": "incharge_name"
+                },
+                "inchargePhone": {
+                  "column": "incharge_phone"
                 },
                 "lat": {
                   "column": "lat"
@@ -11186,6 +11265,15 @@
                 "name": {
                   "column": "name"
                 },
+                "pincode": {
+                  "column": "pincode"
+                },
+                "shiftEnd": {
+                  "column": "shift_end"
+                },
+                "shiftStart": {
+                  "column": "shift_start"
+                },
                 "stateCode": {
                   "column": "state_code"
                 },
@@ -11197,6 +11285,9 @@
                 },
                 "updatedBy": {
                   "column": "updated_by"
+                },
+                "wageSphere": {
+                  "column": "wage_sphere"
                 }
               },
               "namespaceId": "app",
@@ -12183,6 +12274,13 @@
                   "kind": "scalar"
                 }
               },
+              "isPrimary": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "siteId": {
                 "nullable": false,
                 "type": {
@@ -12260,6 +12358,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "isPrimary": {
+                  "column": "is_primary"
                 },
                 "siteId": {
                   "column": "site_id"
@@ -22175,14 +22276,48 @@
             "sites": {
               "checks": [
                 {
+                  "expression": "lat IS NULL OR (lat BETWEEN -90 AND 90 AND lng BETWEEN -180 AND 180)",
+                  "name": "sites_lat_lng_range_dca82d1b",
+                  "prefix": "sites_lat_lng_range"
+                },
+                {
+                  "expression": "(lat IS NULL) = (lng IS NULL)",
+                  "name": "sites_lat_lng_together_0e7ee438",
+                  "prefix": "sites_lat_lng_together"
+                },
+                {
+                  "expression": "pincode ~ '^[1-9][0-9]{5}$'",
+                  "name": "sites_pincode_format_02a4aef6",
+                  "prefix": "sites_pincode_format"
+                },
+                {
+                  "expression": "shift_end IS NULL OR shift_end ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'",
+                  "name": "sites_shift_end_format_5dda953e",
+                  "prefix": "sites_shift_end_format"
+                },
+                {
+                  "expression": "shift_start IS NULL OR shift_start ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'",
+                  "name": "sites_shift_start_format_0a5a3400",
+                  "prefix": "sites_shift_start_format"
+                },
+                {
                   "expression": "\"status\" IN ('ACTIVE', 'INACTIVE')",
                   "name": "sites_status_check_ee520df2",
                   "prefix": "sites_status_check"
+                },
+                {
+                  "expression": "wage_sphere IS NULL OR wage_sphere IN ('CENTRAL','STATE')",
+                  "name": "sites_wage_sphere_values_3e1a5a75",
+                  "prefix": "sites_wage_sphere_values"
                 }
               ],
               "columns": {
                 "address": {
                   "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": ""
+                  },
                   "nativeType": "text",
                   "nullable": false
                 },
@@ -22216,6 +22351,14 @@
                   "nativeType": "uuid",
                   "nullable": true
                 },
+                "district": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 80
+                  }
+                },
                 "geofence_m": {
                   "codecId": "pg/int4@1",
                   "nativeType": "int4",
@@ -22225,6 +22368,22 @@
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": false
+                },
+                "incharge_name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 120
+                  }
+                },
+                "incharge_phone": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 20
+                  }
                 },
                 "lat": {
                   "codecId": "pg/numeric@1",
@@ -22260,6 +22419,30 @@
                     "length": 200
                   }
                 },
+                "pincode": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 6
+                  }
+                },
+                "shift_end": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 5
+                  }
+                },
+                "shift_start": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 5
+                  }
+                },
                 "state_code": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -22292,6 +22475,14 @@
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": true
+                },
+                "wage_sphere": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 7
+                  }
                 }
               },
               "foreignKeys": [
@@ -22978,6 +23169,15 @@
                 "id": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
+                  "nullable": false
+                },
+                "is_primary": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
                   "nullable": false
                 },
                 "site_id": {
@@ -24030,7 +24230,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "03056ddc505f1f8f1e1ea51a972e157148a510d08c1bef828e272821765aaae6"
+    "storageHash": "105e2ce81bcfb34b6aaed7d77a717a5fc40e28aa3944904d2737b4ee40b7fb22"
   },
   "execution": {
     "executionHash": "0ddeb2f700d9512f88bda082abe50909dc69c89b44d8631f4fb0aafa05c019ad",

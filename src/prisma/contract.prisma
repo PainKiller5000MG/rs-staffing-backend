@@ -415,6 +415,7 @@ namespace app {
     id            Uuid            @id @default(uuid(7))
     userId        Uuid            @map("user_id")
     siteId        Uuid            @map("site_id")
+    isPrimary     Boolean         @default(false) @map("is_primary") // M2-SIT-06: one approved primary per site at a time
     effectiveFrom Date            @map("effective_from")
     effectiveTo   Date?           @map("effective_to")
     createdAt     Timestamptz(6)  @default(now()) @map("created_at")
@@ -600,9 +601,16 @@ namespace app {
     clientId           Uuid                 @map("client_id")
     code               VarChar(30)          @unique
     name               VarChar(200)
-    address            String
+    address            String               @default("") // optional in the API; "" when not given
     stateCode          VarChar(4)           @map("state_code")
+    district           VarChar(80)
+    pincode            Char(6)
     minWageZone        VarChar(20)?         @map("min_wage_zone")
+    wageSphere         VarChar(7)?          @map("wage_sphere") // CENTRAL | STATE
+    inchargeName       VarChar(120)?        @map("incharge_name")
+    inchargePhone      VarChar(20)?         @map("incharge_phone")
+    shiftStart         VarChar(5)?          @map("shift_start") // HH:MM
+    shiftEnd           VarChar(5)?          @map("shift_end")
     lat                Numeric(9, 6)? // Phase 2 geofence
     lng                Numeric(9, 6)?
     geofenceM          Int?                 @map("geofence_m")
@@ -628,6 +636,12 @@ namespace app {
 
     @@index([clientId])
     @@index([stateCode])
+    @@check(expression: "pincode ~ '^[1-9][0-9]{5}$'", name: "sites_pincode_format")
+    @@check(expression: "wage_sphere IS NULL OR wage_sphere IN ('CENTRAL','STATE')", name: "sites_wage_sphere_values")
+    @@check(expression: "shift_start IS NULL OR shift_start ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'", name: "sites_shift_start_format")
+    @@check(expression: "shift_end IS NULL OR shift_end ~ '^([01][0-9]|2[0-3]):[0-5][0-9]$'", name: "sites_shift_end_format")
+    @@check(expression: "(lat IS NULL) = (lng IS NULL)", name: "sites_lat_lng_together")
+    @@check(expression: "lat IS NULL OR (lat BETWEEN -90 AND 90 AND lng BETWEEN -180 AND 180)", name: "sites_lat_lng_range")
     @@map("sites")
   }
 

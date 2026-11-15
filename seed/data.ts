@@ -49,13 +49,13 @@ export const CLIENTS = [
 export type ClientCode = (typeof CLIENTS)[number]['code'];
 
 export const SITES = [
-  { code: 'NTX-BPL', client: 'NTX', name: 'Narmada Textiles — Bhopal Mill', address: 'Govindpura, Bhopal', state: 'MP', zone: 'A' },
-  { code: 'NTX-MDP', client: 'NTX', name: 'Narmada Textiles — Mandideep Unit', address: 'Mandideep, Raisen', state: 'MP', zone: 'B' },
-  { code: 'VHC-IDR', client: 'VHC', name: 'Vindhya Hospital — Indore', address: 'AB Road, Indore', state: 'MP', zone: 'A' },
-  { code: 'VHC-UJN', client: 'VHC', name: 'Vindhya Hospital — Ujjain', address: 'Freeganj, Ujjain', state: 'MP', zone: 'B' },
-  { code: 'CCW-GWL', client: 'CCW', name: 'Chambal Cement — Gwalior Works', address: 'Malanpur, Gwalior', state: 'MP', zone: 'B' },
+  { code: 'NTX-BPL', client: 'NTX', name: 'Narmada Textiles — Bhopal Mill', address: 'Govindpura, Bhopal', state: 'MP', zone: 'A', district: 'Bhopal', pincode: '462023' },
+  { code: 'NTX-MDP', client: 'NTX', name: 'Narmada Textiles — Mandideep Unit', address: 'Mandideep, Raisen', state: 'MP', zone: 'B', district: 'Raisen', pincode: '462046' },
+  { code: 'VHC-IDR', client: 'VHC', name: 'Vindhya Hospital — Indore', address: 'AB Road, Indore', state: 'MP', zone: 'A', district: 'Indore', pincode: '452001' },
+  { code: 'VHC-UJN', client: 'VHC', name: 'Vindhya Hospital — Ujjain', address: 'Freeganj, Ujjain', state: 'MP', zone: 'B', district: 'Ujjain', pincode: '456010' },
+  { code: 'CCW-GWL', client: 'CCW', name: 'Chambal Cement — Gwalior Works', address: 'Malanpur, Gwalior', state: 'MP', zone: 'B', district: 'Gwalior', pincode: '474005' },
   // Rajasthan has no rules seeded: tests the missing-rules gate (M7-CAL-08, Decision 5).
-  { code: 'CCW-KOT', client: 'CCW', name: 'Chambal Cement — Kota Depot', address: 'Industrial Area, Kota', state: 'RJ', zone: null },
+  { code: 'CCW-KOT', client: 'CCW', name: 'Chambal Cement — Kota Depot', address: 'Industrial Area, Kota', state: 'RJ', zone: null, district: 'Kota', pincode: '324007' },
 ] as const;
 
 export type SiteCode = (typeof SITES)[number]['code'];
@@ -76,13 +76,13 @@ export const USERS = [
 export type UserKey = (typeof USERS)[number]['key'];
 
 /** Supervisor reach (approved). Supervisor A covers exactly three sites. */
-export const SCOPES: { user: UserKey; site: SiteCode; approved: boolean }[] = [
-  { user: 'supA', site: 'NTX-BPL', approved: true },
-  { user: 'supA', site: 'NTX-MDP', approved: true },
-  { user: 'supA', site: 'VHC-IDR', approved: true },
-  { user: 'supB', site: 'VHC-UJN', approved: true },
-  { user: 'supB', site: 'CCW-GWL', approved: true },
-  { user: 'supB', site: 'CCW-KOT', approved: true },
+export const SCOPES: { user: UserKey; site: SiteCode; approved: boolean; primary?: boolean }[] = [
+  { user: 'supA', site: 'NTX-BPL', approved: true, primary: true },
+  { user: 'supA', site: 'NTX-MDP', approved: true, primary: true },
+  { user: 'supA', site: 'VHC-IDR', approved: true, primary: true },
+  { user: 'supB', site: 'VHC-UJN', approved: true, primary: true },
+  { user: 'supB', site: 'CCW-GWL', approved: true, primary: true },
+  { user: 'supB', site: 'CCW-KOT', approved: true, primary: true },
   // Pending: assigned by HR, awaiting a different HQ user's approval (M1-SCP-06).
   { user: 'supB', site: 'NTX-BPL', approved: false },
 ];

@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'03056ddc505f1f8f1e1ea51a972e157148a510d08c1bef828e272821765aaae6'>;
+  StorageHashBase<'105e2ce81bcfb34b6aaed7d77a717a5fc40e28aa3944904d2737b4ee40b7fb22'>;
 export type ExecutionHash =
   ExecutionHashBase<'0ddeb2f700d9512f88bda082abe50909dc69c89b44d8631f4fb0aafa05c019ad'>;
 export type ProfileHash =
@@ -1003,16 +1003,23 @@ export type FieldOutputTypes = {
       readonly code: Varchar<30>;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly district: Varchar<80>;
       readonly geofenceM: CodecTypes['pg/int4@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly inchargeName: Varchar<120> | null;
+      readonly inchargePhone: Varchar<20> | null;
       readonly lat: Numeric<9, 6> | null;
       readonly lng: Numeric<9, 6> | null;
       readonly minWageZone: Varchar<20> | null;
       readonly name: Varchar<200>;
+      readonly pincode: Char<6>;
+      readonly shiftEnd: Varchar<5> | null;
+      readonly shiftStart: Varchar<5> | null;
       readonly stateCode: Varchar<4>;
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly wageSphere: Varchar<7> | null;
     };
     readonly SmsOutbox: {
       readonly body: CodecTypes['pg/text@1']['output'];
@@ -1089,6 +1096,7 @@ export type FieldOutputTypes = {
       readonly endedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly endedBy: CodecTypes['pg/uuid@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly isPrimary: CodecTypes['pg/bool@1']['output'];
       readonly siteId: CodecTypes['pg/uuid@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
     };
@@ -1889,16 +1897,23 @@ export type FieldInputTypes = {
       readonly code: CodecTypes['sql/varchar@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly district: CodecTypes['sql/varchar@1']['input'];
       readonly geofenceM: CodecTypes['pg/int4@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly inchargeName: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly inchargePhone: CodecTypes['sql/varchar@1']['input'] | null;
       readonly lat: CodecTypes['pg/numeric@1']['input'] | null;
       readonly lng: CodecTypes['pg/numeric@1']['input'] | null;
       readonly minWageZone: CodecTypes['sql/varchar@1']['input'] | null;
       readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly pincode: CodecTypes['sql/char@1']['input'];
+      readonly shiftEnd: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly shiftStart: CodecTypes['sql/varchar@1']['input'] | null;
       readonly stateCode: CodecTypes['sql/varchar@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updatedBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly wageSphere: CodecTypes['sql/varchar@1']['input'] | null;
     };
     readonly SmsOutbox: {
       readonly body: CodecTypes['pg/text@1']['input'];
@@ -1975,6 +1990,7 @@ export type FieldInputTypes = {
       readonly endedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly endedBy: CodecTypes['pg/uuid@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly isPrimary: CodecTypes['pg/bool@1']['input'];
       readonly siteId: CodecTypes['pg/uuid@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
     };
@@ -2775,16 +2791,23 @@ export type StorageColumnTypes = {
       readonly code: Varchar<30>;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly district: Varchar<80>;
       readonly geofence_m: CodecTypes['pg/int4@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly incharge_name: Varchar<120> | null;
+      readonly incharge_phone: Varchar<20> | null;
       readonly lat: Numeric<9, 6> | null;
       readonly lng: Numeric<9, 6> | null;
       readonly min_wage_zone: Varchar<20> | null;
       readonly name: Varchar<200>;
+      readonly pincode: Char<6>;
+      readonly shift_end: Varchar<5> | null;
+      readonly shift_start: Varchar<5> | null;
       readonly state_code: Varchar<4>;
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly updated_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly wage_sphere: Varchar<7> | null;
     };
     readonly sms_outbox: {
       readonly body: CodecTypes['pg/text@1']['output'];
@@ -2844,6 +2867,7 @@ export type StorageColumnTypes = {
       readonly ended_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly ended_by: CodecTypes['pg/uuid@1']['output'] | null;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly is_primary: CodecTypes['pg/bool@1']['output'];
       readonly site_id: CodecTypes['pg/uuid@1']['output'];
       readonly user_id: CodecTypes['pg/uuid@1']['output'];
     };
@@ -3661,16 +3685,23 @@ export type StorageColumnInputTypes = {
       readonly code: CodecTypes['sql/varchar@1']['input'];
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly district: CodecTypes['sql/varchar@1']['input'];
       readonly geofence_m: CodecTypes['pg/int4@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly incharge_name: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly incharge_phone: CodecTypes['sql/varchar@1']['input'] | null;
       readonly lat: CodecTypes['pg/numeric@1']['input'] | null;
       readonly lng: CodecTypes['pg/numeric@1']['input'] | null;
       readonly min_wage_zone: CodecTypes['sql/varchar@1']['input'] | null;
       readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly pincode: CodecTypes['sql/char@1']['input'];
+      readonly shift_end: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly shift_start: CodecTypes['sql/varchar@1']['input'] | null;
       readonly state_code: CodecTypes['sql/varchar@1']['input'];
       readonly status: 'ACTIVE' | 'INACTIVE';
       readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly updated_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly wage_sphere: CodecTypes['sql/varchar@1']['input'] | null;
     };
     readonly sms_outbox: {
       readonly body: CodecTypes['pg/text@1']['input'];
@@ -3730,6 +3761,7 @@ export type StorageColumnInputTypes = {
       readonly ended_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly ended_by: CodecTypes['pg/uuid@1']['input'] | null;
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly is_primary: CodecTypes['pg/bool@1']['input'];
       readonly site_id: CodecTypes['pg/uuid@1']['input'];
       readonly user_id: CodecTypes['pg/uuid@1']['input'];
     };
@@ -4821,16 +4853,23 @@ export namespace Models {
     code: Varchar<30>;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+    district: Varchar<80>;
     geofenceM: CodecTypes['pg/int4@1']['output'] | null;
     id: CodecTypes['pg/uuid@1']['output'];
+    inchargeName: Varchar<120> | null;
+    inchargePhone: Varchar<20> | null;
     lat: Numeric<9, 6> | null;
     lng: Numeric<9, 6> | null;
     minWageZone: Varchar<20> | null;
     name: Varchar<200>;
+    pincode: Char<6>;
+    shiftEnd: Varchar<5> | null;
+    shiftStart: Varchar<5> | null;
     stateCode: Varchar<4>;
     status: 'ACTIVE' | 'INACTIVE';
     updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    wageSphere: Varchar<7> | null;
     attendanceDays: app_AttendanceDay[];
     attendanceMonths: app_AttendanceMonth[];
     cashReleases: app_CashRelease[];
@@ -4956,6 +4995,7 @@ export namespace Models {
     endedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     endedBy: CodecTypes['pg/uuid@1']['output'] | null;
     id: CodecTypes['pg/uuid@1']['output'];
+    isPrimary: CodecTypes['pg/bool@1']['output'];
     siteId: CodecTypes['pg/uuid@1']['output'];
     userId: CodecTypes['pg/uuid@1']['output'];
     site: app_Site;
@@ -11069,6 +11109,10 @@ type ContractBase = Omit<
                   readonly nativeType: 'text';
                   readonly codecId: 'pg/text@1';
                   readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', ''>;
+                  };
                 };
                 readonly client_id: {
                   readonly nativeType: 'uuid';
@@ -11093,6 +11137,12 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: true;
                 };
+                readonly district: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 80 };
+                };
                 readonly geofence_m: {
                   readonly nativeType: 'int4';
                   readonly codecId: 'pg/int4@1';
@@ -11102,6 +11152,18 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
+                };
+                readonly incharge_name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 120 };
+                };
+                readonly incharge_phone: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 20 };
                 };
                 readonly lat: {
                   readonly nativeType: 'numeric';
@@ -11127,6 +11189,24 @@ type ContractBase = Omit<
                   readonly nullable: false;
                   readonly typeParams: { readonly length: 200 };
                 };
+                readonly pincode: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 6 };
+                };
+                readonly shift_end: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 5 };
+                };
+                readonly shift_start: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 5 };
+                };
                 readonly state_code: {
                   readonly nativeType: 'character varying';
                   readonly codecId: 'sql/varchar@1';
@@ -11151,6 +11231,12 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: true;
+                };
+                readonly wage_sphere: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 7 };
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -11651,6 +11737,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
+                };
+                readonly is_primary: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
                 };
                 readonly site_id: {
                   readonly nativeType: 'uuid';
@@ -18998,6 +19093,14 @@ type ContractBase = Omit<
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
+              readonly district: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 80 };
+                };
+              };
               readonly geofenceM: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
@@ -19005,6 +19108,22 @@ type ContractBase = Omit<
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly inchargeName: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
+              };
+              readonly inchargePhone: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 20 };
+                };
               };
               readonly lat: {
                 readonly nullable: true;
@@ -19038,6 +19157,30 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 200 };
                 };
               };
+              readonly pincode: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 6 };
+                };
+              };
+              readonly shiftEnd: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 5 };
+                };
+              };
+              readonly shiftStart: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 5 };
+                };
+              };
               readonly stateCode: {
                 readonly nullable: false;
                 readonly type: {
@@ -19060,6 +19203,14 @@ type ContractBase = Omit<
               readonly updatedBy: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly wageSphere: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 7 };
+                };
               };
             };
             readonly relations: {
@@ -19209,16 +19360,23 @@ type ContractBase = Omit<
                 readonly code: { readonly column: 'code' };
                 readonly createdAt: { readonly column: 'created_at' };
                 readonly createdBy: { readonly column: 'created_by' };
+                readonly district: { readonly column: 'district' };
                 readonly geofenceM: { readonly column: 'geofence_m' };
                 readonly id: { readonly column: 'id' };
+                readonly inchargeName: { readonly column: 'incharge_name' };
+                readonly inchargePhone: { readonly column: 'incharge_phone' };
                 readonly lat: { readonly column: 'lat' };
                 readonly lng: { readonly column: 'lng' };
                 readonly minWageZone: { readonly column: 'min_wage_zone' };
                 readonly name: { readonly column: 'name' };
+                readonly pincode: { readonly column: 'pincode' };
+                readonly shiftEnd: { readonly column: 'shift_end' };
+                readonly shiftStart: { readonly column: 'shift_start' };
                 readonly stateCode: { readonly column: 'state_code' };
                 readonly status: { readonly column: 'status' };
                 readonly updatedAt: { readonly column: 'updated_at' };
                 readonly updatedBy: { readonly column: 'updated_by' };
+                readonly wageSphere: { readonly column: 'wage_sphere' };
               };
             };
           };
@@ -19830,6 +19988,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
+              readonly isPrimary: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
               readonly siteId: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
@@ -19872,6 +20034,7 @@ type ContractBase = Omit<
                 readonly endedAt: { readonly column: 'ended_at' };
                 readonly endedBy: { readonly column: 'ended_by' };
                 readonly id: { readonly column: 'id' };
+                readonly isPrimary: { readonly column: 'is_primary' };
                 readonly siteId: { readonly column: 'site_id' };
                 readonly userId: { readonly column: 'user_id' };
               };

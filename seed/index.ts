@@ -83,7 +83,7 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
   const sites = {} as Record<D.SiteCode, string>;
   for (const s of D.SITES) {
     const created = await o.Site.create(
-      row<Models.app_Site>({ clientId: clients[s.client], code: s.code, name: s.name, address: s.address, stateCode: s.state, minWageZone: s.zone }),
+      row<Models.app_Site>({ clientId: clients[s.client], code: s.code, name: s.name, address: s.address, stateCode: s.state, district: s.district, pincode: s.pincode, minWageZone: s.zone, wageSphere: 'STATE' }),
     );
     sites[s.code] = created.id;
   }
@@ -377,6 +377,7 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
       row<Models.app_UserSiteScope>({
         userId: users[s.user].id,
         siteId: sites[s.site],
+        isPrimary: s.primary ?? false,
         effectiveFrom: date('2026-04-01'),
         effectiveTo: null,
         createdBy: hr,

@@ -60,6 +60,14 @@ ALTER TABLE app.user_site_scopes
     daterange(effective_from, COALESCE(effective_to, 'infinity'::date), '[]') WITH &&
   );
 
+-- @@step no-overlap: one approved primary supervisor per site (M2-SIT-06)
+ALTER TABLE app.user_site_scopes
+  ADD CONSTRAINT user_site_scopes_one_primary
+  EXCLUDE USING gist (
+    site_id WITH =,
+    daterange(effective_from, COALESCE(effective_to, 'infinity'::date), '[]') WITH &&
+  ) WHERE (is_primary AND approved_by IS NOT NULL);
+
 -- @@step no-overlap: minimum wages per state + zone + skill
 ALTER TABLE app.min_wages
   ADD CONSTRAINT min_wages_no_overlap
