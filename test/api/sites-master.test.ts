@@ -47,7 +47,7 @@ beforeAll(async () => {
   // Clients of their own, so the sites these tests create never change the seeded clients' site counts.
   for (const key of ['clientNtx', 'clientVhc'] as const) {
     const code = `ZK-${++counter}`;
-    const made = await request('POST', '/clients', { cookie: hr, body: { code, name: `Site Test Client ${key}`, stateCode: 'MP' } });
+    const made = await request('POST', '/clients', { cookie: hr, body: { code, name: `Site Test Client ${key === 'clientNtx' ? 'Alpha' : 'Beta'}`, stateCode: 'MP' } });
     expect(made.status).toBe(201);
     ids[key] = made.body.id;
     if (key === 'clientNtx') clientCode = code;
