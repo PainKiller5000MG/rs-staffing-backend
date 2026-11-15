@@ -1814,6 +1814,620 @@
             ]
           }
         }
+      },
+      "SettingList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Setting"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "Setting": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "scope": {
+            "$ref": "#/components/schemas/SettingScope"
+          },
+          "scopeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "key": {
+            "type": "string"
+          },
+          "designation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "value": {
+            "type": "string"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "effectiveTo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SettingStatus"
+          },
+          "createdBy": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "approvedBy": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "approvedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "scope",
+          "scopeId",
+          "key",
+          "designation",
+          "value",
+          "effectiveFrom",
+          "effectiveTo",
+          "status",
+          "createdBy",
+          "approvedBy",
+          "approvedAt"
+        ]
+      },
+      "SettingScope": {
+        "type": "string",
+        "enum": [
+          "COMPANY",
+          "CLIENT",
+          "SITE"
+        ]
+      },
+      "SettingStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING",
+          "SCHEDULED",
+          "ACTIVE",
+          "ENDED"
+        ]
+      },
+      "ProposeSettingBody": {
+        "type": "object",
+        "properties": {
+          "scope": {
+            "$ref": "#/components/schemas/SettingScope"
+          },
+          "scopeId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Client or site id; omit for COMPANY"
+          },
+          "key": {
+            "$ref": "#/components/schemas/SettingKey"
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 40,
+            "description": "Only for key SALARY_TEMPLATE: the designation this template is the default for"
+          },
+          "value": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          }
+        },
+        "required": [
+          "scope",
+          "key",
+          "value",
+          "effectiveFrom"
+        ]
+      },
+      "SettingKey": {
+        "type": "string",
+        "enum": [
+          "PAID_DAYS_BASIS",
+          "OT_BASE",
+          "OT_DIVISOR",
+          "OT_HOURS_PER_DAY",
+          "WEEKLY_OFF_DAYS",
+          "WEEKLY_OFF_PAID",
+          "PAY_PERIOD_START_DAY",
+          "ATTENDANCE_DUE_DAY",
+          "SALARY_PAY_DAY",
+          "PF_APPLICABLE",
+          "ESI_APPLICABLE",
+          "PT_APPLICABLE",
+          "LWF_APPLICABLE",
+          "BONUS_APPLICABLE",
+          "PF_WAGE_BASIS",
+          "SALARY_TEMPLATE"
+        ]
+      },
+      "ResolvedSettings": {
+        "type": "object",
+        "properties": {
+          "asOf": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "clientId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "settings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "$ref": "#/components/schemas/SettingKey"
+                },
+                "value": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "SITE",
+                    "CLIENT",
+                    "COMPANY",
+                    "DEFAULT",
+                    "NONE"
+                  ]
+                },
+                "effectiveFrom": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "date",
+                  "example": "2026-09-15"
+                }
+              },
+              "required": [
+                "key",
+                "value",
+                "source",
+                "effectiveFrom"
+              ]
+            }
+          }
+        },
+        "required": [
+          "asOf",
+          "clientId",
+          "siteId",
+          "settings"
+        ]
+      },
+      "SalaryDefaults": {
+        "type": "object",
+        "properties": {
+          "asOf": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "default": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "templateId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "effectiveFrom": {
+                "type": "string",
+                "format": "date",
+                "example": "2026-09-15"
+              }
+            },
+            "required": [
+              "templateId",
+              "effectiveFrom"
+            ]
+          },
+          "designations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "designation": {
+                  "type": "string"
+                },
+                "templateId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "effectiveFrom": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "2026-09-15"
+                }
+              },
+              "required": [
+                "designation",
+                "templateId",
+                "effectiveFrom"
+              ]
+            }
+          }
+        },
+        "required": [
+          "asOf",
+          "clientId",
+          "default",
+          "designations"
+        ]
+      },
+      "AttendanceLayoutList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttendanceLayout"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "AttendanceLayout": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "This version; imports reference it"
+          },
+          "layoutKey": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "version": {
+            "type": "integer"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "siteId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/LayoutDefinition"
+          },
+          "headerFingerprint": {
+            "type": "string"
+          },
+          "confirmedBy": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "confirmedAt": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "createdAt": {
+            "type": "string"
+          },
+          "isLatest": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "layoutKey",
+          "version",
+          "clientId",
+          "siteId",
+          "name",
+          "definition",
+          "headerFingerprint",
+          "confirmedBy",
+          "confirmedAt",
+          "createdAt",
+          "isLatest"
+        ]
+      },
+      "LayoutDefinition": {
+        "type": "object",
+        "properties": {
+          "sheet": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100,
+            "description": "Sheet name in the workbook"
+          },
+          "layoutType": {
+            "type": "string",
+            "enum": [
+              "DAY_COLUMNS",
+              "DATE_COLUMNS",
+              "DATE_STATUS_ROWS"
+            ],
+            "description": "DAY_COLUMNS: columns 1..31. DATE_COLUMNS: one dated column per day. DATE_STATUS_ROWS: one row per worker per date."
+          },
+          "headerRow": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "identityColumns": {
+            "type": "object",
+            "properties": {
+              "employeeCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "mobile": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "siteCode": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "designation": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              }
+            }
+          },
+          "dayColumns": {
+            "type": "object",
+            "properties": {
+              "from": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              },
+              "to": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60
+              }
+            },
+            "required": [
+              "from",
+              "to"
+            ],
+            "description": "First and last day/date column (DAY_COLUMNS, DATE_COLUMNS)"
+          },
+          "dateColumn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "DATE_STATUS_ROWS only"
+          },
+          "statusColumn": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "description": "DATE_STATUS_ROWS only"
+          },
+          "statusMap": {
+            "type": "object",
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DayCode"
+            },
+            "description": "The client's code → our code, e.g. {\"P\":\"P\",\"A\":\"A\",\"H\":\"HD\",\"OFF\":\"WO\"}"
+          },
+          "otColumns": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "maxItems": 3,
+            "default": []
+          }
+        },
+        "required": [
+          "sheet",
+          "layoutType",
+          "headerRow",
+          "identityColumns",
+          "statusMap"
+        ]
+      },
+      "DayCode": {
+        "type": "string",
+        "enum": [
+          "P",
+          "A",
+          "HD",
+          "WO",
+          "WOP",
+          "PH",
+          "PHP",
+          "EL",
+          "CL",
+          "SL"
+        ]
+      },
+      "CreateLayoutBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "siteId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Set when this sheet is one site's own"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/LayoutDefinition"
+          },
+          "headerFingerprint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Fingerprint of the header cells, to recognise next month's file"
+          }
+        },
+        "required": [
+          "name",
+          "definition",
+          "headerFingerprint"
+        ]
+      },
+      "AttendanceLayoutVersions": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AttendanceLayout"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "NewLayoutVersionBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "siteId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid",
+            "description": "Set when this sheet is one site's own"
+          },
+          "definition": {
+            "$ref": "#/components/schemas/LayoutDefinition"
+          },
+          "headerFingerprint": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 128,
+            "description": "Fingerprint of the header cells, to recognise next month's file"
+          }
+        },
+        "required": [
+          "definition",
+          "headerFingerprint"
+        ]
       }
     },
     "parameters": {}
@@ -4755,6 +5369,1085 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ClientContact"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings": {
+      "get": {
+        "summary": "Setting rows with their history and status, for one scope (M2-SET-09, M2-SET-10)",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "$ref": "#/components/schemas/SettingScope"
+            },
+            "required": true,
+            "name": "scope",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "scopeId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 60
+            },
+            "required": false,
+            "name": "key",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "$ref": "#/components/schemas/SettingStatus"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Setting rows with their history and status, for one scope (M2-SET-09, M2-SET-10)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SettingList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Propose a dated setting value; pending until a second person approves (M2-SET-01..04, 06, 10)",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProposeSettingBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Propose a dated setting value; pending until a second person approves (M2-SET-01..04, 06, 10)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Setting"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/settings/{id}/approve": {
+      "post": {
+        "summary": "Approve a pending setting (maker-checker) (M2-SET-10)",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Approve a pending setting (maker-checker) (M2-SET-10)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Setting"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{clientId}/settings": {
+      "get": {
+        "summary": "A client's settings as of a day (client, else company) (M2-SET-09)",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "clientId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-09-15",
+              "description": "The day to resolve for; default today"
+            },
+            "required": false,
+            "description": "The day to resolve for; default today",
+            "name": "asOf",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A client's settings as of a day (client, else company) (M2-SET-09)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolvedSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{clientId}/salary-defaults": {
+      "get": {
+        "summary": "A client's default salary template and one per designation (M2-SET-04)",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "clientId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-09-15",
+              "description": "The day to resolve for; default today"
+            },
+            "required": false,
+            "description": "The day to resolve for; default today",
+            "name": "asOf",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A client's default salary template and one per designation (M2-SET-04)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SalaryDefaults"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{siteId}/settings": {
+      "get": {
+        "summary": "A site's settings as of a day (site, else client, else company) (M2-SET-10)",
+        "tags": [
+          "Settings"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "siteId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-09-15",
+              "description": "The day to resolve for; default today"
+            },
+            "required": false,
+            "description": "The day to resolve for; default today",
+            "name": "asOf",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A site's settings as of a day (site, else client, else company) (M2-SET-10)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResolvedSettings"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/clients/{clientId}/attendance-layouts": {
+      "get": {
+        "summary": "A client's attendance layouts, newest version of each (M2-SET-05)",
+        "tags": [
+          "Layouts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "clientId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "siteId",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A client's attendance layouts, newest version of each (M2-SET-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceLayoutList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Save a confirmed attendance layout for a client (M2-SET-05)",
+        "tags": [
+          "Layouts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "clientId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateLayoutBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Save a confirmed attendance layout for a client (M2-SET-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceLayout"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance-layouts/{layoutKey}/versions": {
+      "get": {
+        "summary": "Every version of a layout, newest first (M2-SET-05)",
+        "tags": [
+          "Layouts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "layoutKey",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Every version of a layout, newest first (M2-SET-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceLayoutVersions"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Edit a layout: saves a new version, earlier ones stay (M2-SET-05)",
+        "tags": [
+          "Layouts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "layoutKey",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/NewLayoutVersionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Edit a layout: saves a new version, earlier ones stay (M2-SET-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceLayout"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/attendance-layouts/{layoutKey}/versions/{version}": {
+      "get": {
+        "summary": "One version of a layout, as past imports used it (M2-SET-05)",
+        "tags": [
+          "Layouts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "layoutKey",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "required": true,
+            "name": "version",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One version of a layout, as past imports used it (M2-SET-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceLayout"
                 }
               }
             }
