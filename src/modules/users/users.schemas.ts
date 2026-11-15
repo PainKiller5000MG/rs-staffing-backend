@@ -81,6 +81,7 @@ export const SiteScopeSchema = z
     id: z.uuid(),
     userId: z.uuid(),
     siteId: z.uuid(),
+    isPrimary: z.boolean().openapi({ description: 'The primary supervisor of the site (M2-SIT-06)' }),
     effectiveFrom: z.string(),
     effectiveTo: z.string().nullable(),
     status: z.enum(['PENDING', 'ACTIVE', 'ENDED']),

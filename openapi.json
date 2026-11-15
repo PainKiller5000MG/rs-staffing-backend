@@ -260,6 +260,10 @@
             "type": "string",
             "format": "uuid"
           },
+          "isPrimary": {
+            "type": "boolean",
+            "description": "The primary supervisor of the site (M2-SIT-06)"
+          },
           "effectiveFrom": {
             "type": "string"
           },
@@ -315,6 +319,7 @@
           "id",
           "userId",
           "siteId",
+          "isPrimary",
           "effectiveFrom",
           "effectiveTo",
           "status",
@@ -399,6 +404,85 @@
           "siteId"
         ]
       },
+      "SiteList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteRow"
+            }
+          },
+          "nextCursor": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          }
+        },
+        "required": [
+          "items",
+          "nextCursor"
+        ]
+      },
+      "SiteRow": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Site"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "activeHeadcount": {
+                "type": "integer",
+                "description": "Employees with a deployment running today"
+              },
+              "primarySupervisor": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "userId": {
+                    "type": "string",
+                    "format": "uuid"
+                  },
+                  "name": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "userId",
+                  "name"
+                ]
+              }
+            },
+            "required": [
+              "activeHeadcount",
+              "primarySupervisor"
+            ]
+          }
+        ]
+      },
+      "WageSphere": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "CENTRAL",
+          "STATE",
+          null
+        ]
+      },
+      "RecordStatus": {
+        "type": "string",
+        "enum": [
+          "ACTIVE",
+          "INACTIVE"
+        ]
+      },
       "Site": {
         "type": "object",
         "properties": {
@@ -416,7 +500,19 @@
           "name": {
             "type": "string"
           },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
           "stateCode": {
+            "type": "string"
+          },
+          "district": {
+            "type": "string"
+          },
+          "pincode": {
             "type": "string"
           },
           "minWageZone": {
@@ -425,12 +521,54 @@
               "null"
             ]
           },
-          "status": {
-            "type": "string",
-            "enum": [
-              "ACTIVE",
-              "INACTIVE"
+          "sphere": {
+            "$ref": "#/components/schemas/WageSphere"
+          },
+          "minWageReady": {
+            "type": "boolean",
+            "description": "Zone and sphere are both set (needed before the first payroll run)"
+          },
+          "lat": {
+            "type": [
+              "number",
+              "null"
             ]
+          },
+          "lng": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "inchargeName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "inchargePhone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "shiftStart": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "shiftEnd": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "$ref": "#/components/schemas/RecordStatus"
+          },
+          "createdAt": {
+            "type": "string"
           }
         },
         "required": [
@@ -438,9 +576,477 @@
           "clientId",
           "code",
           "name",
+          "address",
           "stateCode",
+          "district",
+          "pincode",
           "minWageZone",
+          "sphere",
+          "minWageReady",
+          "lat",
+          "lng",
+          "inchargeName",
+          "inchargePhone",
+          "shiftStart",
+          "shiftEnd",
+          "status",
+          "createdAt"
+        ]
+      },
+      "CreateSiteBody": {
+        "type": "object",
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string",
+            "pattern": "^[A-Z0-9][A-Z0-9-]{2,29}$",
+            "example": "NTX-BPL"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "stateCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,4}$"
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "pincode": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{5}$",
+            "example": "462023"
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "minWageZone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 20,
+            "description": "Zone/area as in the state notification, e.g. \"A\" or \"Zone II\""
+          },
+          "sphere": {
+            "$ref": "#/components/schemas/WageSphere"
+          },
+          "lat": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lng": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -180,
+            "maximum": 180
+          },
+          "inchargeName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "inchargePhone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\+?[0-9][0-9 -]{5,18}$"
+          },
+          "shiftStart": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+            "example": "06:00"
+          },
+          "shiftEnd": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+            "example": "06:00"
+          }
+        },
+        "required": [
+          "clientId",
+          "code",
+          "name",
+          "stateCode",
+          "district",
+          "pincode"
+        ]
+      },
+      "ImportSitesResult": {
+        "type": "object",
+        "properties": {
+          "created": {
+            "type": "integer"
+          },
+          "rejected": {
+            "type": "integer"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "row": {
+                  "type": "integer",
+                  "description": "1-based position in the request"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "CREATED",
+                    "REJECTED"
+                  ]
+                },
+                "id": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "format": "uuid"
+                },
+                "errors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "message": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "path",
+                      "message"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "row",
+                "status",
+                "id",
+                "errors"
+              ]
+            }
+          }
+        },
+        "required": [
+          "created",
+          "rejected",
+          "results"
+        ]
+      },
+      "ImportSitesBody": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": {}
+            },
+            "minItems": 1,
+            "maxItems": 1000,
+            "description": "One object per site: clientCode, code, name, stateCode, district, pincode, minWageZone, address, lat, lng, primarySupervisorEmployeeCode"
+          }
+        },
+        "required": [
+          "rows"
+        ]
+      },
+      "UpdateSiteBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "stateCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,4}$",
+            "description": "Refused once payroll has run for the site"
+          },
+          "district": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "pincode": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{5}$",
+            "example": "462023"
+          },
+          "address": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 500
+          },
+          "minWageZone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 20,
+            "description": "Zone/area as in the state notification, e.g. \"A\" or \"Zone II\""
+          },
+          "sphere": {
+            "$ref": "#/components/schemas/WageSphere"
+          },
+          "lat": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -90,
+            "maximum": 90
+          },
+          "lng": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": -180,
+            "maximum": 180
+          },
+          "inchargeName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "inchargePhone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^\\+?[0-9][0-9 -]{5,18}$"
+          },
+          "shiftStart": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+            "example": "06:00"
+          },
+          "shiftEnd": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+            "example": "06:00"
+          }
+        },
+        "additionalProperties": false
+      },
+      "SiteSupervisorList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SiteSupervisor"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "SiteSupervisor": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "The site-scope id: approve or revoke it at /site-scopes/{id}/…"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PRIMARY",
+              "BACKUP"
+            ]
+          },
+          "effectiveFrom": {
+            "type": "string"
+          },
+          "effectiveTo": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "ACTIVE",
+              "ENDED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "name",
+          "role",
+          "effectiveFrom",
+          "effectiveTo",
           "status"
+        ]
+      },
+      "AssignSupervisorBody": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "PRIMARY",
+              "BACKUP"
+            ]
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15",
+            "description": "Defaults to today"
+          },
+          "effectiveTo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "example": "2026-09-15"
+          }
+        },
+        "required": [
+          "userId",
+          "role"
+        ]
+      },
+      "MySites": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "siteId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "code": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "clientId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "clientName": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "district": {
+                  "type": "string"
+                },
+                "shiftStart": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "shiftEnd": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "PRIMARY",
+                    "BACKUP"
+                  ]
+                }
+              },
+              "required": [
+                "siteId",
+                "code",
+                "name",
+                "clientId",
+                "clientName",
+                "address",
+                "district",
+                "shiftStart",
+                "shiftEnd",
+                "role"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
         ]
       },
       "Lookups": {
@@ -663,13 +1269,6 @@
               "activeEmployees"
             ]
           }
-        ]
-      },
-      "RecordStatus": {
-        "type": "string",
-        "enum": [
-          "ACTIVE",
-          "INACTIVE"
         ]
       },
       "Client": {
@@ -2204,7 +2803,7 @@
     },
     "/sites": {
       "get": {
-        "summary": "List sites (supervisors: only their own)",
+        "summary": "List and search sites (supervisors: only their own) (M2-SIT-04)",
         "tags": [
           "Sites"
         ],
@@ -2213,24 +2812,252 @@
             "session": []
           }
         ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "cursor",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 100,
+              "description": "Matches site name or code"
+            },
+            "required": false,
+            "description": "Matches site name or code",
+            "name": "q",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": false,
+            "name": "clientId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{2,4}$"
+            },
+            "required": false,
+            "name": "stateCode",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "User id of a supervisor with a current assignment (primary or backup)"
+            },
+            "required": false,
+            "description": "User id of a supervisor with a current assignment (primary or backup)",
+            "name": "supervisorId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "$ref": "#/components/schemas/RecordStatus"
+            },
+            "required": false,
+            "name": "status",
+            "in": "query"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "List sites (supervisors: only their own)",
+            "description": "List and search sites (supervisors: only their own) (M2-SIT-04)",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "items": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Site"
-                      }
-                    }
-                  },
-                  "required": [
-                    "items"
-                  ]
+                  "$ref": "#/components/schemas/SiteList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a site (M2-SIT-01)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSiteBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create a site (M2-SIT-01)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/import": {
+      "post": {
+        "summary": "Bulk-create sites; valid rows are saved, bad rows reported (M2-SIT-08)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImportSitesBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Bulk-create sites; valid rows are saved, bad rows reported (M2-SIT-08)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportSitesResult"
                 }
               }
             }
@@ -2317,6 +3144,441 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Edit a site, including its minimum-wage zone and sphere (M2-SIT-03, M2-SIT-02)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "siteId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSiteBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Edit a site, including its minimum-wage zone and sphere (M2-SIT-03, M2-SIT-02)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{siteId}/close": {
+      "post": {
+        "summary": "Close a site (M2-SIT-05)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "siteId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Close a site (M2-SIT-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Site"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{siteId}/supervisors": {
+      "get": {
+        "summary": "A site's supervisor assignments (M2-SIT-06)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "siteId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A site's supervisor assignments (M2-SIT-06)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteSupervisorList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Assign a primary or backup supervisor; pending until a second person approves (M2-SIT-06)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "siteId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignSupervisorBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Assign a primary or backup supervisor; pending until a second person approves (M2-SIT-06)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SiteSupervisor"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/me/sites": {
+      "get": {
+        "summary": "The sites I cover today (M2-SIT-07)",
+        "tags": [
+          "Sites"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The sites I cover today (M2-SIT-07)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MySites"
                 }
               }
             }

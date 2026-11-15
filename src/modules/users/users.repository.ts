@@ -30,6 +30,7 @@ export type SiteScope = {
   id: string;
   userId: string;
   siteId: string;
+  isPrimary: boolean;
   effectiveFrom: string;
   effectiveTo: string | null;
   createdBy: string | null;
@@ -66,6 +67,7 @@ function toScope(r: ScopeRow): SiteScope {
     id: r.id,
     userId: r.userId,
     siteId: r.siteId,
+    isPrimary: r.isPrimary,
     effectiveFrom: r.effectiveFrom.toString(),
     effectiveTo: iso(r.effectiveTo),
     createdBy: r.createdBy,
@@ -221,6 +223,31 @@ export class UsersRepository {
         ? [{ siteId: r.siteId, siteCode: r.site.code, siteName: r.site.name, effectiveFrom: r.effectiveFrom.toString(), effectiveTo: iso(r.effectiveTo) }]
         : [],
     );
+  }
+
+  /** Approved, un-ended primary assignments on a site whose dates overlap [from, to]. */
+  async overlappingPrimaries(siteId: string, from: string, to: string | null, exceptId: string): Promise<SiteScope[]> {
+    const rows = await this.#scopes
+      .where((s) =>
+        and(
+          s.siteId.eq(siteId as ScopeRow['siteId']),
+          s.isPrimary.eq(true),
+          s.approvedBy.isNotNull(),
+          s.endedAt.isNull(),
+          s.id.neq(exceptId as ScopeRow['id']),
+          or(s.effectiveTo.isNull(), s.effectiveTo.gte(Temporal.PlainDate.from(from) as ScopeRow['effectiveFrom'])),
+          ...(to ? [s.effectiveFrom.lte(Temporal.PlainDate.from(to) as ScopeRow['effectiveFrom'])] : []),
+        ),
+      )
+      .all();
+    return rows.map(toScope);
+  }
+
+  /** Moves an assignment's end date without marking it revoked (a primary handing over). */
+  async setScopeEnd(id: string, effectiveTo: Temporal.PlainDate): Promise<SiteScope> {
+    const row = await this.#scopes.where({ id: id as ScopeRow['id'] }).update({ effectiveTo: effectiveTo as ScopeRow['effectiveTo'] });
+    if (!row) throw new Error(`scope ${id} vanished during update`);
+    return toScope(row);
   }
 
   /** Approved, live scopes for the same user and site (for a clearer error than the DB's OVERLAP). */

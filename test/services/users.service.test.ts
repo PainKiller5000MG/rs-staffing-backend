@@ -51,7 +51,7 @@ class FakeUsers {
   async findScope(i: string) { return this.scopes.get(i) ?? null; }
   async listScopes() { return [...this.scopes.values()]; }
   async createScope(d: { userId: string; siteId: string; effectiveFrom: Temporal.PlainDate; createdBy: string }) {
-    const s: SiteScope = { id: id(), userId: d.userId, siteId: d.siteId, effectiveFrom: d.effectiveFrom.toString(), effectiveTo: null, createdBy: d.createdBy, createdAt: 'now', approvedBy: null, approvedAt: null, endedBy: null, endedAt: null };
+    const s: SiteScope = { id: id(), userId: d.userId, siteId: d.siteId, isPrimary: false, effectiveFrom: d.effectiveFrom.toString(), effectiveTo: null, createdBy: d.createdBy, createdAt: 'now', approvedBy: null, approvedAt: null, endedBy: null, endedAt: null };
     this.scopes.set(s.id, s);
     return s;
   }

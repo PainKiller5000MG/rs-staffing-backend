@@ -164,6 +164,7 @@ export class UsersService {
     if (scope.createdBy === this.#ctx.user.id) throw makerChecker();
     if (await this.#users.liveScopeExists(scope.userId, scope.siteId, scope.id)) throw errors.scopeAlreadyLive();
 
+    if (scope.isPrimary) await this.#handOverPrimary(scope);
     const approved = await this.#users.approveScope(scopeId, this.#ctx.user.id);
     await audit(this.#ctx, 'user_site_scope.approve', 'user_site_scope', scope, approved);
     this.#events.emit('user.site_scope_approved', { userId: scope.userId, siteId: scope.siteId });
@@ -184,6 +185,17 @@ export class UsersService {
     const ended = await this.#users.endScope(scopeId, this.#ctx.user.id, effectiveTo);
     await audit(this.#ctx, 'user_site_scope.revoke', 'user_site_scope', scope, ended);
     return withStatus(ended);
+  }
+
+  /** M2-SIT-06 AC3: a new primary ends the old one the day before it starts. */
+  async #handOverPrimary(scope: SiteScope) {
+    const from = parseDate(scope.effectiveFrom);
+    for (const old of await this.#users.overlappingPrimaries(scope.siteId, scope.effectiveFrom, scope.effectiveTo, scope.id)) {
+      // The old primary must have started before the new one, or there is nothing left of it to keep.
+      if (Temporal.PlainDate.compare(parseDate(old.effectiveFrom), from) >= 0) throw errors.primaryOverlap();
+      const ended = await this.#users.setScopeEnd(old.id, from.subtract({ days: 1 }));
+      await audit(this.#ctx, 'user_site_scope.handover', 'user_site_scope', old, ended);
+    }
   }
 
   async #mustFind(id: string): Promise<User> {

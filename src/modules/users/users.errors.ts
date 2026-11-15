@@ -20,3 +20,7 @@ export const scopeAlreadyLive = () =>
   new ConflictError('OVERLAP', 'The supervisor already has an approved scope for this site');
 
 export const siteInactive = () => new RuleError('SITE_INACTIVE', 'This site is not active');
+
+/** M2-SIT-06: the new primary would start on or before the current primary's own start. */
+export const primaryOverlap = () =>
+  new ConflictError('PRIMARY_OVERLAP', 'The site already has a primary supervisor who started on or after this date');
