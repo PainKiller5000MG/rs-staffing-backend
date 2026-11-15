@@ -549,6 +549,7 @@ namespace app {
     costAllocations    SupervisorCostAllocation[]
     workOrders         WorkOrder[]
     exportLayouts      ExportLayout[]
+    attendanceLayouts  AttendanceLayout[]
 
     @@index([stateCode])
     @@check(expression: "code ~ '^[A-Z0-9][A-Z0-9-]{2,19}$'", name: "clients_code_format")
@@ -624,6 +625,7 @@ namespace app {
     state              State                @relation(fields: [stateCode], references: [code])
     userScopes         UserSiteScope[]
     deployments        Deployment[]
+    attendanceLayouts  AttendanceLayout[]
     dailyWorkEntries   DailyWorkEntry[]
     attendanceDays     AttendanceDay[]
     attendanceMonths   AttendanceMonth[]
@@ -1110,13 +1112,43 @@ namespace app {
     approvedBy Uuid?                  @map("approved_by")
     approvedAt Timestamptz(6)?        @map("approved_at")
 
+    layoutId   Uuid?                  @map("layout_id") // the layout version this file was read with (M2-SET-05 AC4)
+
     client     Client                 @relation(fields: [clientId], references: [id])
+    layout     AttendanceLayout?      @relation(fields: [layoutId], references: [id])
     rows       AttendanceImportRow[]
     days       AttendanceDay[]
 
     @@index([clientId, month, status])
     @@check(expression: "approved_by IS NULL OR created_by IS NULL OR approved_by <> created_by", name: "attendance_imports_maker_checker")
     @@map("attendance_imports")
+  }
+
+  /// M2-SET-05: a client's attendance sheet layout. Every row is one immutable version (a trigger refuses
+  /// UPDATE/DELETE): editing inserts version + 1 under the same layoutKey, and imports point at the version they used.
+  model AttendanceLayout {
+    id                Uuid               @id @default(uuid(7))
+    layoutKey         Uuid               @map("layout_key") // same for every version of one layout
+    version           Int
+    clientId          Uuid               @map("client_id")
+    siteId            Uuid?              @map("site_id") // set when this sheet is one site's own
+    name              VarChar(120)
+    definition        Jsonb // sheet, layout type, header row, identity/day/OT columns, status code map
+    headerFingerprint VarChar(128)       @map("header_fingerprint")
+    confirmedBy       Uuid?              @map("confirmed_by")
+    confirmedAt       Timestamptz(6)?    @map("confirmed_at")
+    createdAt         Timestamptz(6)     @default(now()) @map("created_at")
+    createdBy         Uuid?              @map("created_by")
+
+    client            Client             @relation(fields: [clientId], references: [id])
+    site              Site?              @relation(fields: [siteId], references: [id])
+    imports           AttendanceImport[]
+
+    @@unique([layoutKey, version])
+    @@index([clientId, layoutKey])
+    @@check(expression: "version >= 1", name: "attendance_layouts_version_positive")
+    @@check(expression: "(confirmed_by IS NULL) = (confirmed_at IS NULL)", name: "attendance_layouts_confirmed")
+    @@map("attendance_layouts")
   }
 
   /// Staging only — nothing reaches payroll until the import is ACCEPTED.

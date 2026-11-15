@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'105e2ce81bcfb34b6aaed7d77a717a5fc40e28aa3944904d2737b4ee40b7fb22'>;
+  StorageHashBase<'9a589209addd0b9c2bd6a7f2c564434df705dbcbdd40fc75b93df37c92c3a73f'>;
 export type ExecutionHash =
-  ExecutionHashBase<'0ddeb2f700d9512f88bda082abe50909dc69c89b44d8631f4fb0aafa05c019ad'>;
+  ExecutionHashBase<'a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -321,6 +321,7 @@ export type FieldOutputTypes = {
       readonly fileKey: CodecTypes['pg/text@1']['output'];
       readonly fileSha256: Char<64>;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly layoutId: CodecTypes['pg/uuid@1']['output'] | null;
       readonly month: CodecTypes['pg/date-temporal@1']['output'];
       readonly status: 'STAGING' | 'ACCEPTED' | 'SUPERSEDED' | 'ABANDONED';
     };
@@ -334,6 +335,20 @@ export type FieldOutputTypes = {
       readonly otHours: Numeric<6, 2> | null;
       readonly rowNo: CodecTypes['pg/int4@1']['output'];
       readonly siteCode: Varchar<30>;
+    };
+    readonly AttendanceLayout: {
+      readonly clientId: CodecTypes['pg/uuid@1']['output'];
+      readonly confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly confirmedBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly definition: CodecTypes['pg/jsonb@1']['output'];
+      readonly headerFingerprint: Varchar<128>;
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly layoutKey: CodecTypes['pg/uuid@1']['output'];
+      readonly name: Varchar<120>;
+      readonly siteId: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly version: CodecTypes['pg/int4@1']['output'];
     };
     readonly AttendanceMonth: {
       readonly computedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1215,6 +1230,7 @@ export type FieldInputTypes = {
       readonly fileKey: CodecTypes['pg/text@1']['input'];
       readonly fileSha256: CodecTypes['sql/char@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly layoutId: CodecTypes['pg/uuid@1']['input'] | null;
       readonly month: CodecTypes['pg/date-temporal@1']['input'];
       readonly status: 'STAGING' | 'ACCEPTED' | 'SUPERSEDED' | 'ABANDONED';
     };
@@ -1228,6 +1244,20 @@ export type FieldInputTypes = {
       readonly otHours: CodecTypes['pg/numeric@1']['input'] | null;
       readonly rowNo: CodecTypes['pg/int4@1']['input'];
       readonly siteCode: CodecTypes['sql/varchar@1']['input'];
+    };
+    readonly AttendanceLayout: {
+      readonly clientId: CodecTypes['pg/uuid@1']['input'];
+      readonly confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly confirmedBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly definition: CodecTypes['pg/jsonb@1']['input'];
+      readonly headerFingerprint: CodecTypes['sql/varchar@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly layoutKey: CodecTypes['pg/uuid@1']['input'];
+      readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly siteId: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly version: CodecTypes['pg/int4@1']['input'];
     };
     readonly AttendanceMonth: {
       readonly computedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -2120,8 +2150,23 @@ export type StorageColumnTypes = {
       readonly file_key: CodecTypes['pg/text@1']['output'];
       readonly file_sha256: Char<64>;
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly layout_id: CodecTypes['pg/uuid@1']['output'] | null;
       readonly month: CodecTypes['pg/date-temporal@1']['output'];
       readonly status: 'STAGING' | 'ACCEPTED' | 'SUPERSEDED' | 'ABANDONED';
+    };
+    readonly attendance_layouts: {
+      readonly client_id: CodecTypes['pg/uuid@1']['output'];
+      readonly confirmed_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly confirmed_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly definition: CodecTypes['pg/jsonb@1']['output'];
+      readonly header_fingerprint: Varchar<128>;
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly layout_key: CodecTypes['pg/uuid@1']['output'];
+      readonly name: Varchar<120>;
+      readonly site_id: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly version: CodecTypes['pg/int4@1']['output'];
     };
     readonly attendance_months: {
       readonly computed_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -3014,8 +3059,23 @@ export type StorageColumnInputTypes = {
       readonly file_key: CodecTypes['pg/text@1']['input'];
       readonly file_sha256: CodecTypes['sql/char@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly layout_id: CodecTypes['pg/uuid@1']['input'] | null;
       readonly month: CodecTypes['pg/date-temporal@1']['input'];
       readonly status: 'STAGING' | 'ACCEPTED' | 'SUPERSEDED' | 'ABANDONED';
+    };
+    readonly attendance_layouts: {
+      readonly client_id: CodecTypes['pg/uuid@1']['input'];
+      readonly confirmed_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly confirmed_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly definition: CodecTypes['pg/jsonb@1']['input'];
+      readonly header_fingerprint: CodecTypes['sql/varchar@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly layout_key: CodecTypes['pg/uuid@1']['input'];
+      readonly name: CodecTypes['sql/varchar@1']['input'];
+      readonly site_id: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly version: CodecTypes['pg/int4@1']['input'];
     };
     readonly attendance_months: {
       readonly computed_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -3913,12 +3973,14 @@ export namespace Models {
     fileKey: CodecTypes['pg/text@1']['output'];
     fileSha256: Char<64>;
     id: CodecTypes['pg/uuid@1']['output'];
+    layoutId: CodecTypes['pg/uuid@1']['output'] | null;
     month: CodecTypes['pg/date-temporal@1']['output'];
     status: 'STAGING' | 'ACCEPTED' | 'SUPERSEDED' | 'ABANDONED';
     client: app_Client;
     days: app_AttendanceDay[];
+    layout: app_AttendanceLayout | null;
     rows: app_AttendanceImportRow[];
-    readonly [RelationKeys]?: 'client' | 'days' | 'rows';
+    readonly [RelationKeys]?: 'client' | 'days' | 'layout' | 'rows';
   };
   export type app_AttendanceImportRow = {
     codes: ReadonlyArray<Varchar<4>>;
@@ -3932,6 +3994,24 @@ export namespace Models {
     siteCode: Varchar<30>;
     import: app_AttendanceImport;
     readonly [RelationKeys]?: 'import';
+  };
+  export type app_AttendanceLayout = {
+    clientId: CodecTypes['pg/uuid@1']['output'];
+    confirmedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    confirmedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+    definition: CodecTypes['pg/jsonb@1']['output'];
+    headerFingerprint: Varchar<128>;
+    id: CodecTypes['pg/uuid@1']['output'];
+    layoutKey: CodecTypes['pg/uuid@1']['output'];
+    name: Varchar<120>;
+    siteId: CodecTypes['pg/uuid@1']['output'] | null;
+    version: CodecTypes['pg/int4@1']['output'];
+    client: app_Client;
+    imports: app_AttendanceImport[];
+    site: app_Site | null;
+    readonly [RelationKeys]?: 'client' | 'imports' | 'site';
   };
   export type app_AttendanceMonth = {
     computedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -4058,6 +4138,7 @@ export namespace Models {
     updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
     workOrderNumber: Varchar<60> | null;
     attendanceImports: app_AttendanceImport[];
+    attendanceLayouts: app_AttendanceLayout[];
     contacts: app_ClientContact[];
     costAllocations: app_SupervisorCostAllocation[];
     esiEstablishment: app_Establishment;
@@ -4071,6 +4152,7 @@ export namespace Models {
     workOrders: app_WorkOrder[];
     readonly [RelationKeys]?:
       | 'attendanceImports'
+      | 'attendanceLayouts'
       | 'contacts'
       | 'costAllocations'
       | 'esiEstablishment'
@@ -4871,6 +4953,7 @@ export namespace Models {
     updatedBy: CodecTypes['pg/uuid@1']['output'] | null;
     wageSphere: Varchar<7> | null;
     attendanceDays: app_AttendanceDay[];
+    attendanceLayouts: app_AttendanceLayout[];
     attendanceMonths: app_AttendanceMonth[];
     cashReleases: app_CashRelease[];
     client: app_Client;
@@ -4885,6 +4968,7 @@ export namespace Models {
     userScopes: app_UserSiteScope[];
     readonly [RelationKeys]?:
       | 'attendanceDays'
+      | 'attendanceLayouts'
       | 'attendanceMonths'
       | 'cashReleases'
       | 'client'
@@ -5055,6 +5139,7 @@ export declare const models: {
     AttendanceDay: Models.app_AttendanceDay;
     AttendanceImport: Models.app_AttendanceImport;
     AttendanceImportRow: Models.app_AttendanceImportRow;
+    AttendanceLayout: Models.app_AttendanceLayout;
     AttendanceMonth: Models.app_AttendanceMonth;
     BankAccount: Models.app_BankAccount;
     CashPayout: Models.app_CashPayout;
@@ -5782,6 +5867,11 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
+                readonly layout_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
                 readonly month: {
                   readonly nativeType: 'date';
                   readonly codecId: 'pg/date-temporal@1';
@@ -5812,6 +5902,12 @@ type ContractBase = Omit<
                   readonly columns: readonly ['client_id', 'month', 'status'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'attendance_imports_layout_id_idx_dbb3a04e';
+                  readonly prefix: 'attendance_imports_layout_id_idx';
+                  readonly columns: readonly ['layout_id'];
+                  readonly unique: false;
+                },
               ];
               foreignKeys: readonly [
                 {
@@ -5823,6 +5919,135 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'app' & NamespaceId;
                     readonly tableName: 'clients';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'attendance_imports';
+                    readonly columns: readonly ['layout_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'attendance_layouts';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly attendance_layouts: {
+              columns: {
+                readonly client_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly confirmed_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly confirmed_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly created_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly definition: {
+                  readonly nativeType: 'jsonb';
+                  readonly codecId: 'pg/jsonb@1';
+                  readonly nullable: false;
+                };
+                readonly header_fingerprint: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 128 };
+                };
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly layout_key: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 120 };
+                };
+                readonly site_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly version: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [{ readonly columns: readonly ['layout_key', 'version'] }];
+              indexes: readonly [
+                {
+                  readonly name: 'attendance_layouts_client_id_idx_1bb5a570';
+                  readonly prefix: 'attendance_layouts_client_id_idx';
+                  readonly columns: readonly ['client_id'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'attendance_layouts_client_id_layout_key_idx_8476666c';
+                  readonly prefix: 'attendance_layouts_client_id_layout_key_idx';
+                  readonly columns: readonly ['client_id', 'layout_key'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'attendance_layouts_site_id_idx_99208b9d';
+                  readonly prefix: 'attendance_layouts_site_id_idx';
+                  readonly columns: readonly ['site_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'attendance_layouts';
+                    readonly columns: readonly ['client_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'clients';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'attendance_layouts';
+                    readonly columns: readonly ['site_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'sites';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -12468,6 +12693,10 @@ type ContractBase = Omit<
       readonly namespace: 'app' & NamespaceId;
       readonly model: 'AttendanceImport';
     };
+    readonly attendance_layouts: {
+      readonly namespace: 'app' & NamespaceId;
+      readonly model: 'AttendanceLayout';
+    };
     readonly attendance_months: {
       readonly namespace: 'app' & NamespaceId;
       readonly model: 'AttendanceMonth';
@@ -13201,6 +13430,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
+              readonly layoutId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
               readonly month: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/date-temporal@1' };
@@ -13231,6 +13464,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['importId'];
                 };
               };
+              readonly layout: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'AttendanceLayout';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['layoutId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
               readonly rows: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
@@ -13256,6 +13501,7 @@ type ContractBase = Omit<
                 readonly fileKey: { readonly column: 'file_key' };
                 readonly fileSha256: { readonly column: 'file_sha256' };
                 readonly id: { readonly column: 'id' };
+                readonly layoutId: { readonly column: 'layout_id' };
                 readonly month: { readonly column: 'month' };
                 readonly status: { readonly column: 'status' };
               };
@@ -13344,6 +13590,123 @@ type ContractBase = Omit<
                 readonly otHours: { readonly column: 'ot_hours' };
                 readonly rowNo: { readonly column: 'row_no' };
                 readonly siteCode: { readonly column: 'site_code' };
+              };
+            };
+          };
+          readonly AttendanceLayout: {
+            readonly fields: {
+              readonly clientId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly confirmedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly confirmedBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly createdBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly definition: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/jsonb@1' };
+              };
+              readonly headerFingerprint: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 128 };
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly layoutKey: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
+              };
+              readonly siteId: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly version: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+            };
+            readonly relations: {
+              readonly client: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'Client' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['clientId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly imports: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'AttendanceImport';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['layoutId'];
+                };
+              };
+              readonly site: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'Site' };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['siteId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'attendance_layouts';
+              readonly namespaceId: 'app';
+              readonly fields: {
+                readonly clientId: { readonly column: 'client_id' };
+                readonly confirmedAt: { readonly column: 'confirmed_at' };
+                readonly confirmedBy: { readonly column: 'confirmed_by' };
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly createdBy: { readonly column: 'created_by' };
+                readonly definition: { readonly column: 'definition' };
+                readonly headerFingerprint: { readonly column: 'header_fingerprint' };
+                readonly id: { readonly column: 'id' };
+                readonly layoutKey: { readonly column: 'layout_key' };
+                readonly name: { readonly column: 'name' };
+                readonly siteId: { readonly column: 'site_id' };
+                readonly version: { readonly column: 'version' };
               };
             };
           };
@@ -14126,6 +14489,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
                   readonly model: 'AttendanceImport';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['clientId'];
+                };
+              };
+              readonly attendanceLayouts: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'AttendanceLayout';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -19225,6 +19599,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['siteId'];
                 };
               };
+              readonly attendanceLayouts: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'AttendanceLayout';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['siteId'];
+                };
+              };
               readonly attendanceMonths: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
@@ -20819,6 +21204,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'attendance_imports';
+            readonly field: 'id';
+            readonly namespace: 'app';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'attendance_layouts';
             readonly field: 'id';
             readonly namespace: 'app';
           };

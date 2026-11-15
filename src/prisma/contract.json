@@ -36,6 +36,10 @@
       "model": "AttendanceImport",
       "namespace": "app"
     },
+    "attendance_layouts": {
+      "model": "AttendanceLayout",
+      "namespace": "app"
+    },
     "attendance_months": {
       "model": "AttendanceMonth",
       "namespace": "app"
@@ -1207,6 +1211,13 @@
                   "kind": "scalar"
                 }
               },
+              "layoutId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
               "month": {
                 "nullable": false,
                 "type": {
@@ -1260,6 +1271,22 @@
                   "namespace": "app"
                 }
               },
+              "layout": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "layoutId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceLayout",
+                  "namespace": "app"
+                }
+              },
               "rows": {
                 "cardinality": "1:N",
                 "on": {
@@ -1304,6 +1331,9 @@
                 },
                 "id": {
                   "column": "id"
+                },
+                "layoutId": {
+                  "column": "layout_id"
                 },
                 "month": {
                   "column": "month"
@@ -1446,6 +1476,197 @@
               },
               "namespaceId": "app",
               "table": "attendance_import_rows"
+            }
+          },
+          "AttendanceLayout": {
+            "fields": {
+              "clientId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "confirmedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "confirmedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "createdBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "definition": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/jsonb@1",
+                  "kind": "scalar"
+                }
+              },
+              "headerFingerprint": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 128
+                  }
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "layoutKey": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "name": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
+                }
+              },
+              "siteId": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "version": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "app"
+                }
+              },
+              "imports": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "layoutId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceImport",
+                  "namespace": "app"
+                }
+              },
+              "site": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "siteId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Site",
+                  "namespace": "app"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientId": {
+                  "column": "client_id"
+                },
+                "confirmedAt": {
+                  "column": "confirmed_at"
+                },
+                "confirmedBy": {
+                  "column": "confirmed_by"
+                },
+                "createdAt": {
+                  "column": "created_at"
+                },
+                "createdBy": {
+                  "column": "created_by"
+                },
+                "definition": {
+                  "column": "definition"
+                },
+                "headerFingerprint": {
+                  "column": "header_fingerprint"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "layoutKey": {
+                  "column": "layout_key"
+                },
+                "name": {
+                  "column": "name"
+                },
+                "siteId": {
+                  "column": "site_id"
+                },
+                "version": {
+                  "column": "version"
+                }
+              },
+              "namespaceId": "app",
+              "table": "attendance_layouts"
             }
           },
           "AttendanceMonth": {
@@ -2704,6 +2925,21 @@
                 },
                 "to": {
                   "model": "AttendanceImport",
+                  "namespace": "app"
+                }
+              },
+              "attendanceLayouts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceLayout",
                   "namespace": "app"
                 }
               },
@@ -11038,6 +11274,21 @@
                   "namespace": "app"
                 }
               },
+              "attendanceLayouts": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "siteId"
+                  ]
+                },
+                "to": {
+                  "model": "AttendanceLayout",
+                  "namespace": "app"
+                }
+              },
               "attendanceMonths": {
                 "cardinality": "1:N",
                 "on": {
@@ -14723,6 +14974,11 @@
                   "nativeType": "uuid",
                   "nullable": false
                 },
+                "layout_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
                 "month": {
                   "codecId": "pg/date-temporal@1",
                   "nativeType": "date",
@@ -14760,6 +15016,22 @@
                     "namespaceId": "app",
                     "tableName": "clients"
                   }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "layout_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "attendance_imports"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "attendance_layouts"
+                  }
                 }
               ],
               "indexes": [
@@ -14780,6 +15052,14 @@
                   "name": "attendance_imports_client_id_month_status_idx_51ef61ad",
                   "prefix": "attendance_imports_client_id_month_status_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "layout_id"
+                  ],
+                  "name": "attendance_imports_layout_id_idx_dbb3a04e",
+                  "prefix": "attendance_imports_layout_id_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -14788,6 +15068,172 @@
                 ]
               },
               "uniques": []
+            },
+            "attendance_layouts": {
+              "checks": [
+                {
+                  "expression": "(confirmed_by IS NULL) = (confirmed_at IS NULL)",
+                  "name": "attendance_layouts_confirmed_80e96171",
+                  "prefix": "attendance_layouts_confirmed"
+                },
+                {
+                  "expression": "version >= 1",
+                  "name": "attendance_layouts_version_positive_c2490804",
+                  "prefix": "attendance_layouts_version_positive"
+                }
+              ],
+              "columns": {
+                "client_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "confirmed_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "confirmed_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "created_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "created_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "definition": {
+                  "codecId": "pg/jsonb@1",
+                  "nativeType": "jsonb",
+                  "nullable": false
+                },
+                "header_fingerprint": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 128
+                  }
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "layout_key": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 120
+                  }
+                },
+                "site_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "version": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "client_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "attendance_layouts"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "clients"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "site_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "attendance_layouts"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "sites"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "client_id"
+                  ],
+                  "name": "attendance_layouts_client_id_idx_1bb5a570",
+                  "prefix": "attendance_layouts_client_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "client_id",
+                    "layout_key"
+                  ],
+                  "name": "attendance_layouts_client_id_layout_key_idx_8476666c",
+                  "prefix": "attendance_layouts_client_id_layout_key_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "site_id"
+                  ],
+                  "name": "attendance_layouts_site_id_idx_99208b9d",
+                  "prefix": "attendance_layouts_site_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": [
+                {
+                  "columns": [
+                    "layout_key",
+                    "version"
+                  ]
+                }
+              ]
             },
             "attendance_months": {
               "columns": {
@@ -24230,10 +24676,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "105e2ce81bcfb34b6aaed7d77a717a5fc40e28aa3944904d2737b4ee40b7fb22"
+    "storageHash": "9a589209addd0b9c2bd6a7f2c564434df705dbcbdd40fc75b93df37c92c3a73f"
   },
   "execution": {
-    "executionHash": "0ddeb2f700d9512f88bda082abe50909dc69c89b44d8631f4fb0aafa05c019ad",
+    "executionHash": "a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d",
     "mutations": {
       "defaults": [
         {
@@ -24324,6 +24770,17 @@
           },
           "ref": {
             "entry": "attendance_imports",
+            "field": "id",
+            "namespace": "app"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv7",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "attendance_layouts",
             "field": "id",
             "namespace": "app"
           }

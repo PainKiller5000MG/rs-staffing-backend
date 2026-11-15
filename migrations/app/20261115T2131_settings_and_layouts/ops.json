@@ -1,0 +1,424 @@
+[
+  {
+    "id": "table.attendance_layouts",
+    "label": "Create table \"attendance_layouts\"",
+    "summary": "Creates table \"attendance_layouts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"attendance_layouts\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"attendance_layouts\"",
+        "sql": "CREATE TABLE \"app\".\"attendance_layouts\" (\n  \"client_id\" uuid NOT NULL,\n  \"confirmed_at\" timestamptz(6),\n  \"confirmed_by\" uuid,\n  \"created_at\" timestamptz(6) DEFAULT (now()) NOT NULL,\n  \"created_by\" uuid,\n  \"definition\" jsonb NOT NULL,\n  \"header_fingerprint\" character varying(128) NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"layout_key\" uuid NOT NULL,\n  \"name\" character varying(120) NOT NULL,\n  \"site_id\" uuid,\n  \"version\" int4 NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"attendance_layouts_confirmed_80e96171\" CHECK ((confirmed_by IS NULL) = (confirmed_at IS NULL)),\n  CONSTRAINT \"attendance_layouts_version_positive_c2490804\" CHECK (version >= 1)\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"attendance_layouts\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.attendance_imports.layout_id",
+    "label": "Add column \"layout_id\" to \"attendance_imports\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "layout_id",
+        "table": "attendance_imports"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"layout_id\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "attendance_imports",
+          "layout_id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"layout_id\"",
+        "sql": "ALTER TABLE \"app\".\"attendance_imports\" ADD COLUMN \"layout_id\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"layout_id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "attendance_imports",
+          "layout_id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.attendance_layouts.attendance_layouts_layout_key_version_key",
+    "label": "Add unique constraint on \"attendance_layouts\" (layout_key, version)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "attendance_layouts_layout_key_version_key",
+        "table": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"attendance_layouts_layout_key_version_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_layouts_layout_key_version_key",
+          "app",
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"attendance_layouts_layout_key_version_key\"",
+        "sql": "ALTER TABLE \"app\".\"attendance_layouts\" ADD CONSTRAINT \"attendance_layouts_layout_key_version_key\" UNIQUE (\"layout_key\", \"version\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"attendance_layouts_layout_key_version_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_layouts_layout_key_version_key",
+          "app",
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendance_imports.attendance_imports_layout_id_idx_dbb3a04e",
+    "label": "Create index \"attendance_imports_layout_id_idx_dbb3a04e\" on \"attendance_imports\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "attendance_imports_layout_id_idx_dbb3a04e",
+        "table": "attendance_imports"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendance_imports_layout_id_idx_dbb3a04e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_imports_layout_id_idx_dbb3a04e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendance_imports_layout_id_idx_dbb3a04e\"",
+        "sql": "CREATE INDEX \"attendance_imports_layout_id_idx_dbb3a04e\" ON \"app\".\"attendance_imports\" (\"layout_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendance_imports_layout_id_idx_dbb3a04e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_imports_layout_id_idx_dbb3a04e\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendance_layouts.attendance_layouts_client_id_idx_1bb5a570",
+    "label": "Create index \"attendance_layouts_client_id_idx_1bb5a570\" on \"attendance_layouts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "attendance_layouts_client_id_idx_1bb5a570",
+        "table": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendance_layouts_client_id_idx_1bb5a570\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts_client_id_idx_1bb5a570\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendance_layouts_client_id_idx_1bb5a570\"",
+        "sql": "CREATE INDEX \"attendance_layouts_client_id_idx_1bb5a570\" ON \"app\".\"attendance_layouts\" (\"client_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendance_layouts_client_id_idx_1bb5a570\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts_client_id_idx_1bb5a570\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendance_layouts.attendance_layouts_client_id_layout_key_idx_8476666c",
+    "label": "Create index \"attendance_layouts_client_id_layout_key_idx_8476666c\" on \"attendance_layouts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "attendance_layouts_client_id_layout_key_idx_8476666c",
+        "table": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendance_layouts_client_id_layout_key_idx_8476666c\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts_client_id_layout_key_idx_8476666c\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendance_layouts_client_id_layout_key_idx_8476666c\"",
+        "sql": "CREATE INDEX \"attendance_layouts_client_id_layout_key_idx_8476666c\" ON \"app\".\"attendance_layouts\" (\"client_id\", \"layout_key\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendance_layouts_client_id_layout_key_idx_8476666c\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts_client_id_layout_key_idx_8476666c\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.attendance_layouts.attendance_layouts_site_id_idx_99208b9d",
+    "label": "Create index \"attendance_layouts_site_id_idx_99208b9d\" on \"attendance_layouts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "attendance_layouts_site_id_idx_99208b9d",
+        "table": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"attendance_layouts_site_id_idx_99208b9d\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts_site_id_idx_99208b9d\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"attendance_layouts_site_id_idx_99208b9d\"",
+        "sql": "CREATE INDEX \"attendance_layouts_site_id_idx_99208b9d\" ON \"app\".\"attendance_layouts\" (\"site_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"attendance_layouts_site_id_idx_99208b9d\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"attendance_layouts_site_id_idx_99208b9d\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendance_layouts.attendance_layouts_client_id_fkey",
+    "label": "Add foreign key \"attendance_layouts_client_id_fkey\" on \"attendance_layouts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "attendance_layouts_client_id_fkey",
+        "table": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendance_layouts_client_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_layouts_client_id_fkey",
+          "app",
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendance_layouts_client_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"attendance_layouts\"\nADD CONSTRAINT \"attendance_layouts_client_id_fkey\"\nFOREIGN KEY (\"client_id\")\nREFERENCES \"app\".\"clients\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendance_layouts_client_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_layouts_client_id_fkey",
+          "app",
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendance_layouts.attendance_layouts_site_id_fkey",
+    "label": "Add foreign key \"attendance_layouts_site_id_fkey\" on \"attendance_layouts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "attendance_layouts_site_id_fkey",
+        "table": "attendance_layouts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendance_layouts_site_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_layouts_site_id_fkey",
+          "app",
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendance_layouts_site_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"attendance_layouts\"\nADD CONSTRAINT \"attendance_layouts_site_id_fkey\"\nFOREIGN KEY (\"site_id\")\nREFERENCES \"app\".\"sites\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendance_layouts_site_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_layouts_site_id_fkey",
+          "app",
+          "\"app\".\"attendance_layouts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.attendance_imports.attendance_imports_layout_id_fkey",
+    "label": "Add foreign key \"attendance_imports_layout_id_fkey\" on \"attendance_imports\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "attendance_imports_layout_id_fkey",
+        "table": "attendance_imports"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"attendance_imports_layout_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_imports_layout_id_fkey",
+          "app",
+          "\"app\".\"attendance_imports\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"attendance_imports_layout_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"attendance_imports\"\nADD CONSTRAINT \"attendance_imports_layout_id_fkey\"\nFOREIGN KEY (\"layout_id\")\nREFERENCES \"app\".\"attendance_layouts\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"attendance_imports_layout_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "attendance_imports_layout_id_fkey",
+          "app",
+          "\"app\".\"attendance_imports\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "extras.attendance_layouts_immutable",
+    "label": "attendance layout versions are immutable (M2-SET-05 AC4)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "trigger attendance_layouts_append_only",
+        "sql": "CREATE TRIGGER attendance_layouts_append_only BEFORE UPDATE OR DELETE ON app.attendance_layouts FOR EACH ROW EXECUTE FUNCTION audit.forbid_change()",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  }
+]
