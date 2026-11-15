@@ -55,3 +55,14 @@ Work that must land before the first production payroll. Each item becomes an is
 
 - [ ] Implement the S3-compatible `FileStorage` adapter (Indian region, private bucket, server-side
       encryption, signed short-lived URLs); `LocalStorage` is dev/test only (M12-ENC-02).
+
+## Clients (M2-CLI)
+
+- [ ] Contract-expiry alerts (M2-CLI-07): `GET /clients/expiring` gives the D30/D7 list; a scheduled pg-boss job must
+      still notify HQ Admin at exactly 30 and 7 days (needs the notification channel from M10).
+- [ ] Inactive clients (M2-CLI-05 AC2): deployments (M3), attendance imports (M5) and payroll runs (M7) must call
+      `ClientsService.assertActive`; each story needs its own `CLIENT_INACTIVE` test.
+- [ ] The short-code lock after payroll (M2-CLI-01 AC4) is enforced in the service only; add a DB trigger when
+      payroll runs exist if the API is ever bypassed.
+- [ ] M2-CLI-08 (client documents) not built yet.
+

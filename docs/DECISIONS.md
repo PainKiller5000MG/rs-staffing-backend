@@ -8,6 +8,7 @@ Format: `- YYYY-MM-DD · <story ids or area> · <decision> (who decided)`
 
 ## Decided
 
+- 2026-11-16 · M2-CLI · Client API choices made while building (not asked): clients are HQ data, so supervisors/employees get 403 on all of `/clients`; create/edit/contacts/import use `sites.write` (Admin, Payroll, HR); deactivate/reactivate are Admin only. New clients default to the default PF/ESI establishment unless one is sent (settles the PF/ESI open question for now). "Payroll has run" = any run for the client that is past DRAFT. PAN must match the GSTIN's embedded PAN. Bulk import is a JSON-rows endpoint (the Excel template/preview is M11). (Claude)
 - 2026-11-16 · M5-AI-04 · AI provider is Google Gemini, pay as you go; no budget cap (cost is logged and reported monthly instead). Region and data terms to confirm when the API key is set up. (user)
 - 2026-11-16 · M5-AI-05 · No client sends scans/photos/PDFs of registers; M5-AI-05 is P2. (user)
 - 2026-11-16 · M1-SEC-07 · Admin second factor is not mandatory at launch; stays optional P1. (user)
