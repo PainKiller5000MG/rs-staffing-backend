@@ -36,8 +36,15 @@ export class ClientsService {
     this.#ctx = ctx;
   }
 
+  /** A supervisor reaches only the clients of their approved sites (like M1-SCP-02: outside → 404). */
+  get #isSupervisor() {
+    return this.#ctx.user.role === 'SUPERVISOR';
+  }
+
   async get(id: string) {
-    return this.#mustFind(id);
+    const client = await this.#mustFind(id);
+    if (this.#isSupervisor && !(await this.#repo.clientIdsOfSites(this.#ctx.user.siteIds)).includes(id)) throw new NotFoundError('Client');
+    return client;
   }
 
   /** M2-CLI-05 AC2: other modules call this before a deployment, attendance import or payroll run. */
@@ -49,9 +56,12 @@ export class ClientsService {
 
   /** M2-CLI-04. */
   async list(query: ListClientsQuery) {
-    const rows = await this.#repo.list({ ...query, limit: query.limit + 1 });
+    const siteIds = this.#isSupervisor ? this.#ctx.user.siteIds : undefined;
+    const ids = siteIds ? await this.#repo.clientIdsOfSites(siteIds) : undefined;
+    const rows = ids?.length === 0 ? [] : await this.#repo.list({ ...query, limit: query.limit + 1, ids });
     const page = rows.slice(0, query.limit);
-    const counts = await this.#repo.counts(page.map((c) => c.id), today());
+    // A supervisor's counts cover their own sites only.
+    const counts = await this.#repo.counts(page.map((c) => c.id), today(), siteIds);
     return {
       items: page.map((c) => ({ ...c, ...(counts.get(c.id) ?? { siteCount: 0, activeEmployees: 0 }) })),
       nextCursor: rows.length > query.limit ? (page.at(-1)?.id ?? null) : null,

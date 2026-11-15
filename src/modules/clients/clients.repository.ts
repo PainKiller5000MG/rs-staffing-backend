@@ -56,7 +56,7 @@ export type ClientFields = {
   esiEstablishmentId: string;
 };
 
-export type ClientFilters = { q?: string; stateCode?: string; status?: Status; cursor?: string; limit: number };
+export type ClientFilters = { q?: string; stateCode?: string; status?: Status; cursor?: string; limit: number; /** Only these clients (a supervisor's reach). */ ids?: string[] };
 
 const iso = (v: { toString(): string } | null | undefined) => (v == null ? null : v.toString());
 const date = (s: string | null | undefined) => (s ? (Temporal.PlainDate.from(s) as ClientRow['contractStart']) : null);
@@ -141,6 +141,16 @@ export class ClientsRepository {
     return row && toClient(row);
   }
 
+  /** The clients that own these sites. */
+  async clientIdsOfSites(siteIds: string[]): Promise<string[]> {
+    if (siteIds.length === 0) return [];
+    const sites = await this.#executor.orm.app.Site
+      .select('clientId')
+      .where((s) => s.id.in(siteIds as Scalars<Models.app_Site>['id'][]))
+      .all();
+    return [...new Set(sites.map((s) => s.clientId))];
+  }
+
   async stateExists(code: string): Promise<boolean> {
     const row = await this.#executor.orm.app.State.where({ code: code as Scalars<Models.app_State>['code'] }).first();
     return row !== null;
@@ -184,8 +194,9 @@ export class ClientsRepository {
   }
 
   /** Cursor-paged, ordered by id (uuid v7 = creation order). */
-  async list({ q, stateCode, status, cursor, limit }: ClientFilters): Promise<Client[]> {
+  async list({ q, stateCode, status, cursor, limit, ids }: ClientFilters): Promise<Client[]> {
     let query = this.#clients.orderBy((c) => c.id.asc());
+    if (ids) query = query.where((c) => c.id.in(ids as ClientRow['id'][]));
     if (stateCode) query = query.where({ stateCode: stateCode as ClientRow['stateCode'] });
     if (status) query = query.where({ status });
     if (q) {
@@ -197,12 +208,12 @@ export class ClientsRepository {
   }
 
   /** Site count and employees with a deployment running on `day`, per client id. */
-  async counts(clientIds: string[], day: Temporal.PlainDate): Promise<Map<string, { siteCount: number; activeEmployees: number }>> {
+  async counts(clientIds: string[], day: Temporal.PlainDate, onlySiteIds?: string[]): Promise<Map<string, { siteCount: number; activeEmployees: number }>> {
     const out = new Map(clientIds.map((id) => [id, { siteCount: 0, activeEmployees: 0 }]));
     if (clientIds.length === 0) return out;
     const sites = await this.#executor.orm.app.Site
       .select('id', 'clientId')
-      .where((s) => s.clientId.in(clientIds as ClientRow['id'][]))
+      .where((s) => (onlySiteIds ? and(s.clientId.in(clientIds as ClientRow['id'][]), s.id.in(onlySiteIds as Scalars<Models.app_Site>['id'][])) : s.clientId.in(clientIds as ClientRow['id'][])))
       .all();
     const clientOfSite = new Map<string, string>();
     for (const s of sites) {

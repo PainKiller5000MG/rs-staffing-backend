@@ -80,8 +80,8 @@ Order: schemas → repository → service → controller → module registration
 1. Iterate with `npm run check -- test/api/<name>.test.ts test/services/<name>.service.test.ts`.
 2. Before each commit: `npm run check -- --story <ID>` (full suite + AC gate). Must print `CHECK PASSED`.
 3. `git add` the specific files (code, tests, regenerated `openapi.json`, `src/prisma/*`, migrations) — then
-   `git commit -m "<ID>: <story title>" -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"`.
-   (Use the model you are; one story per commit; a shared refactor may be its own commit.)
+   `git commit -m "<ID>: <story title>" -m "Co-Authored-By: <the model you are> <noreply@anthropic.com>"`.
+   (Use the model you are; one story per commit; a shared refactor may be its own commit. Stories that share one module and one set of schemas may go in a single commit named `<first ID>..<last ID>: <what>`; say so in the closing reply.)
 4. If a test fails twice for the same reason, stop guessing: read the failing code path once, fix the cause.
    Never weaken an assertion, a constraint or the gate to get green.
 

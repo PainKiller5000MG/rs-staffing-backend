@@ -61,7 +61,7 @@ Work that must land before the first production payroll. Each item becomes an is
 - [ ] Contract-expiry alerts (M2-CLI-07): `GET /clients/expiring` gives the D30/D7 list; a scheduled pg-boss job must
       still notify HQ Admin at exactly 30 and 7 days (needs the notification channel from M10).
 - [ ] Inactive clients (M2-CLI-05 AC2): deployments (M3), attendance imports (M5) and payroll runs (M7) must call
-      `ClientsService.assertActive`; each story needs its own `CLIENT_INACTIVE` test.
+      `ClientsService.assertActive`; test/todo/client-inactive-guard.test.ts fails (red) once they do, then each story keeps its own `CLIENT_INACTIVE` test.
 - [ ] The short-code lock after payroll (M2-CLI-01 AC4) is enforced in the service only; add a DB trigger when
       payroll runs exist if the API is ever bypassed.
 - [ ] M2-CLI-08 (client documents) not built yet.

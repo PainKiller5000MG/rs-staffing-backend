@@ -22,8 +22,10 @@ import {
 } from './clients.schemas.ts';
 import type { ClientsService } from './clients.service.ts';
 
-/** Clients are HQ data: supervisors and employees never see the client list. */
-const READERS = HQ;
+/** Module 1 permission table: supervisors read clients and sites for their own sites (the service scopes them); employees don't. */
+const READERS = rolesWith('sites.read');
+/** Contacts and expiry dates are HQ-only. */
+const HQ_READERS = HQ;
 const WRITERS = rolesWith('sites.write');
 /** M2-CLI-05: "HQ Admin" deactivates. */
 const ADMIN_ONLY = ['ADMIN'] as const;
@@ -49,7 +51,7 @@ export class ClientsController {
       method: 'get',
       path: '/clients/expiring',
       summary: 'Clients whose contract ends soon (M2-CLI-07)',
-      roles: READERS,
+      roles: HQ_READERS,
       query: ExpiringQuery,
       response: ExpiringSchema,
       handler: (c, ctx) => c.service.expiring(ctx.query()),
@@ -119,7 +121,7 @@ export class ClientsController {
       method: 'get',
       path: '/clients/{id}/contacts',
       summary: 'List a client\'s contacts (M2-CLI-02)',
-      roles: READERS,
+      roles: HQ_READERS,
       params: IdParam,
       response: ContactListSchema,
       handler: (c, ctx) => c.service.listContacts(ctx.param('id')),

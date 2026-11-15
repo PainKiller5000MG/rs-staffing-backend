@@ -1,6 +1,7 @@
 // Clients end to end against the seeded database (npm run seed:reset).
 // Every client these tests create has a unique code/GSTIN, so reruns need no reset.
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
+import { mapError } from '../../src/core/error-handler.ts';
 import { gstinCheckChar } from '../../src/lib/tax-ids.ts';
 import { db } from '../../src/prisma/db.ts';
 import { mobileOf, testApp } from '../helpers.ts';
@@ -46,13 +47,33 @@ beforeAll(async () => {
 afterAll(() => db.close());
 
 describe('access', () => {
-  test('M2-CLI-01 AC1: no session → 401; supervisors and employees → 403 on every clients route', async () => {
+  test('M2-CLI-01 AC1: no session → 401; employees → 403; supervisors cannot write or see contacts and expiry', async () => {
     expect((await request('GET', '/clients')).status).toBe(401);
-    for (const cookie of [supA, employee]) {
-      expect((await request('GET', '/clients', { cookie })).status).toBe(403);
-      expect((await request('GET', `/clients/${NIL}`, { cookie })).status).toBe(403);
-      expect((await request('POST', '/clients', { cookie, body: body() })).status).toBe(403);
-    }
+    expect((await request('GET', '/clients', { cookie: employee })).status).toBe(403);
+    expect((await request('POST', '/clients', { cookie: employee, body: body() })).status).toBe(403);
+    expect((await request('POST', '/clients', { cookie: supA, body: body() })).status).toBe(403);
+    expect((await request('PATCH', `/clients/${NIL}`, { cookie: supA, body: { name: 'X' } })).status).toBe(403);
+    expect((await request('POST', '/clients/import', { cookie: supA, body: { rows: [body()] } })).status).toBe(403);
+    expect((await request('GET', `/clients/${NIL}/contacts`, { cookie: supA })).status).toBe(403);
+    expect((await request('GET', '/clients/expiring', { cookie: supA })).status).toBe(403);
+  });
+
+  test('M2-CLI-04 AC1 AC2: a supervisor sees only the clients of their sites, counted over their own sites; any other client → 404', async () => {
+    // supA: NTX-BPL, NTX-MDP, VHC-IDR → NTX (2 sites) and VHC (1 of its 2 sites); never CCW.
+    const list = await request('GET', '/clients', { cookie: supA });
+    expect(list.status).toBe(200);
+    const rows = new Map<string, { id: string; siteCount: number }>(list.body.items.map((c: { code: string }) => [c.code, c]));
+    expect([...rows.keys()].sort()).toEqual(['NTX', 'VHC']);
+    expect(rows.get('NTX')).toMatchObject({ siteCount: 2 });
+    expect(rows.get('VHC')).toMatchObject({ siteCount: 1 });
+
+    const all = (await request('GET', '/clients?q=CCW', { cookie: hr })).body.items[0];
+    const outside = await request('GET', `/clients/${all.id}`, { cookie: supA });
+    const missing = await request('GET', `/clients/${NIL}`, { cookie: supA });
+    expect(outside.status).toBe(404);
+    expect({ ...outside.body.error, requestId: null }).toEqual({ ...missing.body.error, requestId: null });
+    expect((await request('GET', `/clients/${rows.get('NTX')!.id}`, { cookie: supA })).status).toBe(200);
+    expect((await request('GET', '/clients?q=CCW', { cookie: supA })).body.items).toEqual([]);
   });
 
   test('M2-CLI-01 AC1: the auditor and accounts can read but not write', async () => {
@@ -204,7 +225,7 @@ describe('M2-CLI-03 edit client', () => {
     expect(row!.after).toMatchObject({ shortCode: next });
   });
 
-  test('M2-CLI-01 AC4 / M2-CLI-03 AC1: after a payroll run the short code is locked (422 CODE_LOCKED); other fields stay editable', async () => {
+  test('M2-CLI-03 AC1: after a payroll run the short code is locked (422 CODE_LOCKED); other fields stay editable', async () => {
     const c = await newClient();
     await db.orm.app.PayrollRun.create({
       clientId: c.id,
@@ -219,6 +240,29 @@ describe('M2-CLI-03 edit client', () => {
     });
     expect((await request('GET', `/clients/${c.id}`, { cookie: hr })).body.code).toBe(c.code);
     expect((await request('PATCH', `/clients/${c.id}`, { cookie: hr, body: { code: c.code, name: 'Still editable' } })).status).toBe(200);
+  });
+
+  test('M2-CLI-01 AC4: the database itself refuses a code change after payroll has run (trigger), even around the service', async () => {
+    const c = await newClient();
+    const run = {
+      clientId: c.id, type: 'REGULAR', periodFrom: Temporal.PlainDate.from('2026-10-01'), periodTo: Temporal.PlainDate.from('2026-10-31'),
+    };
+    await db.orm.app.PayrollRun.create({ ...run, status: 'DRAFT' } as never);
+    // A draft run does not lock it, so the direct update below succeeds and rolls back.
+    await db.transaction(async (tx) => {
+      await tx.orm.app.Client.where({ id: c.id as never }).update({ code: codeOf() } as never);
+      throw new Error('rollback');
+    }).catch((e: Error) => expect(e.message).toBe('rollback'));
+    await db.orm.app.PayrollRun.create({
+      ...run, periodFrom: Temporal.PlainDate.from('2026-11-01'), periodTo: Temporal.PlainDate.from('2026-11-30'), status: 'LOCKED',
+    } as never);
+    let err: unknown;
+    await db.transaction(async (tx) => {
+      await tx.orm.app.Client.where({ id: c.id as never }).update({ code: codeOf() } as never);
+    }).catch((e: unknown) => (err = e));
+    expect(err).toBeDefined();
+    expect(mapError(err)).toMatchObject({ status: 422, code: 'CODE_LOCKED' });
+    expect((await db.orm.app.Client.first({ id: c.id as never }))!.code).toBe(c.code);
   });
 
   test('M2-CLI-03 AC1: a draft run does not lock the code', async () => {
