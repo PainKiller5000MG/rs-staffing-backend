@@ -1,0 +1,836 @@
+[
+  {
+    "id": "table.ifsc_codes",
+    "label": "Create table \"ifsc_codes\"",
+    "summary": "Creates table \"ifsc_codes\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "ifsc_codes"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"ifsc_codes\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"ifsc_codes\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"ifsc_codes\"",
+        "sql": "CREATE TABLE \"app\".\"ifsc_codes\" (\n  \"bank_name\" character varying(80) NOT NULL,\n  \"branch\" character varying(120) NOT NULL,\n  \"ifsc\" character(11) NOT NULL,\n  \"updated_at\" timestamptz(6) DEFAULT (now()) NOT NULL,\n  PRIMARY KEY (\"ifsc\"),\n  CONSTRAINT \"ifsc_codes_format_f94934d9\" CHECK (ifsc ~ '^[A-Z]{4}0[A-Z0-9]{6}$')\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"ifsc_codes\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"ifsc_codes\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.account_hmac",
+    "label": "Add column \"account_hmac\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "account_hmac",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"account_hmac\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "account_hmac"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"account_hmac\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"account_hmac\" character varying(64)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"account_hmac\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "account_hmac"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.account_type",
+    "label": "Add column \"account_type\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "account_type",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"account_type\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "account_type"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"account_type\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"account_type\" text DEFAULT 'SAVINGS' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"account_type\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "account_type"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.bank_name",
+    "label": "Add column \"bank_name\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "bank_name",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"bank_name\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "bank_name"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"bank_name\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"bank_name\" character varying(80)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"bank_name\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "bank_name"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.bank_returned_name",
+    "label": "Add column \"bank_returned_name\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "bank_returned_name",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"bank_returned_name\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "bank_returned_name"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"bank_returned_name\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"bank_returned_name\" character varying(120)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"bank_returned_name\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "bank_returned_name"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.branch",
+    "label": "Add column \"branch\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "branch",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"branch\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "branch"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"branch\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"branch\" character varying(120)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"branch\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "branch"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.mismatch_approved_by",
+    "label": "Add column \"mismatch_approved_by\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "mismatch_approved_by",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"mismatch_approved_by\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "mismatch_approved_by"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"mismatch_approved_by\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"mismatch_approved_by\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"mismatch_approved_by\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "mismatch_approved_by"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.mismatch_reason",
+    "label": "Add column \"mismatch_reason\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "mismatch_reason",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"mismatch_reason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "mismatch_reason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"mismatch_reason\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"mismatch_reason\" character varying(300)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"mismatch_reason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "mismatch_reason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.name_match_score",
+    "label": "Add column \"name_match_score\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "name_match_score",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"name_match_score\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "name_match_score"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"name_match_score\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"name_match_score\" int4"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"name_match_score\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "name_match_score"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.proof_key",
+    "label": "Add column \"proof_key\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "proof_key",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"proof_key\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "proof_key"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"proof_key\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"proof_key\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"proof_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "proof_key"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.shared_override_by",
+    "label": "Add column \"shared_override_by\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "shared_override_by",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"shared_override_by\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "shared_override_by"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"shared_override_by\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"shared_override_by\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"shared_override_by\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "shared_override_by"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.shared_override_reason",
+    "label": "Add column \"shared_override_reason\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "shared_override_reason",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"shared_override_reason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "shared_override_reason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"shared_override_reason\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"shared_override_reason\" character varying(300)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"shared_override_reason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "shared_override_reason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.bank_accounts.verify_status",
+    "label": "Add column \"verify_status\" to \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "verify_status",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"verify_status\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "verify_status"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"verify_status\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD COLUMN \"verify_status\" text DEFAULT 'PENDING' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"verify_status\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "bank_accounts",
+          "verify_status"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.bank_accounts.bank_accounts_account_type_check_9903954f",
+    "label": "Add check constraint \"bank_accounts_account_type_check_9903954f\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "bank_accounts_account_type_check_9903954f",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"bank_accounts_account_type_check_9903954f\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_account_type_check_9903954f",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"bank_accounts_account_type_check_9903954f\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD CONSTRAINT \"bank_accounts_account_type_check_9903954f\" CHECK (\"account_type\" IN ('SAVINGS', 'CURRENT'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"bank_accounts_account_type_check_9903954f\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_account_type_check_9903954f",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.bank_accounts.bank_accounts_approved_needs_verified_9160b4c1",
+    "label": "Add check constraint \"bank_accounts_approved_needs_verified_9160b4c1\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "bank_accounts_approved_needs_verified_9160b4c1",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"bank_accounts_approved_needs_verified_9160b4c1\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_approved_needs_verified_9160b4c1",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"bank_accounts_approved_needs_verified_9160b4c1\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD CONSTRAINT \"bank_accounts_approved_needs_verified_9160b4c1\" CHECK (approved_by IS NULL OR verify_status = 'VERIFIED' OR (verify_status = 'NAME_MISMATCH' AND mismatch_approved_by IS NOT NULL AND mismatch_reason IS NOT NULL))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"bank_accounts_approved_needs_verified_9160b4c1\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_approved_needs_verified_9160b4c1",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.bank_accounts.bank_accounts_mismatch_maker_checker_df76b1e4",
+    "label": "Add check constraint \"bank_accounts_mismatch_maker_checker_df76b1e4\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "bank_accounts_mismatch_maker_checker_df76b1e4",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"bank_accounts_mismatch_maker_checker_df76b1e4\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_mismatch_maker_checker_df76b1e4",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"bank_accounts_mismatch_maker_checker_df76b1e4\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD CONSTRAINT \"bank_accounts_mismatch_maker_checker_df76b1e4\" CHECK (mismatch_approved_by IS NULL OR created_by IS NULL OR mismatch_approved_by <> created_by)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"bank_accounts_mismatch_maker_checker_df76b1e4\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_mismatch_maker_checker_df76b1e4",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.bank_accounts.bank_accounts_score_range_7c7cb17b",
+    "label": "Add check constraint \"bank_accounts_score_range_7c7cb17b\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "bank_accounts_score_range_7c7cb17b",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"bank_accounts_score_range_7c7cb17b\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_score_range_7c7cb17b",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"bank_accounts_score_range_7c7cb17b\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD CONSTRAINT \"bank_accounts_score_range_7c7cb17b\" CHECK (name_match_score IS NULL OR (name_match_score BETWEEN 0 AND 100))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"bank_accounts_score_range_7c7cb17b\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_score_range_7c7cb17b",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.bank_accounts.bank_accounts_shared_override_reason_a50b05b8",
+    "label": "Add check constraint \"bank_accounts_shared_override_reason_a50b05b8\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "bank_accounts_shared_override_reason_a50b05b8",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"bank_accounts_shared_override_reason_a50b05b8\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_shared_override_reason_a50b05b8",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"bank_accounts_shared_override_reason_a50b05b8\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD CONSTRAINT \"bank_accounts_shared_override_reason_a50b05b8\" CHECK (shared_override_by IS NULL OR shared_override_reason IS NOT NULL)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"bank_accounts_shared_override_reason_a50b05b8\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_shared_override_reason_a50b05b8",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.bank_accounts.bank_accounts_verify_status_check_1d195c9d",
+    "label": "Add check constraint \"bank_accounts_verify_status_check_1d195c9d\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "bank_accounts_verify_status_check_1d195c9d",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"bank_accounts_verify_status_check_1d195c9d\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_verify_status_check_1d195c9d",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"bank_accounts_verify_status_check_1d195c9d\"",
+        "sql": "ALTER TABLE \"app\".\"bank_accounts\" ADD CONSTRAINT \"bank_accounts_verify_status_check_1d195c9d\" CHECK (\"verify_status\" IN ('PENDING', 'VERIFIED', 'NAME_MISMATCH', 'FAILED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"bank_accounts_verify_status_check_1d195c9d\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "bank_accounts_verify_status_check_1d195c9d",
+          "app",
+          "\"app\".\"bank_accounts\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.bank_accounts.bank_accounts_account_hmac_idx_64e5f05e",
+    "label": "Create index \"bank_accounts_account_hmac_idx_64e5f05e\" on \"bank_accounts\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "bank_accounts_account_hmac_idx_64e5f05e",
+        "table": "bank_accounts"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"bank_accounts_account_hmac_idx_64e5f05e\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"bank_accounts_account_hmac_idx_64e5f05e\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"bank_accounts_account_hmac_idx_64e5f05e\"",
+        "sql": "CREATE INDEX \"bank_accounts_account_hmac_idx_64e5f05e\" ON \"app\".\"bank_accounts\" (\"account_hmac\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"bank_accounts_account_hmac_idx_64e5f05e\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"bank_accounts_account_hmac_idx_64e5f05e\""
+        ]
+      }
+    ]
+  }
+]

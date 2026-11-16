@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'a3806aa4366b1f33f502ea9d7805ca34ad18b912c3732878ce8a4583c88943a9'>;
+  StorageHashBase<'0f6703d7cdb8808f84b241caa333ad36086bc568e713ef1a12640bf580b04542'>;
 export type ExecutionHash =
   ExecutionHashBase<'a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d'>;
 export type ProfileHash =
@@ -370,9 +370,14 @@ export type FieldOutputTypes = {
     };
     readonly BankAccount: {
       readonly accountEnc: CodecTypes['pg/bytea@1']['output'];
+      readonly accountHmac: Varchar<64> | null;
       readonly accountLast4: Char<4>;
+      readonly accountType: 'SAVINGS' | 'CURRENT';
       readonly approvedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly approvedBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly bankName: Varchar<80> | null;
+      readonly bankReturnedName: Varchar<120> | null;
+      readonly branch: Varchar<120> | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
       readonly effectiveFrom: CodecTypes['pg/date-temporal@1']['output'];
@@ -382,8 +387,15 @@ export type FieldOutputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly ifsc: Char<11>;
       readonly isPrimary: CodecTypes['pg/bool@1']['output'];
+      readonly mismatchApprovedBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly mismatchReason: Varchar<300> | null;
+      readonly nameMatchScore: CodecTypes['pg/int4@1']['output'] | null;
+      readonly proofKey: CodecTypes['pg/text@1']['output'] | null;
+      readonly sharedOverrideBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly sharedOverrideReason: Varchar<300> | null;
       readonly verifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly verifyRef: Varchar<80> | null;
+      readonly verifyStatus: 'PENDING' | 'VERIFIED' | 'NAME_MISMATCH' | 'FAILED';
     };
     readonly CashPayout: {
       readonly ackPhotoKey: CodecTypes['pg/text@1']['output'] | null;
@@ -744,6 +756,12 @@ export type FieldOutputTypes = {
       readonly response: CodecTypes['pg/jsonb@1']['output'];
       readonly status: CodecTypes['pg/int2@1']['output'];
       readonly userId: CodecTypes['pg/uuid@1']['output'];
+    };
+    readonly IfscCode: {
+      readonly bankName: Varchar<80>;
+      readonly branch: Varchar<120>;
+      readonly ifsc: Char<11>;
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly ImportJob: {
       readonly counts: CodecTypes['pg/jsonb@1']['output'] | null;
@@ -1289,9 +1307,14 @@ export type FieldInputTypes = {
     };
     readonly BankAccount: {
       readonly accountEnc: CodecTypes['pg/bytea@1']['input'];
+      readonly accountHmac: CodecTypes['sql/varchar@1']['input'] | null;
       readonly accountLast4: CodecTypes['sql/char@1']['input'];
+      readonly accountType: 'SAVINGS' | 'CURRENT';
       readonly approvedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly approvedBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly bankName: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly bankReturnedName: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly branch: CodecTypes['sql/varchar@1']['input'] | null;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
       readonly effectiveFrom: CodecTypes['pg/date-temporal@1']['input'];
@@ -1301,8 +1324,15 @@ export type FieldInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly ifsc: CodecTypes['sql/char@1']['input'];
       readonly isPrimary: CodecTypes['pg/bool@1']['input'];
+      readonly mismatchApprovedBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly mismatchReason: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly nameMatchScore: CodecTypes['pg/int4@1']['input'] | null;
+      readonly proofKey: CodecTypes['pg/text@1']['input'] | null;
+      readonly sharedOverrideBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly sharedOverrideReason: CodecTypes['sql/varchar@1']['input'] | null;
       readonly verifiedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly verifyRef: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly verifyStatus: 'PENDING' | 'VERIFIED' | 'NAME_MISMATCH' | 'FAILED';
     };
     readonly CashPayout: {
       readonly ackPhotoKey: CodecTypes['pg/text@1']['input'] | null;
@@ -1663,6 +1693,12 @@ export type FieldInputTypes = {
       readonly response: CodecTypes['pg/jsonb@1']['input'];
       readonly status: CodecTypes['pg/int2@1']['input'];
       readonly userId: CodecTypes['pg/uuid@1']['input'];
+    };
+    readonly IfscCode: {
+      readonly bankName: CodecTypes['sql/varchar@1']['input'];
+      readonly branch: CodecTypes['sql/varchar@1']['input'];
+      readonly ifsc: CodecTypes['sql/char@1']['input'];
+      readonly updatedAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly ImportJob: {
       readonly counts: CodecTypes['pg/jsonb@1']['input'] | null;
@@ -2208,9 +2244,14 @@ export type StorageColumnTypes = {
     };
     readonly bank_accounts: {
       readonly account_enc: CodecTypes['pg/bytea@1']['output'];
+      readonly account_hmac: Varchar<64> | null;
       readonly account_last4: Char<4>;
+      readonly account_type: 'SAVINGS' | 'CURRENT';
       readonly approved_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly approved_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly bank_name: Varchar<80> | null;
+      readonly bank_returned_name: Varchar<120> | null;
+      readonly branch: Varchar<120> | null;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
       readonly effective_from: CodecTypes['pg/date-temporal@1']['output'];
@@ -2220,8 +2261,15 @@ export type StorageColumnTypes = {
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly ifsc: Char<11>;
       readonly is_primary: CodecTypes['pg/bool@1']['output'];
+      readonly mismatch_approved_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly mismatch_reason: Varchar<300> | null;
+      readonly name_match_score: CodecTypes['pg/int4@1']['output'] | null;
+      readonly proof_key: CodecTypes['pg/text@1']['output'] | null;
+      readonly shared_override_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly shared_override_reason: Varchar<300> | null;
       readonly verified_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
       readonly verify_ref: Varchar<80> | null;
+      readonly verify_status: 'PENDING' | 'VERIFIED' | 'NAME_MISMATCH' | 'FAILED';
     };
     readonly cash_payouts: {
       readonly ack_photo_key: CodecTypes['pg/text@1']['output'] | null;
@@ -2582,6 +2630,12 @@ export type StorageColumnTypes = {
       readonly response: CodecTypes['pg/jsonb@1']['output'];
       readonly status: CodecTypes['pg/int2@1']['output'];
       readonly user_id: CodecTypes['pg/uuid@1']['output'];
+    };
+    readonly ifsc_codes: {
+      readonly bank_name: Varchar<80>;
+      readonly branch: Varchar<120>;
+      readonly ifsc: Char<11>;
+      readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
     };
     readonly import_jobs: {
       readonly counts: CodecTypes['pg/jsonb@1']['output'] | null;
@@ -3127,9 +3181,14 @@ export type StorageColumnInputTypes = {
     };
     readonly bank_accounts: {
       readonly account_enc: CodecTypes['pg/bytea@1']['input'];
+      readonly account_hmac: CodecTypes['sql/varchar@1']['input'] | null;
       readonly account_last4: CodecTypes['sql/char@1']['input'];
+      readonly account_type: 'SAVINGS' | 'CURRENT';
       readonly approved_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly approved_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly bank_name: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly bank_returned_name: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly branch: CodecTypes['sql/varchar@1']['input'] | null;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
       readonly effective_from: CodecTypes['pg/date-temporal@1']['input'];
@@ -3139,8 +3198,15 @@ export type StorageColumnInputTypes = {
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly ifsc: CodecTypes['sql/char@1']['input'];
       readonly is_primary: CodecTypes['pg/bool@1']['input'];
+      readonly mismatch_approved_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly mismatch_reason: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly name_match_score: CodecTypes['pg/int4@1']['input'] | null;
+      readonly proof_key: CodecTypes['pg/text@1']['input'] | null;
+      readonly shared_override_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly shared_override_reason: CodecTypes['sql/varchar@1']['input'] | null;
       readonly verified_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
       readonly verify_ref: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly verify_status: 'PENDING' | 'VERIFIED' | 'NAME_MISMATCH' | 'FAILED';
     };
     readonly cash_payouts: {
       readonly ack_photo_key: CodecTypes['pg/text@1']['input'] | null;
@@ -3501,6 +3567,12 @@ export type StorageColumnInputTypes = {
       readonly response: CodecTypes['pg/jsonb@1']['input'];
       readonly status: CodecTypes['pg/int2@1']['input'];
       readonly user_id: CodecTypes['pg/uuid@1']['input'];
+    };
+    readonly ifsc_codes: {
+      readonly bank_name: CodecTypes['sql/varchar@1']['input'];
+      readonly branch: CodecTypes['sql/varchar@1']['input'];
+      readonly ifsc: CodecTypes['sql/char@1']['input'];
+      readonly updated_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
     };
     readonly import_jobs: {
       readonly counts: CodecTypes['pg/jsonb@1']['input'] | null;
@@ -4076,9 +4148,14 @@ export namespace Models {
   };
   export type app_BankAccount = {
     accountEnc: CodecTypes['pg/bytea@1']['output'];
+    accountHmac: Varchar<64> | null;
     accountLast4: Char<4>;
+    accountType: 'SAVINGS' | 'CURRENT';
     approvedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     approvedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    bankName: Varchar<80> | null;
+    bankReturnedName: Varchar<120> | null;
+    branch: Varchar<120> | null;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdBy: CodecTypes['pg/uuid@1']['output'] | null;
     effectiveFrom: CodecTypes['pg/date-temporal@1']['output'];
@@ -4088,8 +4165,15 @@ export namespace Models {
     id: CodecTypes['pg/uuid@1']['output'];
     ifsc: Char<11>;
     isPrimary: CodecTypes['pg/bool@1']['output'];
+    mismatchApprovedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    mismatchReason: Varchar<300> | null;
+    nameMatchScore: CodecTypes['pg/int4@1']['output'] | null;
+    proofKey: CodecTypes['pg/text@1']['output'] | null;
+    sharedOverrideBy: CodecTypes['pg/uuid@1']['output'] | null;
+    sharedOverrideReason: Varchar<300> | null;
     verifiedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
     verifyRef: Varchar<80> | null;
+    verifyStatus: 'PENDING' | 'VERIFIED' | 'NAME_MISMATCH' | 'FAILED';
     employee: app_Employee;
     readonly [RelationKeys]?: 'employee';
   };
@@ -4608,6 +4692,13 @@ export namespace Models {
     response: CodecTypes['pg/jsonb@1']['output'];
     status: CodecTypes['pg/int2@1']['output'];
     userId: CodecTypes['pg/uuid@1']['output'];
+    readonly [RelationKeys]?: never;
+  };
+  export type app_IfscCode = {
+    bankName: Varchar<80>;
+    branch: Varchar<120>;
+    ifsc: Char<11>;
+    updatedAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     readonly [RelationKeys]?: never;
   };
   export type app_ImportJob = {
@@ -5234,6 +5325,7 @@ export declare const models: {
     FnfCase: Models.app_FnfCase;
     Holiday: Models.app_Holiday;
     IdempotencyKey: Models.app_IdempotencyKey;
+    IfscCode: Models.app_IfscCode;
     ImportJob: Models.app_ImportJob;
     ImportRow: Models.app_ImportRow;
     LeaveApplication: Models.app_LeaveApplication;
@@ -6259,11 +6351,26 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/bytea@1';
                   readonly nullable: false;
                 };
+                readonly account_hmac: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 64 };
+                };
                 readonly account_last4: {
                   readonly nativeType: 'character';
                   readonly codecId: 'sql/char@1';
                   readonly nullable: false;
                   readonly typeParams: { readonly length: 4 };
+                };
+                readonly account_type: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'SAVINGS'>;
+                  };
                 };
                 readonly approved_at: {
                   readonly nativeType: 'timestamptz';
@@ -6275,6 +6382,24 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: true;
+                };
+                readonly bank_name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 80 };
+                };
+                readonly bank_returned_name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 120 };
+                };
+                readonly branch: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 120 };
                 };
                 readonly created_at: {
                   readonly nativeType: 'timestamptz';
@@ -6329,6 +6454,38 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
                 };
+                readonly mismatch_approved_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly mismatch_reason: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 300 };
+                };
+                readonly name_match_score: {
+                  readonly nativeType: 'int4';
+                  readonly codecId: 'pg/int4@1';
+                  readonly nullable: true;
+                };
+                readonly proof_key: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
+                readonly shared_override_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly shared_override_reason: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 300 };
+                };
                 readonly verified_at: {
                   readonly nativeType: 'timestamptz';
                   readonly codecId: 'pg/timestamptz-temporal@1';
@@ -6341,10 +6498,25 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly typeParams: { readonly length: 80 };
                 };
+                readonly verify_status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'PENDING'>;
+                  };
+                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
               uniques: readonly [];
               indexes: readonly [
+                {
+                  readonly name: 'bank_accounts_account_hmac_idx_64e5f05e';
+                  readonly prefix: 'bank_accounts_account_hmac_idx';
+                  readonly columns: readonly ['account_hmac'];
+                  readonly unique: false;
+                },
                 {
                   readonly name: 'bank_accounts_employee_id_idx_a830a6c3';
                   readonly prefix: 'bank_accounts_employee_id_idx';
@@ -9256,6 +9428,39 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
               ];
+              foreignKeys: readonly [];
+            };
+            readonly ifsc_codes: {
+              columns: {
+                readonly bank_name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 80 };
+                };
+                readonly branch: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 120 };
+                };
+                readonly ifsc: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: false;
+                  readonly typeParams: { readonly length: 11 };
+                };
+                readonly updated_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              primaryKey: { readonly columns: readonly ['ifsc'] };
+              uniques: readonly [];
+              indexes: readonly [];
               foreignKeys: readonly [];
             };
             readonly import_jobs: {
@@ -12507,6 +12712,14 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['IMPORT', 'CORRECTION', 'LEAVE', 'APP'];
             };
+            readonly BankAccountType: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['SAVINGS', 'CURRENT'];
+            };
+            readonly BankVerifyStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['PENDING', 'VERIFIED', 'NAME_MISMATCH', 'FAILED'];
+            };
             readonly BatchStatus: {
               readonly kind: 'valueSet';
               readonly values: readonly ['DRAFT', 'APPROVED', 'SENT', 'PAID', 'CANCELLED'];
@@ -12956,6 +13169,7 @@ type ContractBase = Omit<
       readonly namespace: 'app' & NamespaceId;
       readonly model: 'IdempotencyKey';
     };
+    readonly ifsc_codes: { readonly namespace: 'app' & NamespaceId; readonly model: 'IfscCode' };
     readonly import_jobs: { readonly namespace: 'app' & NamespaceId; readonly model: 'ImportJob' };
     readonly import_rows: { readonly namespace: 'app' & NamespaceId; readonly model: 'ImportRow' };
     readonly leave_applications: {
@@ -14013,6 +14227,14 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bytea@1' };
               };
+              readonly accountHmac: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 64 };
+                };
+              };
               readonly accountLast4: {
                 readonly nullable: false;
                 readonly type: {
@@ -14020,6 +14242,10 @@ type ContractBase = Omit<
                   readonly codecId: 'sql/char@1';
                   readonly typeParams: { readonly length: 4 };
                 };
+              };
+              readonly accountType: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
               readonly approvedAt: {
                 readonly nullable: true;
@@ -14032,6 +14258,30 @@ type ContractBase = Omit<
               readonly approvedBy: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly bankName: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 80 };
+                };
+              };
+              readonly bankReturnedName: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
+              };
+              readonly branch: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
               };
               readonly createdAt: {
                 readonly nullable: false;
@@ -14081,6 +14331,38 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
+              readonly mismatchApprovedBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly mismatchReason: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 300 };
+                };
+              };
+              readonly nameMatchScore: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int4@1' };
+              };
+              readonly proofKey: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly sharedOverrideBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly sharedOverrideReason: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 300 };
+                };
+              };
               readonly verifiedAt: {
                 readonly nullable: true;
                 readonly type: {
@@ -14096,6 +14378,10 @@ type ContractBase = Omit<
                   readonly codecId: 'sql/varchar@1';
                   readonly typeParams: { readonly length: 80 };
                 };
+              };
+              readonly verifyStatus: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
               };
             };
             readonly relations: {
@@ -14117,9 +14403,14 @@ type ContractBase = Omit<
               readonly namespaceId: 'app';
               readonly fields: {
                 readonly accountEnc: { readonly column: 'account_enc' };
+                readonly accountHmac: { readonly column: 'account_hmac' };
                 readonly accountLast4: { readonly column: 'account_last4' };
+                readonly accountType: { readonly column: 'account_type' };
                 readonly approvedAt: { readonly column: 'approved_at' };
                 readonly approvedBy: { readonly column: 'approved_by' };
+                readonly bankName: { readonly column: 'bank_name' };
+                readonly bankReturnedName: { readonly column: 'bank_returned_name' };
+                readonly branch: { readonly column: 'branch' };
                 readonly createdAt: { readonly column: 'created_at' };
                 readonly createdBy: { readonly column: 'created_by' };
                 readonly effectiveFrom: { readonly column: 'effective_from' };
@@ -14129,8 +14420,15 @@ type ContractBase = Omit<
                 readonly id: { readonly column: 'id' };
                 readonly ifsc: { readonly column: 'ifsc' };
                 readonly isPrimary: { readonly column: 'is_primary' };
+                readonly mismatchApprovedBy: { readonly column: 'mismatch_approved_by' };
+                readonly mismatchReason: { readonly column: 'mismatch_reason' };
+                readonly nameMatchScore: { readonly column: 'name_match_score' };
+                readonly proofKey: { readonly column: 'proof_key' };
+                readonly sharedOverrideBy: { readonly column: 'shared_override_by' };
+                readonly sharedOverrideReason: { readonly column: 'shared_override_reason' };
                 readonly verifiedAt: { readonly column: 'verified_at' };
                 readonly verifyRef: { readonly column: 'verify_ref' };
+                readonly verifyStatus: { readonly column: 'verify_status' };
               };
             };
           };
@@ -17377,6 +17675,53 @@ type ContractBase = Omit<
                 readonly response: { readonly column: 'response' };
                 readonly status: { readonly column: 'status' };
                 readonly userId: { readonly column: 'user_id' };
+              };
+            };
+          };
+          readonly IfscCode: {
+            readonly fields: {
+              readonly bankName: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 80 };
+                };
+              };
+              readonly branch: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
+              };
+              readonly ifsc: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 11 };
+                };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+            };
+            readonly relations: Record<string, never>;
+            readonly storage: {
+              readonly table: 'ifsc_codes';
+              readonly namespaceId: 'app';
+              readonly fields: {
+                readonly bankName: { readonly column: 'bank_name' };
+                readonly branch: { readonly column: 'branch' };
+                readonly ifsc: { readonly column: 'ifsc' };
+                readonly updatedAt: { readonly column: 'updated_at' };
               };
             };
           };
@@ -20920,6 +21265,22 @@ type ContractBase = Omit<
               { readonly name: 'CORRECTION'; readonly value: 'CORRECTION' },
               { readonly name: 'LEAVE'; readonly value: 'LEAVE' },
               { readonly name: 'APP'; readonly value: 'APP' },
+            ];
+          };
+          readonly BankAccountType: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'SAVINGS'; readonly value: 'SAVINGS' },
+              { readonly name: 'CURRENT'; readonly value: 'CURRENT' },
+            ];
+          };
+          readonly BankVerifyStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'PENDING'; readonly value: 'PENDING' },
+              { readonly name: 'VERIFIED'; readonly value: 'VERIFIED' },
+              { readonly name: 'NAME_MISMATCH'; readonly value: 'NAME_MISMATCH' },
+              { readonly name: 'FAILED'; readonly value: 'FAILED' },
             ];
           };
           readonly BatchStatus: {

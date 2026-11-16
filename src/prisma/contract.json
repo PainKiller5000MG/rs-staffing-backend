@@ -168,6 +168,10 @@
       "model": "IdempotencyKey",
       "namespace": "app"
     },
+    "ifsc_codes": {
+      "model": "IfscCode",
+      "namespace": "app"
+    },
     "import_jobs": {
       "model": "ImportJob",
       "namespace": "app"
@@ -1901,6 +1905,16 @@
                   "kind": "scalar"
                 }
               },
+              "accountHmac": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 64
+                  }
+                }
+              },
               "accountLast4": {
                 "nullable": false,
                 "type": {
@@ -1909,6 +1923,19 @@
                   "typeParams": {
                     "length": 4
                   }
+                }
+              },
+              "accountType": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "BankAccountType",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               },
               "approvedAt": {
@@ -1926,6 +1953,36 @@
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
+                }
+              },
+              "bankName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 80
+                  }
+                }
+              },
+              "bankReturnedName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
+                }
+              },
+              "branch": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
                 }
               },
               "createdAt": {
@@ -2000,6 +2057,54 @@
                   "kind": "scalar"
                 }
               },
+              "mismatchApprovedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "mismatchReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 300
+                  }
+                }
+              },
+              "nameMatchScore": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/int4@1",
+                  "kind": "scalar"
+                }
+              },
+              "proofKey": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                }
+              },
+              "sharedOverrideBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "sharedOverrideReason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 300
+                  }
+                }
+              },
               "verifiedAt": {
                 "nullable": true,
                 "type": {
@@ -2018,6 +2123,19 @@
                   "typeParams": {
                     "length": 80
                   }
+                }
+              },
+              "verifyStatus": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "BankVerifyStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
                 }
               }
             },
@@ -2044,14 +2162,29 @@
                 "accountEnc": {
                   "column": "account_enc"
                 },
+                "accountHmac": {
+                  "column": "account_hmac"
+                },
                 "accountLast4": {
                   "column": "account_last4"
+                },
+                "accountType": {
+                  "column": "account_type"
                 },
                 "approvedAt": {
                   "column": "approved_at"
                 },
                 "approvedBy": {
                   "column": "approved_by"
+                },
+                "bankName": {
+                  "column": "bank_name"
+                },
+                "bankReturnedName": {
+                  "column": "bank_returned_name"
+                },
+                "branch": {
+                  "column": "branch"
                 },
                 "createdAt": {
                   "column": "created_at"
@@ -2080,11 +2213,32 @@
                 "isPrimary": {
                   "column": "is_primary"
                 },
+                "mismatchApprovedBy": {
+                  "column": "mismatch_approved_by"
+                },
+                "mismatchReason": {
+                  "column": "mismatch_reason"
+                },
+                "nameMatchScore": {
+                  "column": "name_match_score"
+                },
+                "proofKey": {
+                  "column": "proof_key"
+                },
+                "sharedOverrideBy": {
+                  "column": "shared_override_by"
+                },
+                "sharedOverrideReason": {
+                  "column": "shared_override_reason"
+                },
                 "verifiedAt": {
                   "column": "verified_at"
                 },
                 "verifyRef": {
                   "column": "verify_ref"
+                },
+                "verifyStatus": {
+                  "column": "verify_status"
                 }
               },
               "namespaceId": "app",
@@ -7316,6 +7470,69 @@
               },
               "namespaceId": "app",
               "table": "idempotency_keys"
+            }
+          },
+          "IfscCode": {
+            "fields": {
+              "bankName": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 80
+                  }
+                }
+              },
+              "branch": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
+                }
+              },
+              "ifsc": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 11
+                  }
+                }
+              },
+              "updatedAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              }
+            },
+            "relations": {},
+            "storage": {
+              "fields": {
+                "bankName": {
+                  "column": "bank_name"
+                },
+                "branch": {
+                  "column": "branch"
+                },
+                "ifsc": {
+                  "column": "ifsc"
+                },
+                "updatedAt": {
+                  "column": "updated_at"
+                }
+              },
+              "namespaceId": "app",
+              "table": "ifsc_codes"
             }
           },
           "ImportJob": {
@@ -13178,6 +13395,40 @@
               }
             ]
           },
+          "BankAccountType": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "SAVINGS",
+                "value": "SAVINGS"
+              },
+              {
+                "name": "CURRENT",
+                "value": "CURRENT"
+              }
+            ]
+          },
+          "BankVerifyStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "PENDING",
+                "value": "PENDING"
+              },
+              {
+                "name": "VERIFIED",
+                "value": "VERIFIED"
+              },
+              {
+                "name": "NAME_MISMATCH",
+                "value": "NAME_MISMATCH"
+              },
+              {
+                "name": "FAILED",
+                "value": "FAILED"
+              }
+            ]
+          },
           "BatchStatus": {
             "codecId": "pg/text@1",
             "members": [
@@ -15630,6 +15881,16 @@
             "bank_accounts": {
               "checks": [
                 {
+                  "expression": "\"account_type\" IN ('SAVINGS', 'CURRENT')",
+                  "name": "bank_accounts_account_type_check_9903954f",
+                  "prefix": "bank_accounts_account_type_check"
+                },
+                {
+                  "expression": "approved_by IS NULL OR verify_status = 'VERIFIED' OR (verify_status = 'NAME_MISMATCH' AND mismatch_approved_by IS NOT NULL AND mismatch_reason IS NOT NULL)",
+                  "name": "bank_accounts_approved_needs_verified_9160b4c1",
+                  "prefix": "bank_accounts_approved_needs_verified"
+                },
+                {
                   "expression": "effective_to IS NULL OR effective_to >= effective_from",
                   "name": "bank_accounts_effective_order_8f4f959a",
                   "prefix": "bank_accounts_effective_order"
@@ -15638,6 +15899,26 @@
                   "expression": "approved_by IS NULL OR created_by IS NULL OR approved_by <> created_by",
                   "name": "bank_accounts_maker_checker_49c0af58",
                   "prefix": "bank_accounts_maker_checker"
+                },
+                {
+                  "expression": "mismatch_approved_by IS NULL OR created_by IS NULL OR mismatch_approved_by <> created_by",
+                  "name": "bank_accounts_mismatch_maker_checker_df76b1e4",
+                  "prefix": "bank_accounts_mismatch_maker_checker"
+                },
+                {
+                  "expression": "name_match_score IS NULL OR (name_match_score BETWEEN 0 AND 100)",
+                  "name": "bank_accounts_score_range_7c7cb17b",
+                  "prefix": "bank_accounts_score_range"
+                },
+                {
+                  "expression": "shared_override_by IS NULL OR shared_override_reason IS NOT NULL",
+                  "name": "bank_accounts_shared_override_reason_a50b05b8",
+                  "prefix": "bank_accounts_shared_override_reason"
+                },
+                {
+                  "expression": "\"verify_status\" IN ('PENDING', 'VERIFIED', 'NAME_MISMATCH', 'FAILED')",
+                  "name": "bank_accounts_verify_status_check_1d195c9d",
+                  "prefix": "bank_accounts_verify_status_check"
                 }
               ],
               "columns": {
@@ -15646,12 +15927,35 @@
                   "nativeType": "bytea",
                   "nullable": false
                 },
+                "account_hmac": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 64
+                  }
+                },
                 "account_last4": {
                   "codecId": "sql/char@1",
                   "nativeType": "character",
                   "nullable": false,
                   "typeParams": {
                     "length": 4
+                  }
+                },
+                "account_type": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "SAVINGS"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "BankAccountType",
+                    "namespaceId": "public",
+                    "plane": "storage"
                   }
                 },
                 "approved_at": {
@@ -15666,6 +15970,30 @@
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": true
+                },
+                "bank_name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 80
+                  }
+                },
+                "bank_returned_name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 120
+                  }
+                },
+                "branch": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 120
+                  }
                 },
                 "created_at": {
                   "codecId": "pg/timestamptz-temporal@1",
@@ -15729,6 +16057,42 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "mismatch_approved_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "mismatch_reason": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 300
+                  }
+                },
+                "name_match_score": {
+                  "codecId": "pg/int4@1",
+                  "nativeType": "int4",
+                  "nullable": true
+                },
+                "proof_key": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true
+                },
+                "shared_override_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "shared_override_reason": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 300
+                  }
+                },
                 "verified_at": {
                   "codecId": "pg/timestamptz-temporal@1",
                   "nativeType": "timestamptz",
@@ -15743,6 +16107,21 @@
                   "nullable": true,
                   "typeParams": {
                     "length": 80
+                  }
+                },
+                "verify_status": {
+                  "codecId": "pg/text@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "PENDING"
+                  },
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "BankVerifyStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
                   }
                 }
               },
@@ -15765,6 +16144,14 @@
                 }
               ],
               "indexes": [
+                {
+                  "columns": [
+                    "account_hmac"
+                  ],
+                  "name": "bank_accounts_account_hmac_idx_64e5f05e",
+                  "prefix": "bank_accounts_account_hmac_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "employee_id"
@@ -19860,6 +20247,61 @@
                   ]
                 }
               ]
+            },
+            "ifsc_codes": {
+              "checks": [
+                {
+                  "expression": "ifsc ~ '^[A-Z]{4}0[A-Z0-9]{6}$'",
+                  "name": "ifsc_codes_format_f94934d9",
+                  "prefix": "ifsc_codes_format"
+                }
+              ],
+              "columns": {
+                "bank_name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 80
+                  }
+                },
+                "branch": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 120
+                  }
+                },
+                "ifsc": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 11
+                  }
+                },
+                "updated_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "foreignKeys": [],
+              "indexes": [],
+              "primaryKey": {
+                "columns": [
+                  "ifsc"
+                ]
+              },
+              "uniques": []
             },
             "import_jobs": {
               "checks": [
@@ -24532,6 +24974,22 @@
                 "APP"
               ]
             },
+            "BankAccountType": {
+              "kind": "valueSet",
+              "values": [
+                "SAVINGS",
+                "CURRENT"
+              ]
+            },
+            "BankVerifyStatus": {
+              "kind": "valueSet",
+              "values": [
+                "PENDING",
+                "VERIFIED",
+                "NAME_MISMATCH",
+                "FAILED"
+              ]
+            },
             "BatchStatus": {
               "kind": "valueSet",
               "values": [
@@ -25065,7 +25523,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "a3806aa4366b1f33f502ea9d7805ca34ad18b912c3732878ce8a4583c88943a9"
+    "storageHash": "0f6703d7cdb8808f84b241caa333ad36086bc568e713ef1a12640bf580b04542"
   },
   "execution": {
     "executionHash": "a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d",

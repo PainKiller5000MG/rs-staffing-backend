@@ -66,6 +66,10 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
   const counts: Record<string, number> = {};
   const bump = (k: string, n = 1) => (counts[k] = (counts[k] ?? 0) + n);
 
+  // --- IFSC lookup table (M3-BNK-01): a small slice of the Razorpay dataset ---
+  for (const [ifsc, bankName, branch] of D.IFSC_ROWS) await o.IfscCode.create(row<Models.app_IfscCode>({ ifsc, bankName, branch }));
+  bump('ifsc_codes');
+
   // --- Company, establishments, states, clients, sites ---------------------
   await o.Company.create(row<Models.app_Company>({ ...D.COMPANY, logoKey: null }));
   const pf = await o.Establishment.create(row<Models.app_Establishment>({ type: 'PF', ...D.ESTABLISHMENTS.pf, isDefault: true }));
@@ -289,6 +293,13 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
           accountLast4: last4(account),
           ifsc: i % 2 ? 'SBIN0030112' : 'PUNB0123400',
           holderName: spec.name,
+          accountHmac: lookupHmac(account),
+          accountType: 'SAVINGS' as never,
+          bankName: i % 2 ? 'State Bank of India' : 'Punjab National Bank',
+          branch: 'Main Branch',
+          verifyStatus: 'VERIFIED' as never,
+          bankReturnedName: spec.name,
+          nameMatchScore: 100,
           verifiedAt: instant(spec.joinDate),
           verifyRef: `PENNY-${1000 + i}`,
           isPrimary: true,

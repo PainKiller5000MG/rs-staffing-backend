@@ -372,3 +372,14 @@ export const CASH_RELEASE = { site: 'VHC-UJN' as SiteCode, releasedOn: '2026-09-
 export const SEPTEMBER = { year: 2026, month: 9, days: 30 };
 /** Client holiday: Vishwakarma Puja at Narmada Textiles. */
 export const CLIENT_HOLIDAY = { client: 'NTX' as ClientCode, date: '2026-09-17', name: 'Vishwakarma Puja' };
+
+/** [IFSC, bank, branch]: a slice of the Razorpay IFSC dataset; production loads the full file monthly. */
+export const IFSC_ROWS: [string, string, string][] = [
+  ['SBIN0030112', 'State Bank of India', 'Indore Main'],
+  ['SBIN0000691', 'State Bank of India', 'Bhopal Main'],
+  ['PUNB0123400', 'Punjab National Bank', 'Indore Vijay Nagar'],
+  ['HDFC0000001', 'HDFC Bank', 'Mumbai Fort'],
+  ['ICIC0000104', 'ICICI Bank', 'Indore'],
+  ['UTIB0000001', 'Axis Bank', 'Mumbai'],
+  ['BARB0INDORE', 'Bank of Baroda', 'Indore'],
+];

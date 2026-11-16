@@ -76,6 +76,20 @@ enum EmployeeStatus {
   ABSCONDED = "ABSCONDED"
 }
 
+enum BankAccountType {
+  @@type("pg/text@1")
+  SAVINGS = "SAVINGS"
+  CURRENT = "CURRENT"
+}
+
+enum BankVerifyStatus {
+  @@type("pg/text@1")
+  PENDING = "PENDING"
+  VERIFIED = "VERIFIED"
+  NAME_MISMATCH = "NAME_MISMATCH"
+  FAILED = "FAILED"
+}
+
 enum PaymentMode {
   @@type("pg/text@1")
   BANK = "BANK"
@@ -587,6 +601,16 @@ namespace app {
     @@map("client_contacts")
   }
 
+  model IfscCode {
+    ifsc      Char(11)       @id // the Razorpay IFSC dataset, loaded monthly (M3-BNK-01)
+    bankName  VarChar(80)    @map("bank_name")
+    branch    VarChar(120)
+    updatedAt Timestamptz(6) @default(now()) @map("updated_at")
+
+    @@check(expression: "ifsc ~ '^[A-Z]{4}0[A-Z0-9]{6}$'", name: "ifsc_codes_format")
+    @@map("ifsc_codes")
+  }
+
   model State {
     id                   Uuid                @id @default(uuid(7))
     code                 VarChar(4)          @unique // MP, RJ, UP...
@@ -783,8 +807,20 @@ namespace app {
     accountLast4  Char(4)         @map("account_last4")
     ifsc          Char(11)
     holderName    VarChar(120)    @map("holder_name")
+    accountHmac   VarChar(64)?    @map("account_hmac") // null only on pre-verification rows; lookup for the shared-account check (M3-BNK-06)
+    accountType   BankAccountType @default(SAVINGS) @map("account_type")
+    bankName      VarChar(80)?    @map("bank_name") // from the IFSC table
+    branch        VarChar(120)?
+    proofKey      String?         @map("proof_key") // cancelled cheque / passbook image
+    verifyStatus  BankVerifyStatus @default(PENDING) @map("verify_status")
     verifiedAt    Timestamptz(6)? @map("verified_at")
     verifyRef     VarChar(80)?    @map("verify_ref")
+    bankReturnedName VarChar(120)? @map("bank_returned_name")
+    nameMatchScore Int?           @map("name_match_score")
+    mismatchApprovedBy Uuid?      @map("mismatch_approved_by")
+    mismatchReason VarChar(300)?  @map("mismatch_reason")
+    sharedOverrideBy Uuid?        @map("shared_override_by")
+    sharedOverrideReason VarChar(300)? @map("shared_override_reason")
     isPrimary     Boolean         @default(true) @map("is_primary")
     effectiveFrom Date            @map("effective_from")
     effectiveTo   Date?           @map("effective_to")
@@ -796,6 +832,11 @@ namespace app {
     employee      Employee        @relation(fields: [employeeId], references: [id])
 
     @@index([employeeId])
+    @@index([accountHmac])
+    @@check(expression: "name_match_score IS NULL OR (name_match_score BETWEEN 0 AND 100)", name: "bank_accounts_score_range")
+    @@check(expression: "approved_by IS NULL OR verify_status = 'VERIFIED' OR (verify_status = 'NAME_MISMATCH' AND mismatch_approved_by IS NOT NULL AND mismatch_reason IS NOT NULL)", name: "bank_accounts_approved_needs_verified")
+    @@check(expression: "mismatch_approved_by IS NULL OR created_by IS NULL OR mismatch_approved_by <> created_by", name: "bank_accounts_mismatch_maker_checker")
+    @@check(expression: "shared_override_by IS NULL OR shared_override_reason IS NOT NULL", name: "bank_accounts_shared_override_reason")
     @@check(expression: "approved_by IS NULL OR created_by IS NULL OR approved_by <> created_by", name: "bank_accounts_maker_checker")
     @@check(expression: "effective_to IS NULL OR effective_to >= effective_from", name: "bank_accounts_effective_order")
     @@map("bank_accounts")
