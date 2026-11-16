@@ -83,6 +83,14 @@ enum PaymentMode {
   CASH = "CASH"
 }
 
+enum MaritalStatus {
+  @@type("pg/text@1")
+  SINGLE = "SINGLE"
+  MARRIED = "MARRIED"
+  WIDOWED = "WIDOWED"
+  DIVORCED = "DIVORCED"
+}
+
 enum Gender {
   @@type("pg/text@1")
   MALE = "MALE"
@@ -589,6 +597,8 @@ namespace app {
 
     sites                Site[]
     clients              Client[]
+    curEmployees         Employee[]          @relation("EmployeeCurState")
+    permEmployees        Employee[]          @relation("EmployeePermState")
     ptSlabs              PtSlab[]
     lwfRates             LwfRate[]
     minWages             MinWage[]
@@ -699,11 +709,23 @@ namespace app {
     exitDate          Date?                      @map("exit_date")
     language          VarChar(5)                 @default("en")
     photoKey          String?                    @map("photo_key")
+    fatherName        VarChar(120)?              @map("father_name") // father's or husband's name
+    maritalStatus     MaritalStatus?             @map("marital_status")
+    altPhone          VarChar(15)?               @map("alt_phone")
+    curAddress        VarChar(300)?              @map("cur_address")
+    curStateCode      VarChar(4)?                @map("cur_state_code")
+    curPin            Char(6)?                   @map("cur_pin")
+    permAddress       VarChar(300)?              @map("perm_address")
+    permStateCode     VarChar(4)?                @map("perm_state_code")
+    permPin           Char(6)?                   @map("perm_pin")
+    aadhaarLast4      Char(4)?                   @map("aadhaar_last4") // the full number lives only in vault.aadhaar_records
     createdAt         Timestamptz(6)             @default(now()) @map("created_at")
     createdBy         Uuid?                      @map("created_by")
     updatedAt         temporal.updatedAt()       @map("updated_at")
     updatedBy         Uuid?                      @map("updated_by")
 
+    curState          State?                     @relation("EmployeeCurState", fields: [curStateCode], references: [code])
+    permState         State?                     @relation("EmployeePermState", fields: [permStateCode], references: [code])
     user              User?
     aadhaar           vault.AadhaarRecord?
     statutory         EmployeeStatutory?
@@ -729,6 +751,9 @@ namespace app {
     @@index([legacyCode])
     @@index([mobile])
     @@index([status, staffType])
+    @@check(expression: "cur_pin IS NULL OR cur_pin ~ '^[1-9][0-9]{5}$'", name: "employees_cur_pin_format")
+    @@check(expression: "perm_pin IS NULL OR perm_pin ~ '^[1-9][0-9]{5}$'", name: "employees_perm_pin_format")
+    @@check(expression: "join_date IS NULL OR join_date >= (dob + interval '18 years')", name: "employees_adult_at_joining")
     @@map("employees")
   }
 
@@ -741,12 +766,13 @@ namespace app {
     esiIpNo      VarChar(17)?         @unique @map("esi_ip_no")
     esiFrom      Date?                @map("esi_from")
     ptExempt     Boolean              @default(false) @map("pt_exempt")
-    pan          Char(10)?
+    pan          Char(10)?            @unique
     updatedAt    temporal.updatedAt() @map("updated_at")
     updatedBy    Uuid?                @map("updated_by")
 
     employee     Employee             @relation(fields: [employeeId], references: [id])
 
+    @@check(expression: "pan IS NULL OR pan ~ '^[A-Z]{3}[PCHFATBLJG][A-Z][0-9]{4}[A-Z]$'", name: "employee_statutory_pan_format")
     @@map("employee_statutory")
   }
 

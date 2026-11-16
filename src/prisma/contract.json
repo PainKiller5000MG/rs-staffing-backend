@@ -5045,6 +5045,26 @@
           },
           "Employee": {
             "fields": {
+              "aadhaarLast4": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 4
+                  }
+                }
+              },
+              "altPhone": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 15
+                  }
+                }
+              },
               "code": {
                 "nullable": false,
                 "type": {
@@ -5070,6 +5090,36 @@
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
+                }
+              },
+              "curAddress": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 300
+                  }
+                }
+              },
+              "curPin": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 6
+                  }
+                }
+              },
+              "curStateCode": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 4
+                  }
                 }
               },
               "designation": {
@@ -5104,6 +5154,16 @@
                 "type": {
                   "codecId": "pg/date-temporal@1",
                   "kind": "scalar"
+                }
+              },
+              "fatherName": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 120
+                  }
                 }
               },
               "gender": {
@@ -5153,6 +5213,19 @@
                   }
                 }
               },
+              "maritalStatus": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "MaritalStatus",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
               "mobile": {
                 "nullable": false,
                 "type": {
@@ -5184,6 +5257,36 @@
                   "entityName": "PaymentMode",
                   "namespaceId": "public",
                   "plane": "domain"
+                }
+              },
+              "permAddress": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 300
+                  }
+                }
+              },
+              "permPin": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/char@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 6
+                  }
+                }
+              },
+              "permStateCode": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 4
+                  }
                 }
               },
               "photoKey": {
@@ -5380,6 +5483,22 @@
                   "namespace": "app"
                 }
               },
+              "curState": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "curStateCode"
+                  ],
+                  "targetFields": [
+                    "code"
+                  ]
+                },
+                "to": {
+                  "model": "State",
+                  "namespace": "app"
+                }
+              },
               "deployments": {
                 "cardinality": "1:N",
                 "on": {
@@ -5500,6 +5619,22 @@
                   "namespace": "app"
                 }
               },
+              "permState": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "permStateCode"
+                  ],
+                  "targetFields": [
+                    "code"
+                  ]
+                },
+                "to": {
+                  "model": "State",
+                  "namespace": "app"
+                }
+              },
               "runLines": {
                 "cardinality": "1:N",
                 "on": {
@@ -5580,6 +5715,12 @@
             },
             "storage": {
               "fields": {
+                "aadhaarLast4": {
+                  "column": "aadhaar_last4"
+                },
+                "altPhone": {
+                  "column": "alt_phone"
+                },
                 "code": {
                   "column": "code"
                 },
@@ -5588,6 +5729,15 @@
                 },
                 "createdBy": {
                   "column": "created_by"
+                },
+                "curAddress": {
+                  "column": "cur_address"
+                },
+                "curPin": {
+                  "column": "cur_pin"
+                },
+                "curStateCode": {
+                  "column": "cur_state_code"
                 },
                 "designation": {
                   "column": "designation"
@@ -5600,6 +5750,9 @@
                 },
                 "exitDate": {
                   "column": "exit_date"
+                },
+                "fatherName": {
+                  "column": "father_name"
                 },
                 "gender": {
                   "column": "gender"
@@ -5616,6 +5769,9 @@
                 "legacyCode": {
                   "column": "legacy_code"
                 },
+                "maritalStatus": {
+                  "column": "marital_status"
+                },
                 "mobile": {
                   "column": "mobile"
                 },
@@ -5624,6 +5780,15 @@
                 },
                 "paymentMode": {
                   "column": "payment_mode"
+                },
+                "permAddress": {
+                  "column": "perm_address"
+                },
+                "permPin": {
+                  "column": "perm_pin"
+                },
+                "permStateCode": {
+                  "column": "perm_state_code"
                 },
                 "photoKey": {
                   "column": "photo_key"
@@ -11696,6 +11861,21 @@
                   "namespace": "app"
                 }
               },
+              "curEmployees": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "code"
+                  ],
+                  "targetFields": [
+                    "curStateCode"
+                  ]
+                },
+                "to": {
+                  "model": "Employee",
+                  "namespace": "app"
+                }
+              },
               "licences": {
                 "cardinality": "1:N",
                 "on": {
@@ -11738,6 +11918,21 @@
                 },
                 "to": {
                   "model": "MinWage",
+                  "namespace": "app"
+                }
+              },
+              "permEmployees": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "code"
+                  ],
+                  "targetFields": [
+                    "permStateCode"
+                  ]
+                },
+                "to": {
+                  "model": "Employee",
                   "namespace": "app"
                 }
               },
@@ -13499,6 +13694,27 @@
               {
                 "name": "YEARLY",
                 "value": "YEARLY"
+              }
+            ]
+          },
+          "MaritalStatus": {
+            "codecId": "pg/text@1",
+            "members": [
+              {
+                "name": "SINGLE",
+                "value": "SINGLE"
+              },
+              {
+                "name": "MARRIED",
+                "value": "MARRIED"
+              },
+              {
+                "name": "WIDOWED",
+                "value": "WIDOWED"
+              },
+              {
+                "name": "DIVORCED",
+                "value": "DIVORCED"
               }
             ]
           },
@@ -18374,6 +18590,13 @@
               "uniques": []
             },
             "employee_statutory": {
+              "checks": [
+                {
+                  "expression": "pan IS NULL OR pan ~ '^[A-Z]{3}[PCHFATBLJG][A-Z][0-9]{4}[A-Z]$'",
+                  "name": "employee_statutory_pan_format_e72d7d77",
+                  "prefix": "employee_statutory_pan_format"
+                }
+              ],
               "columns": {
                 "employee_id": {
                   "codecId": "pg/uuid@1",
@@ -18486,20 +18709,45 @@
                   "columns": [
                     "esi_ip_no"
                   ]
+                },
+                {
+                  "columns": [
+                    "pan"
+                  ]
                 }
               ]
             },
             "employees": {
               "checks": [
                 {
+                  "expression": "join_date IS NULL OR join_date >= (dob + interval '18 years')",
+                  "name": "employees_adult_at_joining_5dd2111b",
+                  "prefix": "employees_adult_at_joining"
+                },
+                {
+                  "expression": "cur_pin IS NULL OR cur_pin ~ '^[1-9][0-9]{5}$'",
+                  "name": "employees_cur_pin_format_4a9e7123",
+                  "prefix": "employees_cur_pin_format"
+                },
+                {
                   "expression": "\"gender\" IN ('MALE', 'FEMALE', 'OTHER')",
                   "name": "employees_gender_check_30490488",
                   "prefix": "employees_gender_check"
                 },
                 {
+                  "expression": "\"marital_status\" IN ('SINGLE', 'MARRIED', 'WIDOWED', 'DIVORCED')",
+                  "name": "employees_marital_status_check_afe3a1d6",
+                  "prefix": "employees_marital_status_check"
+                },
+                {
                   "expression": "\"payment_mode\" IN ('BANK', 'UPI', 'CASH')",
                   "name": "employees_payment_mode_check_fbb26ca1",
                   "prefix": "employees_payment_mode_check"
+                },
+                {
+                  "expression": "perm_pin IS NULL OR perm_pin ~ '^[1-9][0-9]{5}$'",
+                  "name": "employees_perm_pin_format_17fd8b44",
+                  "prefix": "employees_perm_pin_format"
                 },
                 {
                   "expression": "\"skill_level\" IN ('UNSKILLED', 'SEMI_SKILLED', 'SKILLED', 'HIGHLY_SKILLED')",
@@ -18518,6 +18766,22 @@
                 }
               ],
               "columns": {
+                "aadhaar_last4": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 4
+                  }
+                },
+                "alt_phone": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 15
+                  }
+                },
                 "code": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -18542,6 +18806,30 @@
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": true
+                },
+                "cur_address": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 300
+                  }
+                },
+                "cur_pin": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 6
+                  }
+                },
+                "cur_state_code": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 4
+                  }
                 },
                 "designation": {
                   "codecId": "sql/varchar@1",
@@ -18568,6 +18856,14 @@
                   "codecId": "pg/date-temporal@1",
                   "nativeType": "date",
                   "nullable": true
+                },
+                "father_name": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 120
+                  }
                 },
                 "gender": {
                   "codecId": "pg/text@1",
@@ -18610,6 +18906,17 @@
                     "length": 40
                   }
                 },
+                "marital_status": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": true,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "MaritalStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
                 "mobile": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -18639,6 +18946,30 @@
                     "entityName": "PaymentMode",
                     "namespaceId": "public",
                     "plane": "storage"
+                  }
+                },
+                "perm_address": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 300
+                  }
+                },
+                "perm_pin": {
+                  "codecId": "sql/char@1",
+                  "nativeType": "character",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 6
+                  }
+                },
+                "perm_state_code": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 4
                   }
                 },
                 "photo_key": {
@@ -18706,8 +19037,49 @@
                   }
                 }
               },
-              "foreignKeys": [],
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "cur_state_code"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "employees"
+                  },
+                  "target": {
+                    "columns": [
+                      "code"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "states"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "perm_state_code"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "employees"
+                  },
+                  "target": {
+                    "columns": [
+                      "code"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "states"
+                  }
+                }
+              ],
               "indexes": [
+                {
+                  "columns": [
+                    "cur_state_code"
+                  ],
+                  "name": "employees_cur_state_code_idx_d0ee84a6",
+                  "prefix": "employees_cur_state_code_idx",
+                  "unique": false
+                },
                 {
                   "columns": [
                     "legacy_code"
@@ -18722,6 +19094,14 @@
                   ],
                   "name": "employees_mobile_idx_5e13aa01",
                   "prefix": "employees_mobile_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "perm_state_code"
+                  ],
+                  "name": "employees_perm_state_code_idx_2ed1e56f",
+                  "prefix": "employees_perm_state_code_idx",
                   "unique": false
                 },
                 {
@@ -24368,6 +24748,15 @@
                 "YEARLY"
               ]
             },
+            "MaritalStatus": {
+              "kind": "valueSet",
+              "values": [
+                "SINGLE",
+                "MARRIED",
+                "WIDOWED",
+                "DIVORCED"
+              ]
+            },
             "NomineeScheme": {
               "kind": "valueSet",
               "values": [
@@ -24676,7 +25065,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "9a589209addd0b9c2bd6a7f2c564434df705dbcbdd40fc75b93df37c92c3a73f"
+    "storageHash": "a3806aa4366b1f33f502ea9d7805ca34ad18b912c3732878ce8a4583c88943a9"
   },
   "execution": {
     "executionHash": "a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d",

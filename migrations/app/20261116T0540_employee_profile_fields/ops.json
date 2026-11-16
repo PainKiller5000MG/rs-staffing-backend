@@ -1,0 +1,836 @@
+[
+  {
+    "id": "column.app.employees.aadhaar_last4",
+    "label": "Add column \"aadhaar_last4\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "aadhaar_last4",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"aadhaar_last4\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "aadhaar_last4"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"aadhaar_last4\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"aadhaar_last4\" character(4)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"aadhaar_last4\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "aadhaar_last4"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.alt_phone",
+    "label": "Add column \"alt_phone\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "alt_phone",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"alt_phone\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "alt_phone"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"alt_phone\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"alt_phone\" character varying(15)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"alt_phone\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "alt_phone"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.cur_address",
+    "label": "Add column \"cur_address\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "cur_address",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cur_address\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "cur_address"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cur_address\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"cur_address\" character varying(300)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cur_address\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "cur_address"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.cur_pin",
+    "label": "Add column \"cur_pin\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "cur_pin",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cur_pin\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "cur_pin"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cur_pin\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"cur_pin\" character(6)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cur_pin\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "cur_pin"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.cur_state_code",
+    "label": "Add column \"cur_state_code\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "cur_state_code",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"cur_state_code\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "cur_state_code"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"cur_state_code\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"cur_state_code\" character varying(4)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"cur_state_code\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "cur_state_code"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.father_name",
+    "label": "Add column \"father_name\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "father_name",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"father_name\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "father_name"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"father_name\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"father_name\" character varying(120)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"father_name\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "father_name"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.marital_status",
+    "label": "Add column \"marital_status\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "marital_status",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"marital_status\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "marital_status"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"marital_status\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"marital_status\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"marital_status\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "marital_status"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.perm_address",
+    "label": "Add column \"perm_address\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "perm_address",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"perm_address\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "perm_address"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"perm_address\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"perm_address\" character varying(300)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"perm_address\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "perm_address"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.perm_pin",
+    "label": "Add column \"perm_pin\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "perm_pin",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"perm_pin\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "perm_pin"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"perm_pin\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"perm_pin\" character(6)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"perm_pin\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "perm_pin"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.employees.perm_state_code",
+    "label": "Add column \"perm_state_code\" to \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "perm_state_code",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"perm_state_code\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "perm_state_code"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"perm_state_code\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD COLUMN \"perm_state_code\" character varying(4)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"perm_state_code\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "employees",
+          "perm_state_code"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.employee_statutory.employee_statutory_pan_format_e72d7d77",
+    "label": "Add check constraint \"employee_statutory_pan_format_e72d7d77\" on \"employee_statutory\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "employee_statutory_pan_format_e72d7d77",
+        "table": "employee_statutory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employee_statutory_pan_format_e72d7d77\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_statutory_pan_format_e72d7d77",
+          "app",
+          "\"app\".\"employee_statutory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"employee_statutory_pan_format_e72d7d77\"",
+        "sql": "ALTER TABLE \"app\".\"employee_statutory\" ADD CONSTRAINT \"employee_statutory_pan_format_e72d7d77\" CHECK (pan IS NULL OR pan ~ '^[A-Z]{3}[PCHFATBLJG][A-Z][0-9]{4}[A-Z]$')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employee_statutory_pan_format_e72d7d77\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_statutory_pan_format_e72d7d77",
+          "app",
+          "\"app\".\"employee_statutory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "unique.employee_statutory.employee_statutory_pan_key",
+    "label": "Add unique constraint on \"employee_statutory\" (pan)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "employee_statutory_pan_key",
+        "table": "employee_statutory"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employee_statutory_pan_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_statutory_pan_key",
+          "app",
+          "\"app\".\"employee_statutory\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add unique constraint \"employee_statutory_pan_key\"",
+        "sql": "ALTER TABLE \"app\".\"employee_statutory\" ADD CONSTRAINT \"employee_statutory_pan_key\" UNIQUE (\"pan\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employee_statutory_pan_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employee_statutory_pan_key",
+          "app",
+          "\"app\".\"employee_statutory\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.employees.employees_adult_at_joining_5dd2111b",
+    "label": "Add check constraint \"employees_adult_at_joining_5dd2111b\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "employees_adult_at_joining_5dd2111b",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employees_adult_at_joining_5dd2111b\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_adult_at_joining_5dd2111b",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"employees_adult_at_joining_5dd2111b\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD CONSTRAINT \"employees_adult_at_joining_5dd2111b\" CHECK (join_date IS NULL OR join_date >= (dob + interval '18 years'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employees_adult_at_joining_5dd2111b\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_adult_at_joining_5dd2111b",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.employees.employees_cur_pin_format_4a9e7123",
+    "label": "Add check constraint \"employees_cur_pin_format_4a9e7123\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "employees_cur_pin_format_4a9e7123",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employees_cur_pin_format_4a9e7123\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_cur_pin_format_4a9e7123",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"employees_cur_pin_format_4a9e7123\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD CONSTRAINT \"employees_cur_pin_format_4a9e7123\" CHECK (cur_pin IS NULL OR cur_pin ~ '^[1-9][0-9]{5}$')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employees_cur_pin_format_4a9e7123\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_cur_pin_format_4a9e7123",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.employees.employees_marital_status_check_afe3a1d6",
+    "label": "Add check constraint \"employees_marital_status_check_afe3a1d6\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "employees_marital_status_check_afe3a1d6",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employees_marital_status_check_afe3a1d6\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_marital_status_check_afe3a1d6",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"employees_marital_status_check_afe3a1d6\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD CONSTRAINT \"employees_marital_status_check_afe3a1d6\" CHECK (\"marital_status\" IN ('SINGLE', 'MARRIED', 'WIDOWED', 'DIVORCED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employees_marital_status_check_afe3a1d6\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_marital_status_check_afe3a1d6",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.employees.employees_perm_pin_format_17fd8b44",
+    "label": "Add check constraint \"employees_perm_pin_format_17fd8b44\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "employees_perm_pin_format_17fd8b44",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"employees_perm_pin_format_17fd8b44\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_perm_pin_format_17fd8b44",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"employees_perm_pin_format_17fd8b44\"",
+        "sql": "ALTER TABLE \"app\".\"employees\" ADD CONSTRAINT \"employees_perm_pin_format_17fd8b44\" CHECK (perm_pin IS NULL OR perm_pin ~ '^[1-9][0-9]{5}$')"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"employees_perm_pin_format_17fd8b44\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_perm_pin_format_17fd8b44",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.employees.employees_cur_state_code_idx_d0ee84a6",
+    "label": "Create index \"employees_cur_state_code_idx_d0ee84a6\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "employees_cur_state_code_idx_d0ee84a6",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"employees_cur_state_code_idx_d0ee84a6\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"employees_cur_state_code_idx_d0ee84a6\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"employees_cur_state_code_idx_d0ee84a6\"",
+        "sql": "CREATE INDEX \"employees_cur_state_code_idx_d0ee84a6\" ON \"app\".\"employees\" (\"cur_state_code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"employees_cur_state_code_idx_d0ee84a6\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"employees_cur_state_code_idx_d0ee84a6\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.employees.employees_perm_state_code_idx_2ed1e56f",
+    "label": "Create index \"employees_perm_state_code_idx_2ed1e56f\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "employees_perm_state_code_idx_2ed1e56f",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"employees_perm_state_code_idx_2ed1e56f\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"employees_perm_state_code_idx_2ed1e56f\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"employees_perm_state_code_idx_2ed1e56f\"",
+        "sql": "CREATE INDEX \"employees_perm_state_code_idx_2ed1e56f\" ON \"app\".\"employees\" (\"perm_state_code\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"employees_perm_state_code_idx_2ed1e56f\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"employees_perm_state_code_idx_2ed1e56f\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.employees.employees_cur_state_code_fkey",
+    "label": "Add foreign key \"employees_cur_state_code_fkey\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "employees_cur_state_code_fkey",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"employees_cur_state_code_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_cur_state_code_fkey",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"employees_cur_state_code_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"employees\"\nADD CONSTRAINT \"employees_cur_state_code_fkey\"\nFOREIGN KEY (\"cur_state_code\")\nREFERENCES \"app\".\"states\" (\"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"employees_cur_state_code_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_cur_state_code_fkey",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.employees.employees_perm_state_code_fkey",
+    "label": "Add foreign key \"employees_perm_state_code_fkey\" on \"employees\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "employees_perm_state_code_fkey",
+        "table": "employees"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"employees_perm_state_code_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_perm_state_code_fkey",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"employees_perm_state_code_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"employees\"\nADD CONSTRAINT \"employees_perm_state_code_fkey\"\nFOREIGN KEY (\"perm_state_code\")\nREFERENCES \"app\".\"states\" (\"code\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"employees_perm_state_code_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "employees_perm_state_code_fkey",
+          "app",
+          "\"app\".\"employees\""
+        ]
+      }
+    ]
+  }
+]

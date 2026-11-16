@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'9a589209addd0b9c2bd6a7f2c564434df705dbcbdd40fc75b93df37c92c3a73f'>;
+  StorageHashBase<'a3806aa4366b1f33f502ea9d7805ca34ad18b912c3732878ce8a4583c88943a9'>;
 export type ExecutionHash =
   ExecutionHashBase<'a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d'>;
 export type ProfileHash =
@@ -594,21 +594,31 @@ export type FieldOutputTypes = {
       readonly siteId: CodecTypes['pg/uuid@1']['output'];
     };
     readonly Employee: {
+      readonly aadhaarLast4: Char<4> | null;
+      readonly altPhone: Varchar<15> | null;
       readonly code: Varchar<12>;
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly curAddress: Varchar<300> | null;
+      readonly curPin: Char<6> | null;
+      readonly curStateCode: Varchar<4> | null;
       readonly designation: Varchar<80>;
       readonly dob: CodecTypes['pg/date-temporal@1']['output'];
       readonly email: Varchar<254> | null;
       readonly exitDate: CodecTypes['pg/date-temporal@1']['output'] | null;
+      readonly fatherName: Varchar<120> | null;
       readonly gender: 'MALE' | 'FEMALE' | 'OTHER';
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly joinDate: CodecTypes['pg/date-temporal@1']['output'] | null;
       readonly language: Varchar<5>;
       readonly legacyCode: Varchar<40> | null;
+      readonly maritalStatus: 'SINGLE' | 'MARRIED' | 'WIDOWED' | 'DIVORCED' | null;
       readonly mobile: Varchar<15>;
       readonly name: Varchar<120>;
       readonly paymentMode: 'BANK' | 'UPI' | 'CASH';
+      readonly permAddress: Varchar<300> | null;
+      readonly permPin: Char<6> | null;
+      readonly permStateCode: Varchar<4> | null;
       readonly photoKey: CodecTypes['pg/text@1']['output'] | null;
       readonly skillLevel: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
       readonly staffType: 'DEPLOYED' | 'SUPERVISOR' | 'HQ' | 'CONTRACT';
@@ -1503,21 +1513,31 @@ export type FieldInputTypes = {
       readonly siteId: CodecTypes['pg/uuid@1']['input'];
     };
     readonly Employee: {
+      readonly aadhaarLast4: CodecTypes['sql/char@1']['input'] | null;
+      readonly altPhone: CodecTypes['sql/varchar@1']['input'] | null;
       readonly code: CodecTypes['sql/varchar@1']['input'];
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly curAddress: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly curPin: CodecTypes['sql/char@1']['input'] | null;
+      readonly curStateCode: CodecTypes['sql/varchar@1']['input'] | null;
       readonly designation: CodecTypes['sql/varchar@1']['input'];
       readonly dob: CodecTypes['pg/date-temporal@1']['input'];
       readonly email: CodecTypes['sql/varchar@1']['input'] | null;
       readonly exitDate: CodecTypes['pg/date-temporal@1']['input'] | null;
+      readonly fatherName: CodecTypes['sql/varchar@1']['input'] | null;
       readonly gender: 'MALE' | 'FEMALE' | 'OTHER';
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly joinDate: CodecTypes['pg/date-temporal@1']['input'] | null;
       readonly language: CodecTypes['sql/varchar@1']['input'];
       readonly legacyCode: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly maritalStatus: 'SINGLE' | 'MARRIED' | 'WIDOWED' | 'DIVORCED' | null;
       readonly mobile: CodecTypes['sql/varchar@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly paymentMode: 'BANK' | 'UPI' | 'CASH';
+      readonly permAddress: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly permPin: CodecTypes['sql/char@1']['input'] | null;
+      readonly permStateCode: CodecTypes['sql/varchar@1']['input'] | null;
       readonly photoKey: CodecTypes['pg/text@1']['input'] | null;
       readonly skillLevel: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
       readonly staffType: 'DEPLOYED' | 'SUPERVISOR' | 'HQ' | 'CONTRACT';
@@ -2461,21 +2481,31 @@ export type StorageColumnTypes = {
       readonly updated_by: CodecTypes['pg/uuid@1']['output'] | null;
     };
     readonly employees: {
+      readonly aadhaar_last4: Char<4> | null;
+      readonly alt_phone: Varchar<15> | null;
       readonly code: Varchar<12>;
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly cur_address: Varchar<300> | null;
+      readonly cur_pin: Char<6> | null;
+      readonly cur_state_code: Varchar<4> | null;
       readonly designation: Varchar<80>;
       readonly dob: CodecTypes['pg/date-temporal@1']['output'];
       readonly email: Varchar<254> | null;
       readonly exit_date: CodecTypes['pg/date-temporal@1']['output'] | null;
+      readonly father_name: Varchar<120> | null;
       readonly gender: 'MALE' | 'FEMALE' | 'OTHER';
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly join_date: CodecTypes['pg/date-temporal@1']['output'] | null;
       readonly language: Varchar<5>;
       readonly legacy_code: Varchar<40> | null;
+      readonly marital_status: 'SINGLE' | 'MARRIED' | 'WIDOWED' | 'DIVORCED' | null;
       readonly mobile: Varchar<15>;
       readonly name: Varchar<120>;
       readonly payment_mode: 'BANK' | 'UPI' | 'CASH';
+      readonly perm_address: Varchar<300> | null;
+      readonly perm_pin: Char<6> | null;
+      readonly perm_state_code: Varchar<4> | null;
       readonly photo_key: CodecTypes['pg/text@1']['output'] | null;
       readonly skill_level: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
       readonly staff_type: 'DEPLOYED' | 'SUPERVISOR' | 'HQ' | 'CONTRACT';
@@ -3370,21 +3400,31 @@ export type StorageColumnInputTypes = {
       readonly updated_by: CodecTypes['pg/uuid@1']['input'] | null;
     };
     readonly employees: {
+      readonly aadhaar_last4: CodecTypes['sql/char@1']['input'] | null;
+      readonly alt_phone: CodecTypes['sql/varchar@1']['input'] | null;
       readonly code: CodecTypes['sql/varchar@1']['input'];
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly cur_address: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly cur_pin: CodecTypes['sql/char@1']['input'] | null;
+      readonly cur_state_code: CodecTypes['sql/varchar@1']['input'] | null;
       readonly designation: CodecTypes['sql/varchar@1']['input'];
       readonly dob: CodecTypes['pg/date-temporal@1']['input'];
       readonly email: CodecTypes['sql/varchar@1']['input'] | null;
       readonly exit_date: CodecTypes['pg/date-temporal@1']['input'] | null;
+      readonly father_name: CodecTypes['sql/varchar@1']['input'] | null;
       readonly gender: 'MALE' | 'FEMALE' | 'OTHER';
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly join_date: CodecTypes['pg/date-temporal@1']['input'] | null;
       readonly language: CodecTypes['sql/varchar@1']['input'];
       readonly legacy_code: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly marital_status: 'SINGLE' | 'MARRIED' | 'WIDOWED' | 'DIVORCED' | null;
       readonly mobile: CodecTypes['sql/varchar@1']['input'];
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly payment_mode: 'BANK' | 'UPI' | 'CASH';
+      readonly perm_address: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly perm_pin: CodecTypes['sql/char@1']['input'] | null;
+      readonly perm_state_code: CodecTypes['sql/varchar@1']['input'] | null;
       readonly photo_key: CodecTypes['pg/text@1']['input'] | null;
       readonly skill_level: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
       readonly staff_type: 'DEPLOYED' | 'SUPERVISOR' | 'HQ' | 'CONTRACT';
@@ -4342,21 +4382,31 @@ export namespace Models {
     readonly [RelationKeys]?: 'employee' | 'site';
   };
   export type app_Employee = {
+    aadhaarLast4: Char<4> | null;
+    altPhone: Varchar<15> | null;
     code: Varchar<12>;
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+    curAddress: Varchar<300> | null;
+    curPin: Char<6> | null;
+    curStateCode: Varchar<4> | null;
     designation: Varchar<80>;
     dob: CodecTypes['pg/date-temporal@1']['output'];
     email: Varchar<254> | null;
     exitDate: CodecTypes['pg/date-temporal@1']['output'] | null;
+    fatherName: Varchar<120> | null;
     gender: 'MALE' | 'FEMALE' | 'OTHER';
     id: CodecTypes['pg/uuid@1']['output'];
     joinDate: CodecTypes['pg/date-temporal@1']['output'] | null;
     language: Varchar<5>;
     legacyCode: Varchar<40> | null;
+    maritalStatus: 'SINGLE' | 'MARRIED' | 'WIDOWED' | 'DIVORCED' | null;
     mobile: Varchar<15>;
     name: Varchar<120>;
     paymentMode: 'BANK' | 'UPI' | 'CASH';
+    permAddress: Varchar<300> | null;
+    permPin: Char<6> | null;
+    permStateCode: Varchar<4> | null;
     photoKey: CodecTypes['pg/text@1']['output'] | null;
     skillLevel: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
     staffType: 'DEPLOYED' | 'SUPERVISOR' | 'HQ' | 'CONTRACT';
@@ -4372,6 +4422,7 @@ export namespace Models {
     cashReleases: app_CashRelease[];
     convertedFrom: app_DailyWorker | null;
     costAllocations: app_SupervisorCostAllocation[];
+    curState: app_State | null;
     deployments: app_Deployment[];
     documents: app_EmployeeDocument[];
     events: app_EmployeeEvent[];
@@ -4380,6 +4431,7 @@ export namespace Models {
     leaveLedger: app_LeaveLedger[];
     nominees: app_Nominee[];
     otApprovals: app_OtApproval[];
+    permState: app_State | null;
     runLines: app_RunLine[];
     salaryStructures: app_EmployeeSalaryStructure[];
     statutory: app_EmployeeStatutory | null;
@@ -4394,6 +4446,7 @@ export namespace Models {
       | 'cashReleases'
       | 'convertedFrom'
       | 'costAllocations'
+      | 'curState'
       | 'deployments'
       | 'documents'
       | 'events'
@@ -4402,6 +4455,7 @@ export namespace Models {
       | 'leaveLedger'
       | 'nominees'
       | 'otApprovals'
+      | 'permState'
       | 'runLines'
       | 'salaryStructures'
       | 'statutory'
@@ -4999,13 +5053,22 @@ export namespace Models {
     ptApplies: CodecTypes['pg/bool@1']['output'];
     rulesCompleteThrough: CodecTypes['pg/date-temporal@1']['output'] | null;
     clients: app_Client[];
+    curEmployees: app_Employee[];
     licences: app_ContractorLicence[];
     lwfRates: app_LwfRate[];
     minWages: app_MinWage[];
+    permEmployees: app_Employee[];
     ptSlabs: app_PtSlab[];
     sites: app_Site[];
     readonly [RelationKeys]?:
-      'clients' | 'licences' | 'lwfRates' | 'minWages' | 'ptSlabs' | 'sites';
+      | 'clients'
+      | 'curEmployees'
+      | 'licences'
+      | 'lwfRates'
+      | 'minWages'
+      | 'permEmployees'
+      | 'ptSlabs'
+      | 'sites';
   };
   export type app_StatutoryRule = {
     approvedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
@@ -8393,6 +8456,7 @@ type ContractBase = Omit<
               uniques: readonly [
                 { readonly columns: readonly ['uan'] },
                 { readonly columns: readonly ['esi_ip_no'] },
+                { readonly columns: readonly ['pan'] },
               ];
               indexes: readonly [];
               foreignKeys: readonly [
@@ -8412,6 +8476,18 @@ type ContractBase = Omit<
             };
             readonly employees: {
               columns: {
+                readonly aadhaar_last4: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 4 };
+                };
+                readonly alt_phone: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 15 };
+                };
                 readonly code: {
                   readonly nativeType: 'character varying';
                   readonly codecId: 'sql/varchar@1';
@@ -8429,6 +8505,24 @@ type ContractBase = Omit<
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: true;
+                };
+                readonly cur_address: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 300 };
+                };
+                readonly cur_pin: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 6 };
+                };
+                readonly cur_state_code: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 4 };
                 };
                 readonly designation: {
                   readonly nativeType: 'character varying';
@@ -8451,6 +8545,12 @@ type ContractBase = Omit<
                   readonly nativeType: 'date';
                   readonly codecId: 'pg/date-temporal@1';
                   readonly nullable: true;
+                };
+                readonly father_name: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 120 };
                 };
                 readonly gender: {
                   readonly nativeType: 'text';
@@ -8483,6 +8583,11 @@ type ContractBase = Omit<
                   readonly nullable: true;
                   readonly typeParams: { readonly length: 40 };
                 };
+                readonly marital_status: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                };
                 readonly mobile: {
                   readonly nativeType: 'character varying';
                   readonly codecId: 'sql/varchar@1';
@@ -8503,6 +8608,24 @@ type ContractBase = Omit<
                     readonly kind: 'literal';
                     readonly value: DefaultLiteralValue<'pg/text@1', 'BANK'>;
                   };
+                };
+                readonly perm_address: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 300 };
+                };
+                readonly perm_pin: {
+                  readonly nativeType: 'character';
+                  readonly codecId: 'sql/char@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 6 };
+                };
+                readonly perm_state_code: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 4 };
                 };
                 readonly photo_key: {
                   readonly nativeType: 'text';
@@ -8553,6 +8676,12 @@ type ContractBase = Omit<
               uniques: readonly [{ readonly columns: readonly ['code'] }];
               indexes: readonly [
                 {
+                  readonly name: 'employees_cur_state_code_idx_d0ee84a6';
+                  readonly prefix: 'employees_cur_state_code_idx';
+                  readonly columns: readonly ['cur_state_code'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'employees_legacy_code_idx_885503e7';
                   readonly prefix: 'employees_legacy_code_idx';
                   readonly columns: readonly ['legacy_code'];
@@ -8565,13 +8694,44 @@ type ContractBase = Omit<
                   readonly unique: false;
                 },
                 {
+                  readonly name: 'employees_perm_state_code_idx_2ed1e56f';
+                  readonly prefix: 'employees_perm_state_code_idx';
+                  readonly columns: readonly ['perm_state_code'];
+                  readonly unique: false;
+                },
+                {
                   readonly name: 'employees_status_staff_type_idx_492a2c36';
                   readonly prefix: 'employees_status_staff_type_idx';
                   readonly columns: readonly ['status', 'staff_type'];
                   readonly unique: false;
                 },
               ];
-              foreignKeys: readonly [];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'employees';
+                    readonly columns: readonly ['cur_state_code'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'states';
+                    readonly columns: readonly ['code'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'employees';
+                    readonly columns: readonly ['perm_state_code'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'states';
+                    readonly columns: readonly ['code'];
+                  };
+                },
+              ];
             };
             readonly establishments: {
               columns: {
@@ -12464,6 +12624,10 @@ type ContractBase = Omit<
               readonly kind: 'valueSet';
               readonly values: readonly ['MONTHLY', 'HALF_YEARLY', 'YEARLY'];
             };
+            readonly MaritalStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['SINGLE', 'MARRIED', 'WIDOWED', 'DIVORCED'];
+            };
             readonly NomineeScheme: {
               readonly kind: 'valueSet';
               readonly values: readonly ['PF', 'ESI', 'GRATUITY'];
@@ -15806,6 +15970,22 @@ type ContractBase = Omit<
           };
           readonly Employee: {
             readonly fields: {
+              readonly aadhaarLast4: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 4 };
+                };
+              };
+              readonly altPhone: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 15 };
+                };
+              };
               readonly code: {
                 readonly nullable: false;
                 readonly type: {
@@ -15825,6 +16005,30 @@ type ContractBase = Omit<
               readonly createdBy: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly curAddress: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 300 };
+                };
+              };
+              readonly curPin: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 6 };
+                };
+              };
+              readonly curStateCode: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 4 };
+                };
               };
               readonly designation: {
                 readonly nullable: false;
@@ -15849,6 +16053,14 @@ type ContractBase = Omit<
               readonly exitDate: {
                 readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/date-temporal@1' };
+              };
+              readonly fatherName: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 120 };
+                };
               };
               readonly gender: {
                 readonly nullable: false;
@@ -15878,6 +16090,10 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 40 };
                 };
               };
+              readonly maritalStatus: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
               readonly mobile: {
                 readonly nullable: false;
                 readonly type: {
@@ -15897,6 +16113,30 @@ type ContractBase = Omit<
               readonly paymentMode: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly permAddress: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 300 };
+                };
+              };
+              readonly permPin: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/char@1';
+                  readonly typeParams: { readonly length: 6 };
+                };
+              };
+              readonly permStateCode: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 4 };
+                };
               };
               readonly photoKey: {
                 readonly nullable: true;
@@ -16022,6 +16262,15 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['supervisorId'];
                 };
               };
+              readonly curState: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'State' };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['curStateCode'];
+                  readonly targetFields: readonly ['code'];
+                };
+              };
               readonly deployments: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
@@ -16104,6 +16353,15 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['employeeId'];
                 };
               };
+              readonly permState: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'State' };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['permStateCode'];
+                  readonly targetFields: readonly ['code'];
+                };
+              };
               readonly runLines: {
                 readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'RunLine' };
                 readonly cardinality: '1:N';
@@ -16160,21 +16418,31 @@ type ContractBase = Omit<
               readonly table: 'employees';
               readonly namespaceId: 'app';
               readonly fields: {
+                readonly aadhaarLast4: { readonly column: 'aadhaar_last4' };
+                readonly altPhone: { readonly column: 'alt_phone' };
                 readonly code: { readonly column: 'code' };
                 readonly createdAt: { readonly column: 'created_at' };
                 readonly createdBy: { readonly column: 'created_by' };
+                readonly curAddress: { readonly column: 'cur_address' };
+                readonly curPin: { readonly column: 'cur_pin' };
+                readonly curStateCode: { readonly column: 'cur_state_code' };
                 readonly designation: { readonly column: 'designation' };
                 readonly dob: { readonly column: 'dob' };
                 readonly email: { readonly column: 'email' };
                 readonly exitDate: { readonly column: 'exit_date' };
+                readonly fatherName: { readonly column: 'father_name' };
                 readonly gender: { readonly column: 'gender' };
                 readonly id: { readonly column: 'id' };
                 readonly joinDate: { readonly column: 'join_date' };
                 readonly language: { readonly column: 'language' };
                 readonly legacyCode: { readonly column: 'legacy_code' };
+                readonly maritalStatus: { readonly column: 'marital_status' };
                 readonly mobile: { readonly column: 'mobile' };
                 readonly name: { readonly column: 'name' };
                 readonly paymentMode: { readonly column: 'payment_mode' };
+                readonly permAddress: { readonly column: 'perm_address' };
+                readonly permPin: { readonly column: 'perm_pin' };
+                readonly permStateCode: { readonly column: 'perm_state_code' };
                 readonly photoKey: { readonly column: 'photo_key' };
                 readonly skillLevel: { readonly column: 'skill_level' };
                 readonly staffType: { readonly column: 'staff_type' };
@@ -19866,6 +20134,17 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['stateCode'];
                 };
               };
+              readonly curEmployees: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'Employee';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['code'];
+                  readonly targetFields: readonly ['curStateCode'];
+                };
+              };
               readonly licences: {
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
@@ -19891,6 +20170,17 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['code'];
                   readonly targetFields: readonly ['stateCode'];
+                };
+              };
+              readonly permEmployees: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'Employee';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['code'];
+                  readonly targetFields: readonly ['permStateCode'];
                 };
               };
               readonly ptSlabs: {
@@ -20846,6 +21136,15 @@ type ContractBase = Omit<
               { readonly name: 'MONTHLY'; readonly value: 'MONTHLY' },
               { readonly name: 'HALF_YEARLY'; readonly value: 'HALF_YEARLY' },
               { readonly name: 'YEARLY'; readonly value: 'YEARLY' },
+            ];
+          };
+          readonly MaritalStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'SINGLE'; readonly value: 'SINGLE' },
+              { readonly name: 'MARRIED'; readonly value: 'MARRIED' },
+              { readonly name: 'WIDOWED'; readonly value: 'WIDOWED' },
+              { readonly name: 'DIVORCED'; readonly value: 'DIVORCED' },
             ];
           };
           readonly NomineeScheme: {
