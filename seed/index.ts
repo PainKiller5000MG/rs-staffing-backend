@@ -310,19 +310,6 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
       bump('bank_accounts');
     }
 
-    if (spec.site) {
-      await o.Deployment.create(
-        row<Models.app_Deployment>({
-          employeeId: emp.id,
-          siteId: sites[spec.site],
-          designation: spec.designation,
-          effectiveFrom: date(spec.joinDate),
-          effectiveTo: spec.exitDate ? date(spec.exitDate) : null,
-          createdBy: hr,
-        }),
-      );
-    }
-
     const lines = D.STRUCTURES[spec.structure] as Record<string, number>;
     const gross = Object.values(lines).reduce((a, b) => a + b, 0);
     const structure = await o.EmployeeSalaryStructure.create(
@@ -342,6 +329,25 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
         row<Models.app_EmployeeSalaryLine>({ structureId: structure.id, componentId: components[component], amountPaise: paise(amount) }),
       );
     }
+
+    if (spec.site) {
+      await o.Deployment.create(
+        row<Models.app_Deployment>({
+          employeeId: emp.id,
+          siteId: sites[spec.site],
+          designation: spec.designation,
+          skillLevel: spec.skill,
+          templateId: templates[spec.template],
+          monthlyCtcPaise: paise(gross),
+          kind: 'DEPLOY',
+          reason: null,
+          effectiveFrom: date(spec.joinDate),
+          effectiveTo: spec.exitDate ? date(spec.exitDate) : null,
+          createdBy: hr,
+        }),
+      );
+    }
+
 
     if (spec.staffType === 'DEPLOYED') {
       const aadhaar = `8${String(31000000000 + i * 2_654_435).slice(0, 11)}`;

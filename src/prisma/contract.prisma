@@ -849,6 +849,11 @@ namespace app {
     employeeId    Uuid           @map("employee_id")
     siteId        Uuid           @map("site_id")
     designation   VarChar(80)
+    skillLevel    SkillLevel     @map("skill_level")
+    templateId    Uuid?          @map("template_id") // salary structure (template) the pay is built from
+    monthlyCtcPaise BigInt       @map("monthly_ctc_paise")
+    kind          VarChar(10)    @default("DEPLOY") // DEPLOY | REDEPLOY | REVISION
+    reason        VarChar(200)?
     effectiveFrom Date           @map("effective_from")
     effectiveTo   Date?          @map("effective_to")
     createdAt     Timestamptz(6) @default(now()) @map("created_at")
@@ -856,10 +861,13 @@ namespace app {
 
     employee      Employee       @relation(fields: [employeeId], references: [id])
     site          Site           @relation(fields: [siteId], references: [id])
+    template      SalaryTemplate? @relation(fields: [templateId], references: [id])
 
     @@index([employeeId, effectiveFrom])
     @@index([siteId, effectiveFrom])
     @@check(expression: "effective_to IS NULL OR effective_to >= effective_from", name: "deployments_effective_order")
+    @@check(expression: "monthly_ctc_paise > 0", name: "deployments_ctc_positive")
+    @@check(expression: "kind IN ('DEPLOY','REDEPLOY','REVISION')", name: "deployments_kind_values")
     @@map("deployments")
   }
 
@@ -1142,6 +1150,7 @@ namespace app {
     client     Client?                   @relation(fields: [clientId], references: [id])
     lines      SalaryTemplateLine[]
     structures EmployeeSalaryStructure[]
+    deployments Deployment[]
 
     @@map("salary_templates")
   }

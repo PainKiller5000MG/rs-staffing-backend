@@ -34,7 +34,7 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'8bf32e323e13fcb93fbcc99b84bb29a4166ac0a2fda21e4de2b743d228cc2927'>;
+  StorageHashBase<'97e86f516ea9424e77b6ea7d62a19ee8fc12af108ec034e42b919dce1e9a2c70'>;
 export type ExecutionHash =
   ExecutionHashBase<'f0fdf3921d1d4359658dca909658c5c67f2c2fa13702e44c901e667470280fb5'>;
 export type ProfileHash =
@@ -603,7 +603,12 @@ export type FieldOutputTypes = {
       readonly effectiveTo: CodecTypes['pg/date-temporal@1']['output'] | null;
       readonly employeeId: CodecTypes['pg/uuid@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly kind: Varchar<10>;
+      readonly monthlyCtcPaise: CodecTypes['pg/int8@1']['output'];
+      readonly reason: Varchar<200> | null;
       readonly siteId: CodecTypes['pg/uuid@1']['output'];
+      readonly skillLevel: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
+      readonly templateId: CodecTypes['pg/uuid@1']['output'] | null;
     };
     readonly Employee: {
       readonly aadhaarLast4: Char<4> | null;
@@ -1554,7 +1559,12 @@ export type FieldInputTypes = {
       readonly effectiveTo: CodecTypes['pg/date-temporal@1']['input'] | null;
       readonly employeeId: CodecTypes['pg/uuid@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly kind: CodecTypes['sql/varchar@1']['input'];
+      readonly monthlyCtcPaise: CodecTypes['pg/int8@1']['input'];
+      readonly reason: CodecTypes['sql/varchar@1']['input'] | null;
       readonly siteId: CodecTypes['pg/uuid@1']['input'];
+      readonly skillLevel: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
+      readonly templateId: CodecTypes['pg/uuid@1']['input'] | null;
     };
     readonly Employee: {
       readonly aadhaarLast4: CodecTypes['sql/char@1']['input'] | null;
@@ -2505,7 +2515,12 @@ export type StorageColumnTypes = {
       readonly effective_to: CodecTypes['pg/date-temporal@1']['output'] | null;
       readonly employee_id: CodecTypes['pg/uuid@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly kind: Varchar<10>;
+      readonly monthly_ctc_paise: CodecTypes['pg/int8@1']['output'];
+      readonly reason: Varchar<200> | null;
       readonly site_id: CodecTypes['pg/uuid@1']['output'];
+      readonly skill_level: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
+      readonly template_id: CodecTypes['pg/uuid@1']['output'] | null;
     };
     readonly employee_documents: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -3456,7 +3471,12 @@ export type StorageColumnInputTypes = {
       readonly effective_to: CodecTypes['pg/date-temporal@1']['input'] | null;
       readonly employee_id: CodecTypes['pg/uuid@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly kind: CodecTypes['sql/varchar@1']['input'];
+      readonly monthly_ctc_paise: CodecTypes['pg/int8@1']['input'];
+      readonly reason: CodecTypes['sql/varchar@1']['input'] | null;
       readonly site_id: CodecTypes['pg/uuid@1']['input'];
+      readonly skill_level: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
+      readonly template_id: CodecTypes['pg/uuid@1']['input'] | null;
     };
     readonly employee_documents: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -4518,10 +4538,16 @@ export namespace Models {
     effectiveTo: CodecTypes['pg/date-temporal@1']['output'] | null;
     employeeId: CodecTypes['pg/uuid@1']['output'];
     id: CodecTypes['pg/uuid@1']['output'];
+    kind: Varchar<10>;
+    monthlyCtcPaise: CodecTypes['pg/int8@1']['output'];
+    reason: Varchar<200> | null;
     siteId: CodecTypes['pg/uuid@1']['output'];
+    skillLevel: 'UNSKILLED' | 'SEMI_SKILLED' | 'SKILLED' | 'HIGHLY_SKILLED';
+    templateId: CodecTypes['pg/uuid@1']['output'] | null;
     employee: app_Employee;
     site: app_Site;
-    readonly [RelationKeys]?: 'employee' | 'site';
+    template: app_SalaryTemplate | null;
+    readonly [RelationKeys]?: 'employee' | 'site' | 'template';
   };
   export type app_Employee = {
     aadhaarLast4: Char<4> | null;
@@ -5127,9 +5153,10 @@ export namespace Models {
     name: Varchar<120>;
     status: 'ACTIVE' | 'INACTIVE';
     client: app_Client | null;
+    deployments: app_Deployment[];
     lines: app_SalaryTemplateLine[];
     structures: app_EmployeeSalaryStructure[];
-    readonly [RelationKeys]?: 'client' | 'lines' | 'structures';
+    readonly [RelationKeys]?: 'client' | 'deployments' | 'lines' | 'structures';
   };
   export type app_SalaryTemplateLine = {
     baseComponentId: CodecTypes['pg/uuid@1']['output'] | null;
@@ -8259,10 +8286,41 @@ type ContractBase = Omit<
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
                 };
+                readonly kind: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'sql/varchar@1', 'DEPLOY'>;
+                  };
+                  readonly typeParams: { readonly length: 10 };
+                };
+                readonly monthly_ctc_paise: {
+                  readonly nativeType: 'int8';
+                  readonly codecId: 'pg/int8@1';
+                  readonly nullable: false;
+                };
+                readonly reason: {
+                  readonly nativeType: 'character varying';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly length: 200 };
+                };
                 readonly site_id: {
                   readonly nativeType: 'uuid';
                   readonly codecId: 'pg/uuid@1';
                   readonly nullable: false;
+                };
+                readonly skill_level: {
+                  readonly nativeType: 'text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                };
+                readonly template_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
                 };
               };
               primaryKey: { readonly columns: readonly ['id'] };
@@ -8292,6 +8350,12 @@ type ContractBase = Omit<
                   readonly columns: readonly ['site_id'];
                   readonly unique: false;
                 },
+                {
+                  readonly name: 'deployments_template_id_idx_dc536619';
+                  readonly prefix: 'deployments_template_id_idx';
+                  readonly columns: readonly ['template_id'];
+                  readonly unique: false;
+                },
               ];
               foreignKeys: readonly [
                 {
@@ -8315,6 +8379,18 @@ type ContractBase = Omit<
                   readonly target: {
                     readonly namespaceId: 'app' & NamespaceId;
                     readonly tableName: 'sites';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'deployments';
+                    readonly columns: readonly ['template_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'salary_templates';
                     readonly columns: readonly ['id'];
                   };
                 },
@@ -16435,8 +16511,36 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
+              readonly kind: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 10 };
+                };
+              };
+              readonly monthlyCtcPaise: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int8@1' };
+              };
+              readonly reason: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'sql/varchar@1';
+                  readonly typeParams: { readonly length: 200 };
+                };
+              };
               readonly siteId: {
                 readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly skillLevel: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly templateId: {
+                readonly nullable: true;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
               };
             };
@@ -16462,6 +16566,18 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['id'];
                 };
               };
+              readonly template: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'SalaryTemplate';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: true;
+                readonly on: {
+                  readonly localFields: readonly ['templateId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
             };
             readonly storage: {
               readonly table: 'deployments';
@@ -16474,7 +16590,12 @@ type ContractBase = Omit<
                 readonly effectiveTo: { readonly column: 'effective_to' };
                 readonly employeeId: { readonly column: 'employee_id' };
                 readonly id: { readonly column: 'id' };
+                readonly kind: { readonly column: 'kind' };
+                readonly monthlyCtcPaise: { readonly column: 'monthly_ctc_paise' };
+                readonly reason: { readonly column: 'reason' };
                 readonly siteId: { readonly column: 'site_id' };
+                readonly skillLevel: { readonly column: 'skill_level' };
+                readonly templateId: { readonly column: 'template_id' };
               };
             };
           };
@@ -20216,6 +20337,17 @@ type ContractBase = Omit<
                 readonly on: {
                   readonly localFields: readonly ['clientId'];
                   readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly deployments: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'Deployment';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['templateId'];
                 };
               };
               readonly lines: {

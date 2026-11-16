@@ -1,0 +1,549 @@
+[
+  {
+    "id": "column.app.deployments.kind",
+    "label": "Add column \"kind\" to \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "kind",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"kind\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "kind"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"kind\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD COLUMN \"kind\" character varying(10) DEFAULT 'DEPLOY' NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"kind\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "kind"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.deployments.reason",
+    "label": "Add column \"reason\" to \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "reason",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"reason\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "reason"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"reason\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD COLUMN \"reason\" character varying(200)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"reason\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "reason"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.deployments.template_id",
+    "label": "Add column \"template_id\" to \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "template_id",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"template_id\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "template_id"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"template_id\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD COLUMN \"template_id\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"template_id\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "template_id"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.deployments.monthly_ctc_paise",
+    "label": "Add column \"monthly_ctc_paise\" to \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "monthly_ctc_paise",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"monthly_ctc_paise\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "monthly_ctc_paise"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"monthly_ctc_paise\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD COLUMN \"monthly_ctc_paise\" int8"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"monthly_ctc_paise\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "monthly_ctc_paise"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "backfill.deployments_ctc",
+    "label": "backfill deployment CTC from the employee salary structure",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "backfill deployment CTC from the employee salary structure",
+        "sql": "UPDATE app.deployments d SET monthly_ctc_paise = COALESCE((SELECT s.monthly_gross_paise FROM app.employee_salary_structures s WHERE s.employee_id = d.employee_id ORDER BY s.effective_from DESC LIMIT 1), 100) WHERE d.monthly_ctc_paise IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "alterNullability.setNotNull.deployments.monthly_ctc_paise",
+    "label": "Set NOT NULL on \"deployments\".\"monthly_ctc_paise\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "monthly_ctc_paise",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"monthly_ctc_paise\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "monthly_ctc_paise"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"monthly_ctc_paise\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"app\".\"deployments\" WHERE \"monthly_ctc_paise\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"monthly_ctc_paise\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ALTER COLUMN \"monthly_ctc_paise\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"monthly_ctc_paise\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "monthly_ctc_paise",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.deployments.skill_level",
+    "label": "Add column \"skill_level\" to \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "skill_level",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"skill_level\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "skill_level"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"skill_level\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD COLUMN \"skill_level\" text"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"skill_level\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "skill_level"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "backfill.deployments_skill",
+    "label": "backfill deployment skill level from the employee",
+    "operationClass": "data",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "backfill deployment skill level from the employee",
+        "sql": "UPDATE app.deployments d SET skill_level = e.skill_level FROM app.employees e WHERE e.id = d.employee_id AND d.skill_level IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "alterNullability.setNotNull.deployments.skill_level",
+    "label": "Set NOT NULL on \"deployments\".\"skill_level\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "skill_level",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"skill_level\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "skill_level"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"skill_level\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"app\".\"deployments\" WHERE \"skill_level\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"skill_level\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ALTER COLUMN \"skill_level\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"skill_level\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "app",
+          "deployments",
+          "skill_level",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.deployments.deployments_ctc_positive_fde0b6ab",
+    "label": "Add check constraint \"deployments_ctc_positive_fde0b6ab\" on \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "deployments_ctc_positive_fde0b6ab",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"deployments_ctc_positive_fde0b6ab\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_ctc_positive_fde0b6ab",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"deployments_ctc_positive_fde0b6ab\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD CONSTRAINT \"deployments_ctc_positive_fde0b6ab\" CHECK (monthly_ctc_paise > 0)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"deployments_ctc_positive_fde0b6ab\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_ctc_positive_fde0b6ab",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.deployments.deployments_kind_values_2daca219",
+    "label": "Add check constraint \"deployments_kind_values_2daca219\" on \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "deployments_kind_values_2daca219",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"deployments_kind_values_2daca219\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_kind_values_2daca219",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"deployments_kind_values_2daca219\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD CONSTRAINT \"deployments_kind_values_2daca219\" CHECK (kind IN ('DEPLOY','REDEPLOY','REVISION'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"deployments_kind_values_2daca219\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_kind_values_2daca219",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.deployments.deployments_skill_level_check_3d5f273a",
+    "label": "Add check constraint \"deployments_skill_level_check_3d5f273a\" on \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "deployments_skill_level_check_3d5f273a",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"deployments_skill_level_check_3d5f273a\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_skill_level_check_3d5f273a",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"deployments_skill_level_check_3d5f273a\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\" ADD CONSTRAINT \"deployments_skill_level_check_3d5f273a\" CHECK (\"skill_level\" IN ('UNSKILLED', 'SEMI_SKILLED', 'SKILLED', 'HIGHLY_SKILLED'))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"deployments_skill_level_check_3d5f273a\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_skill_level_check_3d5f273a",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.deployments.deployments_template_id_idx_dc536619",
+    "label": "Create index \"deployments_template_id_idx_dc536619\" on \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "deployments_template_id_idx_dc536619",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"deployments_template_id_idx_dc536619\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"deployments_template_id_idx_dc536619\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"deployments_template_id_idx_dc536619\"",
+        "sql": "CREATE INDEX \"deployments_template_id_idx_dc536619\" ON \"app\".\"deployments\" (\"template_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"deployments_template_id_idx_dc536619\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"deployments_template_id_idx_dc536619\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.deployments.deployments_template_id_fkey",
+    "label": "Add foreign key \"deployments_template_id_fkey\" on \"deployments\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "deployments_template_id_fkey",
+        "table": "deployments"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"deployments_template_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_template_id_fkey",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"deployments_template_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"deployments\"\nADD CONSTRAINT \"deployments_template_id_fkey\"\nFOREIGN KEY (\"template_id\")\nREFERENCES \"app\".\"salary_templates\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"deployments_template_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "deployments_template_id_fkey",
+          "app",
+          "\"app\".\"deployments\""
+        ]
+      }
+    ]
+  }
+]

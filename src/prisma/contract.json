@@ -5143,8 +5143,55 @@
                   "kind": "scalar"
                 }
               },
+              "kind": {
+                "nullable": false,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 10
+                  }
+                }
+              },
+              "monthlyCtcPaise": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int8@1",
+                  "kind": "scalar"
+                }
+              },
+              "reason": {
+                "nullable": true,
+                "type": {
+                  "codecId": "sql/varchar@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "length": 200
+                  }
+                }
+              },
               "siteId": {
                 "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "skillLevel": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/text@1",
+                  "kind": "scalar"
+                },
+                "valueSet": {
+                  "entityKind": "enum",
+                  "entityName": "SkillLevel",
+                  "namespaceId": "public",
+                  "plane": "domain"
+                }
+              },
+              "templateId": {
+                "nullable": true,
                 "type": {
                   "codecId": "pg/uuid@1",
                   "kind": "scalar"
@@ -5183,6 +5230,22 @@
                   "model": "Site",
                   "namespace": "app"
                 }
+              },
+              "template": {
+                "cardinality": "N:1",
+                "nullable": true,
+                "on": {
+                  "localFields": [
+                    "templateId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "SalaryTemplate",
+                  "namespace": "app"
+                }
               }
             },
             "storage": {
@@ -5208,8 +5271,23 @@
                 "id": {
                   "column": "id"
                 },
+                "kind": {
+                  "column": "kind"
+                },
+                "monthlyCtcPaise": {
+                  "column": "monthly_ctc_paise"
+                },
+                "reason": {
+                  "column": "reason"
+                },
                 "siteId": {
                   "column": "site_id"
+                },
+                "skillLevel": {
+                  "column": "skill_level"
+                },
+                "templateId": {
+                  "column": "template_id"
                 }
               },
               "namespaceId": "app",
@@ -11392,6 +11470,21 @@
                 },
                 "to": {
                   "model": "Client",
+                  "namespace": "app"
+                }
+              },
+              "deployments": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "templateId"
+                  ]
+                },
+                "to": {
+                  "model": "Deployment",
                   "namespace": "app"
                 }
               },
@@ -18632,9 +18725,24 @@
             "deployments": {
               "checks": [
                 {
+                  "expression": "monthly_ctc_paise > 0",
+                  "name": "deployments_ctc_positive_fde0b6ab",
+                  "prefix": "deployments_ctc_positive"
+                },
+                {
                   "expression": "effective_to IS NULL OR effective_to >= effective_from",
                   "name": "deployments_effective_order_8f4f959a",
                   "prefix": "deployments_effective_order"
+                },
+                {
+                  "expression": "kind IN ('DEPLOY','REDEPLOY','REVISION')",
+                  "name": "deployments_kind_values_2daca219",
+                  "prefix": "deployments_kind_values"
+                },
+                {
+                  "expression": "\"skill_level\" IN ('UNSKILLED', 'SEMI_SKILLED', 'SKILLED', 'HIGHLY_SKILLED')",
+                  "name": "deployments_skill_level_check_3d5f273a",
+                  "prefix": "deployments_skill_level_check"
                 }
               ],
               "columns": {
@@ -18683,10 +18791,51 @@
                   "nativeType": "uuid",
                   "nullable": false
                 },
+                "kind": {
+                  "codecId": "sql/varchar@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": "DEPLOY"
+                  },
+                  "nativeType": "character varying",
+                  "nullable": false,
+                  "typeParams": {
+                    "length": 10
+                  }
+                },
+                "monthly_ctc_paise": {
+                  "codecId": "pg/int8@1",
+                  "nativeType": "int8",
+                  "nullable": false
+                },
+                "reason": {
+                  "codecId": "sql/varchar@1",
+                  "nativeType": "character varying",
+                  "nullable": true,
+                  "typeParams": {
+                    "length": 200
+                  }
+                },
                 "site_id": {
                   "codecId": "pg/uuid@1",
                   "nativeType": "uuid",
                   "nullable": false
+                },
+                "skill_level": {
+                  "codecId": "pg/text@1",
+                  "nativeType": "text",
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "SkillLevel",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "template_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
                 }
               },
               "foreignKeys": [
@@ -18720,6 +18869,22 @@
                     ],
                     "namespaceId": "app",
                     "tableName": "sites"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "template_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "deployments"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "salary_templates"
                   }
                 }
               ],
@@ -18756,6 +18921,14 @@
                   ],
                   "name": "deployments_site_id_idx_99208b9d",
                   "prefix": "deployments_site_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "template_id"
+                  ],
+                  "name": "deployments_template_id_idx_dc536619",
+                  "prefix": "deployments_template_id_idx",
                   "unique": false
                 }
               ],
@@ -25899,7 +26072,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "8bf32e323e13fcb93fbcc99b84bb29a4166ac0a2fda21e4de2b743d228cc2927"
+    "storageHash": "97e86f516ea9424e77b6ea7d62a19ee8fc12af108ec034e42b919dce1e9a2c70"
   },
   "execution": {
     "executionHash": "f0fdf3921d1d4359658dca909658c5c67f2c2fa13702e44c901e667470280fb5",
