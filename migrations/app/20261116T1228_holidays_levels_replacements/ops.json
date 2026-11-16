@@ -1,0 +1,753 @@
+[
+  {
+    "id": "dropConstraint.holidays.holidays_level_scope_key_date_key",
+    "label": "Drop constraint \"holidays_level_scope_key_date_key\" on \"holidays\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "unique",
+        "name": "holidays_level_scope_key_date_key",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"holidays_level_scope_key_date_key\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_level_scope_key_date_key",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "drop constraint \"holidays_level_scope_key_date_key\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" DROP CONSTRAINT \"holidays_level_scope_key_date_key\""
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"holidays_level_scope_key_date_key\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_level_scope_key_date_key",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "table.holiday_replacements",
+    "label": "Create table \"holiday_replacements\"",
+    "summary": "Creates table \"holiday_replacements\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "table",
+        "name": "holiday_replacements"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure table \"holiday_replacements\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holiday_replacements\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create table \"holiday_replacements\"",
+        "sql": "CREATE TABLE \"app\".\"holiday_replacements\" (\n  \"client_id\" uuid NOT NULL,\n  \"created_at\" timestamptz(6) DEFAULT (now()) NOT NULL,\n  \"created_by\" uuid,\n  \"holiday_id\" uuid NOT NULL,\n  \"id\" uuid NOT NULL,\n  \"removed_at\" timestamptz(6),\n  \"removed_by\" uuid,\n  \"replacement_date\" date NOT NULL,\n  PRIMARY KEY (\"id\"),\n  CONSTRAINT \"holiday_replacements_removed_together_a0981901\" CHECK ((removed_at IS NULL) = (removed_by IS NULL))\n)",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify table \"holiday_replacements\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holiday_replacements\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.holidays.half",
+    "label": "Add column \"half\" to \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "half",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"half\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "half"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"half\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD COLUMN \"half\" bool DEFAULT false NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"half\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "half"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.holidays.removed_at",
+    "label": "Add column \"removed_at\" to \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "removed_at",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"removed_at\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "removed_at"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"removed_at\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD COLUMN \"removed_at\" timestamptz(6)"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"removed_at\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "removed_at"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.holidays.removed_by",
+    "label": "Add column \"removed_by\" to \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "removed_by",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"removed_by\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "removed_by"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"removed_by\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD COLUMN \"removed_by\" uuid"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"removed_by\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "removed_by"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "column.app.holidays.year",
+    "label": "Add column \"year\" to \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "year",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"year\" is missing",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "year"
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add column \"year\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD COLUMN \"year\" int2"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"year\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "year"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "holidays.backfill_year",
+    "label": "backfill holidays.year from date",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "backfill holidays.year from date",
+        "sql": "UPDATE app.holidays SET year = EXTRACT(YEAR FROM date)",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "alterNullability.setNotNull.holidays.year",
+    "label": "Set NOT NULL on \"holidays\".\"year\"",
+    "operationClass": "destructive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "column",
+        "name": "year",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure column \"year\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "year"
+        ]
+      },
+      {
+        "description": "ensure no NULL values in \"year\"",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"app\".\"holidays\" WHERE \"year\" IS NULL) AS \"result\"",
+        "params": []
+      }
+    ],
+    "execute": [
+      {
+        "description": "set NOT NULL on \"year\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ALTER COLUMN \"year\" SET NOT NULL"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify column \"year\" is NOT NULL",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"information_schema\".\"columns\" WHERE (\"table_schema\" = $1 AND \"table_name\" = $2 AND \"column_name\" = $3 AND \"is_nullable\" = $4)) AS \"result\"",
+        "params": [
+          "app",
+          "holidays",
+          "year",
+          "NO"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.holidays.holidays_national_paid_fixed_6abe4056",
+    "label": "Add check constraint \"holidays_national_paid_fixed_6abe4056\" on \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "holidays_national_paid_fixed_6abe4056",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"holidays_national_paid_fixed_6abe4056\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_national_paid_fixed_6abe4056",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"holidays_national_paid_fixed_6abe4056\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD CONSTRAINT \"holidays_national_paid_fixed_6abe4056\" CHECK (level <> 'NATIONAL' OR (paid AND NOT optional AND NOT half))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"holidays_national_paid_fixed_6abe4056\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_national_paid_fixed_6abe4056",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.holidays.holidays_removed_together_a0981901",
+    "label": "Add check constraint \"holidays_removed_together_a0981901\" on \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "holidays_removed_together_a0981901",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"holidays_removed_together_a0981901\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_removed_together_a0981901",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"holidays_removed_together_a0981901\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD CONSTRAINT \"holidays_removed_together_a0981901\" CHECK ((removed_at IS NULL) = (removed_by IS NULL))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"holidays_removed_together_a0981901\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_removed_together_a0981901",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.holidays.holidays_scope_key_by_level_42a63ec2",
+    "label": "Add check constraint \"holidays_scope_key_by_level_42a63ec2\" on \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "holidays_scope_key_by_level_42a63ec2",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"holidays_scope_key_by_level_42a63ec2\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_scope_key_by_level_42a63ec2",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"holidays_scope_key_by_level_42a63ec2\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD CONSTRAINT \"holidays_scope_key_by_level_42a63ec2\" CHECK ((level = 'NATIONAL') = (scope_key IS NULL))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"holidays_scope_key_by_level_42a63ec2\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_scope_key_by_level_42a63ec2",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "checkConstraint.holidays.holidays_year_matches_date_4953e491",
+    "label": "Add check constraint \"holidays_year_matches_date_4953e491\" on \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "checkConstraint",
+        "name": "holidays_year_matches_date_4953e491",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure constraint \"holidays_year_matches_date_4953e491\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_year_matches_date_4953e491",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add check constraint \"holidays_year_matches_date_4953e491\"",
+        "sql": "ALTER TABLE \"app\".\"holidays\" ADD CONSTRAINT \"holidays_year_matches_date_4953e491\" CHECK (year = EXTRACT(YEAR FROM date))"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify constraint \"holidays_year_matches_date_4953e491\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holidays_year_matches_date_4953e491",
+          "app",
+          "\"app\".\"holidays\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.holiday_replacements.holiday_replacements_client_id_idx_1bb5a570",
+    "label": "Create index \"holiday_replacements_client_id_idx_1bb5a570\" on \"holiday_replacements\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "holiday_replacements_client_id_idx_1bb5a570",
+        "table": "holiday_replacements"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"holiday_replacements_client_id_idx_1bb5a570\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holiday_replacements_client_id_idx_1bb5a570\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"holiday_replacements_client_id_idx_1bb5a570\"",
+        "sql": "CREATE INDEX \"holiday_replacements_client_id_idx_1bb5a570\" ON \"app\".\"holiday_replacements\" (\"client_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"holiday_replacements_client_id_idx_1bb5a570\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holiday_replacements_client_id_idx_1bb5a570\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.holiday_replacements.holiday_replacements_holiday_id_idx_57087977",
+    "label": "Create index \"holiday_replacements_holiday_id_idx_57087977\" on \"holiday_replacements\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "holiday_replacements_holiday_id_idx_57087977",
+        "table": "holiday_replacements"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"holiday_replacements_holiday_id_idx_57087977\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holiday_replacements_holiday_id_idx_57087977\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"holiday_replacements_holiday_id_idx_57087977\"",
+        "sql": "CREATE INDEX \"holiday_replacements_holiday_id_idx_57087977\" ON \"app\".\"holiday_replacements\" (\"holiday_id\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"holiday_replacements_holiday_id_idx_57087977\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holiday_replacements_holiday_id_idx_57087977\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "index.holidays.holidays_level_scope_key_year_idx_1d504125",
+    "label": "Create index \"holidays_level_scope_key_year_idx_1d504125\" on \"holidays\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "index",
+        "name": "holidays_level_scope_key_year_idx_1d504125",
+        "table": "holidays"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure index \"holidays_level_scope_key_year_idx_1d504125\" does not exist",
+        "sql": "SELECT (to_regclass($1)) IS NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holidays_level_scope_key_year_idx_1d504125\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "create index \"holidays_level_scope_key_year_idx_1d504125\"",
+        "sql": "CREATE INDEX \"holidays_level_scope_key_year_idx_1d504125\" ON \"app\".\"holidays\" (\"level\", \"scope_key\", \"year\")",
+        "params": []
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify index \"holidays_level_scope_key_year_idx_1d504125\" exists",
+        "sql": "SELECT (to_regclass($1)) IS NOT NULL AS \"result\"",
+        "params": [
+          "\"app\".\"holidays_level_scope_key_year_idx_1d504125\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.holiday_replacements.holiday_replacements_client_id_fkey",
+    "label": "Add foreign key \"holiday_replacements_client_id_fkey\" on \"holiday_replacements\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "holiday_replacements_client_id_fkey",
+        "table": "holiday_replacements"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"holiday_replacements_client_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holiday_replacements_client_id_fkey",
+          "app",
+          "\"app\".\"holiday_replacements\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"holiday_replacements_client_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"holiday_replacements\"\nADD CONSTRAINT \"holiday_replacements_client_id_fkey\"\nFOREIGN KEY (\"client_id\")\nREFERENCES \"app\".\"clients\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"holiday_replacements_client_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holiday_replacements_client_id_fkey",
+          "app",
+          "\"app\".\"holiday_replacements\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "foreignKey.holiday_replacements.holiday_replacements_holiday_id_fkey",
+    "label": "Add foreign key \"holiday_replacements_holiday_id_fkey\" on \"holiday_replacements\"",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres",
+      "details": {
+        "schema": "app",
+        "objectType": "foreignKey",
+        "name": "holiday_replacements_holiday_id_fkey",
+        "table": "holiday_replacements"
+      }
+    },
+    "precheck": [
+      {
+        "description": "ensure FK \"holiday_replacements_holiday_id_fkey\" does not exist",
+        "sql": "SELECT NOT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holiday_replacements_holiday_id_fkey",
+          "app",
+          "\"app\".\"holiday_replacements\""
+        ]
+      }
+    ],
+    "execute": [
+      {
+        "description": "add FK \"holiday_replacements_holiday_id_fkey\"",
+        "sql": "ALTER TABLE \"app\".\"holiday_replacements\"\nADD CONSTRAINT \"holiday_replacements_holiday_id_fkey\"\nFOREIGN KEY (\"holiday_id\")\nREFERENCES \"app\".\"holidays\" (\"id\")"
+      }
+    ],
+    "postcheck": [
+      {
+        "description": "verify FK \"holiday_replacements_holiday_id_fkey\" exists",
+        "sql": "SELECT EXISTS (SELECT 1 AS \"one\" FROM \"pg_constraint\" AS \"c\" INNER JOIN \"pg_namespace\" AS \"n\" ON \"n\".\"oid\" = \"c\".\"connamespace\" WHERE (\"c\".\"conname\" = $1 AND \"n\".\"nspname\" = $2 AND \"c\".\"conrelid\" = to_regclass($3))) AS \"result\"",
+        "params": [
+          "holiday_replacements_holiday_id_fkey",
+          "app",
+          "\"app\".\"holiday_replacements\""
+        ]
+      }
+    ]
+  },
+  {
+    "id": "extras.holidays_live_unique",
+    "label": "one live holiday per level, scope and date (M14-HOL-01 AC4; national included)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "one live holiday per level, scope and date (M14-HOL-01 AC4; national included)",
+        "sql": "CREATE UNIQUE INDEX holidays_live_unique ON app.holidays (level, scope_key, date) NULLS NOT DISTINCT WHERE removed_at IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "extras.holiday_replacements_live_unique",
+    "label": "a client replaces a state holiday at most once (M14-HOL-02)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "a client replaces a state holiday at most once (M14-HOL-02)",
+        "sql": "CREATE UNIQUE INDEX holiday_replacements_live_unique ON app.holiday_replacements (client_id, holiday_id) WHERE removed_at IS NULL",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "extras.holiday_replacements_fn",
+    "label": "replaced holiday must be a state holiday (M14-HOL-02 AC2)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "replaced holiday must be a state holiday (M14-HOL-02 AC2)",
+        "sql": "CREATE FUNCTION app.holiday_replacement_state_only() RETURNS trigger LANGUAGE plpgsql AS $f$\nBEGIN\n  IF NOT EXISTS (SELECT 1 FROM app.holidays h WHERE h.id = NEW.holiday_id AND h.level = 'STATE' AND h.removed_at IS NULL) THEN\n    RAISE EXCEPTION 'only a state holiday can be replaced by a client' USING ERRCODE = '23514', CONSTRAINT = 'holiday_replacements_state_only';\n  END IF;\n  IF NEW.replacement_date = (SELECT date FROM app.holidays WHERE id = NEW.holiday_id) THEN\n    RAISE EXCEPTION 'the replacement day must differ from the holiday' USING ERRCODE = '23514', CONSTRAINT = 'holiday_replacements_other_day';\n  END IF;\n  RETURN NEW;\nEND $f$",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "extras.holiday_replacements_trg",
+    "label": "trigger holiday_replacements_state_only",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "trigger holiday_replacements_state_only",
+        "sql": "CREATE TRIGGER holiday_replacements_state_only BEFORE INSERT ON app.holiday_replacements FOR EACH ROW EXECUTE FUNCTION app.holiday_replacement_state_only()",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  }
+]

@@ -34,9 +34,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'0f6703d7cdb8808f84b241caa333ad36086bc568e713ef1a12640bf580b04542'>;
+  StorageHashBase<'8bf32e323e13fcb93fbcc99b84bb29a4166ac0a2fda21e4de2b743d228cc2927'>;
 export type ExecutionHash =
-  ExecutionHashBase<'a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d'>;
+  ExecutionHashBase<'f0fdf3921d1d4359658dca909658c5c67f2c2fa13702e44c901e667470280fb5'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -739,12 +739,26 @@ export type FieldOutputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
       readonly date: CodecTypes['pg/date-temporal@1']['output'];
+      readonly half: CodecTypes['pg/bool@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly level: 'NATIONAL' | 'STATE' | 'CLIENT' | 'SITE';
       readonly name: Varchar<120>;
       readonly optional: CodecTypes['pg/bool@1']['output'];
       readonly paid: CodecTypes['pg/bool@1']['output'];
+      readonly removedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly removedBy: CodecTypes['pg/uuid@1']['output'] | null;
       readonly scopeKey: Varchar<40> | null;
+      readonly year: CodecTypes['pg/int2@1']['output'];
+    };
+    readonly HolidayReplacement: {
+      readonly clientId: CodecTypes['pg/uuid@1']['output'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly holidayId: CodecTypes['pg/uuid@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly removedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly removedBy: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly replacementDate: CodecTypes['pg/date-temporal@1']['output'];
     };
     readonly IdempotencyKey: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -1676,12 +1690,26 @@ export type FieldInputTypes = {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
       readonly date: CodecTypes['pg/date-temporal@1']['input'];
+      readonly half: CodecTypes['pg/bool@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly level: 'NATIONAL' | 'STATE' | 'CLIENT' | 'SITE';
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly optional: CodecTypes['pg/bool@1']['input'];
       readonly paid: CodecTypes['pg/bool@1']['input'];
+      readonly removedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly removedBy: CodecTypes['pg/uuid@1']['input'] | null;
       readonly scopeKey: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly year: CodecTypes['pg/int2@1']['input'];
+    };
+    readonly HolidayReplacement: {
+      readonly clientId: CodecTypes['pg/uuid@1']['input'];
+      readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly createdBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly holidayId: CodecTypes['pg/uuid@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly removedAt: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly removedBy: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly replacementDate: CodecTypes['pg/date-temporal@1']['input'];
     };
     readonly IdempotencyKey: {
       readonly createdAt: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -2609,16 +2637,30 @@ export type StorageColumnTypes = {
       readonly statement_key: CodecTypes['pg/text@1']['output'] | null;
       readonly status: 'OPEN' | 'COMPUTED' | 'LOCKED' | 'PAID' | 'CANCELLED';
     };
+    readonly holiday_replacements: {
+      readonly client_id: CodecTypes['pg/uuid@1']['output'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
+      readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly holiday_id: CodecTypes['pg/uuid@1']['output'];
+      readonly id: CodecTypes['pg/uuid@1']['output'];
+      readonly removed_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly removed_by: CodecTypes['pg/uuid@1']['output'] | null;
+      readonly replacement_date: CodecTypes['pg/date-temporal@1']['output'];
+    };
     readonly holidays: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
       readonly created_by: CodecTypes['pg/uuid@1']['output'] | null;
       readonly date: CodecTypes['pg/date-temporal@1']['output'];
+      readonly half: CodecTypes['pg/bool@1']['output'];
       readonly id: CodecTypes['pg/uuid@1']['output'];
       readonly level: 'NATIONAL' | 'STATE' | 'CLIENT' | 'SITE';
       readonly name: Varchar<120>;
       readonly optional: CodecTypes['pg/bool@1']['output'];
       readonly paid: CodecTypes['pg/bool@1']['output'];
+      readonly removed_at: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+      readonly removed_by: CodecTypes['pg/uuid@1']['output'] | null;
       readonly scope_key: Varchar<40> | null;
+      readonly year: CodecTypes['pg/int2@1']['output'];
     };
     readonly idempotency_keys: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -3546,16 +3588,30 @@ export type StorageColumnInputTypes = {
       readonly statement_key: CodecTypes['pg/text@1']['input'] | null;
       readonly status: 'OPEN' | 'COMPUTED' | 'LOCKED' | 'PAID' | 'CANCELLED';
     };
+    readonly holiday_replacements: {
+      readonly client_id: CodecTypes['pg/uuid@1']['input'];
+      readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
+      readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly holiday_id: CodecTypes['pg/uuid@1']['input'];
+      readonly id: CodecTypes['pg/uuid@1']['input'];
+      readonly removed_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly removed_by: CodecTypes['pg/uuid@1']['input'] | null;
+      readonly replacement_date: CodecTypes['pg/date-temporal@1']['input'];
+    };
     readonly holidays: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
       readonly created_by: CodecTypes['pg/uuid@1']['input'] | null;
       readonly date: CodecTypes['pg/date-temporal@1']['input'];
+      readonly half: CodecTypes['pg/bool@1']['input'];
       readonly id: CodecTypes['pg/uuid@1']['input'];
       readonly level: 'NATIONAL' | 'STATE' | 'CLIENT' | 'SITE';
       readonly name: CodecTypes['sql/varchar@1']['input'];
       readonly optional: CodecTypes['pg/bool@1']['input'];
       readonly paid: CodecTypes['pg/bool@1']['input'];
+      readonly removed_at: CodecTypes['pg/timestamptz-temporal@1']['input'] | null;
+      readonly removed_by: CodecTypes['pg/uuid@1']['input'] | null;
       readonly scope_key: CodecTypes['sql/varchar@1']['input'] | null;
+      readonly year: CodecTypes['pg/int2@1']['input'];
     };
     readonly idempotency_keys: {
       readonly created_at: CodecTypes['pg/timestamptz-temporal@1']['input'];
@@ -4267,6 +4323,7 @@ export namespace Models {
     costAllocations: app_SupervisorCostAllocation[];
     esiEstablishment: app_Establishment;
     exportLayouts: app_ExportLayout[];
+    holidayReplacements: app_HolidayReplacement[];
     leaveTypes: app_LeaveType[];
     payrollRuns: app_PayrollRun[];
     pfEstablishment: app_Establishment;
@@ -4281,6 +4338,7 @@ export namespace Models {
       | 'costAllocations'
       | 'esiEstablishment'
       | 'exportLayouts'
+      | 'holidayReplacements'
       | 'leaveTypes'
       | 'payrollRuns'
       | 'pfEstablishment'
@@ -4674,13 +4732,31 @@ export namespace Models {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
     createdBy: CodecTypes['pg/uuid@1']['output'] | null;
     date: CodecTypes['pg/date-temporal@1']['output'];
+    half: CodecTypes['pg/bool@1']['output'];
     id: CodecTypes['pg/uuid@1']['output'];
     level: 'NATIONAL' | 'STATE' | 'CLIENT' | 'SITE';
     name: Varchar<120>;
     optional: CodecTypes['pg/bool@1']['output'];
     paid: CodecTypes['pg/bool@1']['output'];
+    removedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    removedBy: CodecTypes['pg/uuid@1']['output'] | null;
     scopeKey: Varchar<40> | null;
-    readonly [RelationKeys]?: never;
+    year: CodecTypes['pg/int2@1']['output'];
+    replacements: app_HolidayReplacement[];
+    readonly [RelationKeys]?: 'replacements';
+  };
+  export type app_HolidayReplacement = {
+    clientId: CodecTypes['pg/uuid@1']['output'];
+    createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
+    createdBy: CodecTypes['pg/uuid@1']['output'] | null;
+    holidayId: CodecTypes['pg/uuid@1']['output'];
+    id: CodecTypes['pg/uuid@1']['output'];
+    removedAt: CodecTypes['pg/timestamptz-temporal@1']['output'] | null;
+    removedBy: CodecTypes['pg/uuid@1']['output'] | null;
+    replacementDate: CodecTypes['pg/date-temporal@1']['output'];
+    client: app_Client;
+    holiday: app_Holiday;
+    readonly [RelationKeys]?: 'client' | 'holiday';
   };
   export type app_IdempotencyKey = {
     createdAt: CodecTypes['pg/timestamptz-temporal@1']['output'];
@@ -5324,6 +5400,7 @@ export declare const models: {
     ExportLayout: Models.app_ExportLayout;
     FnfCase: Models.app_FnfCase;
     Holiday: Models.app_Holiday;
+    HolidayReplacement: Models.app_HolidayReplacement;
     IdempotencyKey: Models.app_IdempotencyKey;
     IfscCode: Models.app_IfscCode;
     ImportJob: Models.app_ImportJob;
@@ -9292,6 +9369,95 @@ type ContractBase = Omit<
                 },
               ];
             };
+            readonly holiday_replacements: {
+              columns: {
+                readonly client_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly created_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly created_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly holiday_id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly id: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: false;
+                };
+                readonly removed_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly removed_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
+                readonly replacement_date: {
+                  readonly nativeType: 'date';
+                  readonly codecId: 'pg/date-temporal@1';
+                  readonly nullable: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'holiday_replacements_client_id_idx_1bb5a570';
+                  readonly prefix: 'holiday_replacements_client_id_idx';
+                  readonly columns: readonly ['client_id'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'holiday_replacements_holiday_id_idx_57087977';
+                  readonly prefix: 'holiday_replacements_holiday_id_idx';
+                  readonly columns: readonly ['holiday_id'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'holiday_replacements';
+                    readonly columns: readonly ['client_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'clients';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'holiday_replacements';
+                    readonly columns: readonly ['holiday_id'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'app' & NamespaceId;
+                    readonly tableName: 'holidays';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
             readonly holidays: {
               columns: {
                 readonly created_at: {
@@ -9310,6 +9476,15 @@ type ContractBase = Omit<
                   readonly nativeType: 'date';
                   readonly codecId: 'pg/date-temporal@1';
                   readonly nullable: false;
+                };
+                readonly half: {
+                  readonly nativeType: 'bool';
+                  readonly codecId: 'pg/bool@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/bool@1', false>;
+                  };
                 };
                 readonly id: {
                   readonly nativeType: 'uuid';
@@ -9345,20 +9520,42 @@ type ContractBase = Omit<
                     readonly value: DefaultLiteralValue<'pg/bool@1', true>;
                   };
                 };
+                readonly removed_at: {
+                  readonly nativeType: 'timestamptz';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly nullable: true;
+                  readonly typeParams: { readonly precision: 6 };
+                };
+                readonly removed_by: {
+                  readonly nativeType: 'uuid';
+                  readonly codecId: 'pg/uuid@1';
+                  readonly nullable: true;
+                };
                 readonly scope_key: {
                   readonly nativeType: 'character varying';
                   readonly codecId: 'sql/varchar@1';
                   readonly nullable: true;
                   readonly typeParams: { readonly length: 40 };
                 };
+                readonly year: {
+                  readonly nativeType: 'int2';
+                  readonly codecId: 'pg/int2@1';
+                  readonly nullable: false;
+                };
               };
               primaryKey: { readonly columns: readonly ['id'] };
-              uniques: readonly [{ readonly columns: readonly ['level', 'scope_key', 'date'] }];
+              uniques: readonly [];
               indexes: readonly [
                 {
                   readonly name: 'holidays_date_idx_b4ca319c';
                   readonly prefix: 'holidays_date_idx';
                   readonly columns: readonly ['date'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'holidays_level_scope_key_year_idx_1d504125';
+                  readonly prefix: 'holidays_level_scope_key_year_idx';
+                  readonly columns: readonly ['level', 'scope_key', 'year'];
                   readonly unique: false;
                 },
               ];
@@ -13164,6 +13361,10 @@ type ContractBase = Omit<
       readonly model: 'ExportLayout';
     };
     readonly fnf_cases: { readonly namespace: 'app' & NamespaceId; readonly model: 'FnfCase' };
+    readonly holiday_replacements: {
+      readonly namespace: 'app' & NamespaceId;
+      readonly model: 'HolidayReplacement';
+    };
     readonly holidays: { readonly namespace: 'app' & NamespaceId; readonly model: 'Holiday' };
     readonly idempotency_keys: {
       readonly namespace: 'app' & NamespaceId;
@@ -15007,6 +15208,17 @@ type ContractBase = Omit<
                 readonly to: {
                   readonly namespace: 'app' & NamespaceId;
                   readonly model: 'ExportLayout';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['clientId'];
+                };
+              };
+              readonly holidayReplacements: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'HolidayReplacement';
                 };
                 readonly cardinality: '1:N';
                 readonly on: {
@@ -17552,6 +17764,10 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/date-temporal@1' };
               };
+              readonly half: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
+              };
               readonly id: {
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
@@ -17576,6 +17792,18 @@ type ContractBase = Omit<
                 readonly nullable: false;
                 readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bool@1' };
               };
+              readonly removedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly removedBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
               readonly scopeKey: {
                 readonly nullable: true;
                 readonly type: {
@@ -17584,8 +17812,24 @@ type ContractBase = Omit<
                   readonly typeParams: { readonly length: 40 };
                 };
               };
+              readonly year: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/int2@1' };
+              };
             };
-            readonly relations: Record<string, never>;
+            readonly relations: {
+              readonly replacements: {
+                readonly to: {
+                  readonly namespace: 'app' & NamespaceId;
+                  readonly model: 'HolidayReplacement';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['holidayId'];
+                };
+              };
+            };
             readonly storage: {
               readonly table: 'holidays';
               readonly namespaceId: 'app';
@@ -17593,12 +17837,94 @@ type ContractBase = Omit<
                 readonly createdAt: { readonly column: 'created_at' };
                 readonly createdBy: { readonly column: 'created_by' };
                 readonly date: { readonly column: 'date' };
+                readonly half: { readonly column: 'half' };
                 readonly id: { readonly column: 'id' };
                 readonly level: { readonly column: 'level' };
                 readonly name: { readonly column: 'name' };
                 readonly optional: { readonly column: 'optional' };
                 readonly paid: { readonly column: 'paid' };
+                readonly removedAt: { readonly column: 'removed_at' };
+                readonly removedBy: { readonly column: 'removed_by' };
                 readonly scopeKey: { readonly column: 'scope_key' };
+                readonly year: { readonly column: 'year' };
+              };
+            };
+          };
+          readonly HolidayReplacement: {
+            readonly fields: {
+              readonly clientId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly createdBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly holidayId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly removedAt: {
+                readonly nullable: true;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-temporal@1';
+                  readonly typeParams: { readonly precision: 6 };
+                };
+              };
+              readonly removedBy: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/uuid@1' };
+              };
+              readonly replacementDate: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/date-temporal@1' };
+              };
+            };
+            readonly relations: {
+              readonly client: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'Client' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['clientId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly holiday: {
+                readonly to: { readonly namespace: 'app' & NamespaceId; readonly model: 'Holiday' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['holidayId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'holiday_replacements';
+              readonly namespaceId: 'app';
+              readonly fields: {
+                readonly clientId: { readonly column: 'client_id' };
+                readonly createdAt: { readonly column: 'created_at' };
+                readonly createdBy: { readonly column: 'created_by' };
+                readonly holidayId: { readonly column: 'holiday_id' };
+                readonly id: { readonly column: 'id' };
+                readonly removedAt: { readonly column: 'removed_at' };
+                readonly removedBy: { readonly column: 'removed_by' };
+                readonly replacementDate: { readonly column: 'replacement_date' };
               };
             };
           };
@@ -22151,6 +22477,14 @@ type ContractBase = Omit<
           readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
           readonly ref: {
             readonly entry: 'fnf_cases';
+            readonly field: 'id';
+            readonly namespace: 'app';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv7'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'holiday_replacements';
             readonly field: 'id';
             readonly namespace: 'app';
           };

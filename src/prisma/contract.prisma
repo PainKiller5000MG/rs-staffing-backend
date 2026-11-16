@@ -572,6 +572,7 @@ namespace app {
     workOrders         WorkOrder[]
     exportLayouts      ExportLayout[]
     attendanceLayouts  AttendanceLayout[]
+    holidayReplacements HolidayReplacement[]
 
     @@index([stateCode])
     @@check(expression: "code ~ '^[A-Z0-9][A-Z0-9-]{2,19}$'", name: "clients_code_format")
@@ -1061,20 +1062,51 @@ namespace app {
   }
 
   /// scopeKey: state code for STATE, client id for CLIENT, site id for SITE, null for NATIONAL.
+  /// Never deleted: removedAt hides a row (the live-row unique index is in the migration).
   model Holiday {
-    id        Uuid           @id @default(uuid(7))
-    level     HolidayLevel
-    scopeKey  VarChar(40)?   @map("scope_key")
-    date      Date
-    name      VarChar(120)
-    paid      Boolean        @default(true)
-    optional  Boolean        @default(false)
-    createdAt Timestamptz(6) @default(now()) @map("created_at")
-    createdBy Uuid?          @map("created_by")
+    id           Uuid                 @id @default(uuid(7))
+    level        HolidayLevel
+    scopeKey     VarChar(40)?         @map("scope_key")
+    date         Date
+    year         SmallInt
+    name         VarChar(120)
+    paid         Boolean              @default(true)
+    optional     Boolean              @default(false)
+    half         Boolean              @default(false) // P1: half-day holiday = 0.5 paid holiday + 0.5 working day
+    createdAt    Timestamptz(6)       @default(now()) @map("created_at")
+    createdBy    Uuid?                @map("created_by")
+    removedAt    Timestamptz(6)?      @map("removed_at")
+    removedBy    Uuid?                @map("removed_by")
 
-    @@unique([level, scopeKey, date])
+    replacements HolidayReplacement[]
+
     @@index([date])
+    @@index([level, scopeKey, year])
+    @@check(expression: "year = EXTRACT(YEAR FROM date)", name: "holidays_year_matches_date")
+    @@check(expression: "(level = 'NATIONAL') = (scope_key IS NULL)", name: "holidays_scope_key_by_level")
+    @@check(expression: "level <> 'NATIONAL' OR (paid AND NOT optional AND NOT half)", name: "holidays_national_paid_fixed")
+    @@check(expression: "(removed_at IS NULL) = (removed_by IS NULL)", name: "holidays_removed_together")
     @@map("holidays")
+  }
+
+  /// A client swaps a STATE holiday for another day (M14-HOL-02). National holidays can't be replaced.
+  model HolidayReplacement {
+    id              Uuid            @id @default(uuid(7))
+    clientId        Uuid            @map("client_id")
+    holidayId       Uuid            @map("holiday_id")
+    replacementDate Date            @map("replacement_date")
+    createdAt       Timestamptz(6)  @default(now()) @map("created_at")
+    createdBy       Uuid?           @map("created_by")
+    removedAt       Timestamptz(6)? @map("removed_at")
+    removedBy       Uuid?           @map("removed_by")
+
+    client          Client          @relation(fields: [clientId], references: [id])
+    holiday         Holiday         @relation(fields: [holidayId], references: [id])
+
+    @@index([clientId])
+    @@index([holidayId])
+    @@check(expression: "(removed_at IS NULL) = (removed_by IS NULL)", name: "holiday_replacements_removed_together")
+    @@map("holiday_replacements")
   }
 
   /// Flags decide every statutory base (50% wage rule, ESI gross, PF wages).

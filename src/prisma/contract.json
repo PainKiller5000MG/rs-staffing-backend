@@ -160,6 +160,10 @@
       "model": "FnfCase",
       "namespace": "app"
     },
+    "holiday_replacements": {
+      "model": "HolidayReplacement",
+      "namespace": "app"
+    },
     "holidays": {
       "model": "Holiday",
       "namespace": "app"
@@ -3155,6 +3159,21 @@
                 },
                 "to": {
                   "model": "ExportLayout",
+                  "namespace": "app"
+                }
+              },
+              "holidayReplacements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "clientId"
+                  ]
+                },
+                "to": {
+                  "model": "HolidayReplacement",
                   "namespace": "app"
                 }
               },
@@ -7266,6 +7285,13 @@
                   "kind": "scalar"
                 }
               },
+              "half": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/bool@1",
+                  "kind": "scalar"
+                }
+              },
               "id": {
                 "nullable": false,
                 "type": {
@@ -7310,6 +7336,23 @@
                   "kind": "scalar"
                 }
               },
+              "removedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "removedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
               "scopeKey": {
                 "nullable": true,
                 "type": {
@@ -7319,9 +7362,32 @@
                     "length": 40
                   }
                 }
+              },
+              "year": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/int2@1",
+                  "kind": "scalar"
+                }
               }
             },
-            "relations": {},
+            "relations": {
+              "replacements": {
+                "cardinality": "1:N",
+                "on": {
+                  "localFields": [
+                    "id"
+                  ],
+                  "targetFields": [
+                    "holidayId"
+                  ]
+                },
+                "to": {
+                  "model": "HolidayReplacement",
+                  "namespace": "app"
+                }
+              }
+            },
             "storage": {
               "fields": {
                 "createdAt": {
@@ -7332,6 +7398,9 @@
                 },
                 "date": {
                   "column": "date"
+                },
+                "half": {
+                  "column": "half"
                 },
                 "id": {
                   "column": "id"
@@ -7348,12 +7417,151 @@
                 "paid": {
                   "column": "paid"
                 },
+                "removedAt": {
+                  "column": "removed_at"
+                },
+                "removedBy": {
+                  "column": "removed_by"
+                },
                 "scopeKey": {
                   "column": "scope_key"
+                },
+                "year": {
+                  "column": "year"
                 }
               },
               "namespaceId": "app",
               "table": "holidays"
+            }
+          },
+          "HolidayReplacement": {
+            "fields": {
+              "clientId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "createdAt": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "createdBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "holidayId": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "id": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "removedAt": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "kind": "scalar",
+                  "typeParams": {
+                    "precision": 6
+                  }
+                }
+              },
+              "removedBy": {
+                "nullable": true,
+                "type": {
+                  "codecId": "pg/uuid@1",
+                  "kind": "scalar"
+                }
+              },
+              "replacementDate": {
+                "nullable": false,
+                "type": {
+                  "codecId": "pg/date-temporal@1",
+                  "kind": "scalar"
+                }
+              }
+            },
+            "relations": {
+              "client": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "clientId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Client",
+                  "namespace": "app"
+                }
+              },
+              "holiday": {
+                "cardinality": "N:1",
+                "nullable": false,
+                "on": {
+                  "localFields": [
+                    "holidayId"
+                  ],
+                  "targetFields": [
+                    "id"
+                  ]
+                },
+                "to": {
+                  "model": "Holiday",
+                  "namespace": "app"
+                }
+              }
+            },
+            "storage": {
+              "fields": {
+                "clientId": {
+                  "column": "client_id"
+                },
+                "createdAt": {
+                  "column": "created_at"
+                },
+                "createdBy": {
+                  "column": "created_by"
+                },
+                "holidayId": {
+                  "column": "holiday_id"
+                },
+                "id": {
+                  "column": "id"
+                },
+                "removedAt": {
+                  "column": "removed_at"
+                },
+                "removedBy": {
+                  "column": "removed_by"
+                },
+                "replacementDate": {
+                  "column": "replacement_date"
+                }
+              },
+              "namespaceId": "app",
+              "table": "holiday_replacements"
             }
           },
           "IdempotencyKey": {
@@ -20048,12 +20256,151 @@
               },
               "uniques": []
             },
+            "holiday_replacements": {
+              "checks": [
+                {
+                  "expression": "(removed_at IS NULL) = (removed_by IS NULL)",
+                  "name": "holiday_replacements_removed_together_a0981901",
+                  "prefix": "holiday_replacements_removed_together"
+                }
+              ],
+              "columns": {
+                "client_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "created_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nativeType": "timestamptz",
+                  "nullable": false,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "created_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "holiday_id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": false
+                },
+                "removed_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "removed_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
+                "replacement_date": {
+                  "codecId": "pg/date-temporal@1",
+                  "nativeType": "date",
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "source": {
+                    "columns": [
+                      "client_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "holiday_replacements"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "clients"
+                  }
+                },
+                {
+                  "source": {
+                    "columns": [
+                      "holiday_id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "holiday_replacements"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "app",
+                    "tableName": "holidays"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "client_id"
+                  ],
+                  "name": "holiday_replacements_client_id_idx_1bb5a570",
+                  "prefix": "holiday_replacements_client_id_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "holiday_id"
+                  ],
+                  "name": "holiday_replacements_holiday_id_idx_57087977",
+                  "prefix": "holiday_replacements_holiday_id_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
+              },
+              "uniques": []
+            },
             "holidays": {
               "checks": [
                 {
                   "expression": "\"level\" IN ('NATIONAL', 'STATE', 'CLIENT', 'SITE')",
                   "name": "holidays_level_check_892e8ea2",
                   "prefix": "holidays_level_check"
+                },
+                {
+                  "expression": "level <> 'NATIONAL' OR (paid AND NOT optional AND NOT half)",
+                  "name": "holidays_national_paid_fixed_6abe4056",
+                  "prefix": "holidays_national_paid_fixed"
+                },
+                {
+                  "expression": "(removed_at IS NULL) = (removed_by IS NULL)",
+                  "name": "holidays_removed_together_a0981901",
+                  "prefix": "holidays_removed_together"
+                },
+                {
+                  "expression": "(level = 'NATIONAL') = (scope_key IS NULL)",
+                  "name": "holidays_scope_key_by_level_42a63ec2",
+                  "prefix": "holidays_scope_key_by_level"
+                },
+                {
+                  "expression": "year = EXTRACT(YEAR FROM date)",
+                  "name": "holidays_year_matches_date_4953e491",
+                  "prefix": "holidays_year_matches_date"
                 }
               ],
               "columns": {
@@ -20077,6 +20424,15 @@
                 "date": {
                   "codecId": "pg/date-temporal@1",
                   "nativeType": "date",
+                  "nullable": false
+                },
+                "half": {
+                  "codecId": "pg/bool@1",
+                  "default": {
+                    "kind": "literal",
+                    "value": false
+                  },
+                  "nativeType": "bool",
                   "nullable": false
                 },
                 "id": {
@@ -20121,6 +20477,19 @@
                   "nativeType": "bool",
                   "nullable": false
                 },
+                "removed_at": {
+                  "codecId": "pg/timestamptz-temporal@1",
+                  "nativeType": "timestamptz",
+                  "nullable": true,
+                  "typeParams": {
+                    "precision": 6
+                  }
+                },
+                "removed_by": {
+                  "codecId": "pg/uuid@1",
+                  "nativeType": "uuid",
+                  "nullable": true
+                },
                 "scope_key": {
                   "codecId": "sql/varchar@1",
                   "nativeType": "character varying",
@@ -20128,6 +20497,11 @@
                   "typeParams": {
                     "length": 40
                   }
+                },
+                "year": {
+                  "codecId": "pg/int2@1",
+                  "nativeType": "int2",
+                  "nullable": false
                 }
               },
               "foreignKeys": [],
@@ -20139,6 +20513,16 @@
                   "name": "holidays_date_idx_b4ca319c",
                   "prefix": "holidays_date_idx",
                   "unique": false
+                },
+                {
+                  "columns": [
+                    "level",
+                    "scope_key",
+                    "year"
+                  ],
+                  "name": "holidays_level_scope_key_year_idx_1d504125",
+                  "prefix": "holidays_level_scope_key_year_idx",
+                  "unique": false
                 }
               ],
               "primaryKey": {
@@ -20146,15 +20530,7 @@
                   "id"
                 ]
               },
-              "uniques": [
-                {
-                  "columns": [
-                    "level",
-                    "scope_key",
-                    "date"
-                  ]
-                }
-              ]
+              "uniques": []
             },
             "idempotency_keys": {
               "columns": {
@@ -25523,10 +25899,10 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "0f6703d7cdb8808f84b241caa333ad36086bc568e713ef1a12640bf580b04542"
+    "storageHash": "8bf32e323e13fcb93fbcc99b84bb29a4166ac0a2fda21e4de2b743d228cc2927"
   },
   "execution": {
-    "executionHash": "a60a507405775f73ff7b0004622b90fe2d1d38cf95e0a71fd66e21e6f9ac209d",
+    "executionHash": "f0fdf3921d1d4359658dca909658c5c67f2c2fa13702e44c901e667470280fb5",
     "mutations": {
       "defaults": [
         {
@@ -26030,6 +26406,17 @@
           },
           "ref": {
             "entry": "fnf_cases",
+            "field": "id",
+            "namespace": "app"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "uuidv7",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "holiday_replacements",
             "field": "id",
             "namespace": "app"
           }

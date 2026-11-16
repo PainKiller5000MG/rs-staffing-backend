@@ -230,13 +230,16 @@ async function seedApp(tx: Tx, authIds: Record<D.UserKey, string>): Promise<Seed
   );
 
   // --- Holidays ---------------------------------------------------------------
-  const holidays = [
-    { level: 'NATIONAL', scopeKey: null, date: '2026-08-15', name: 'Independence Day' },
-    { level: 'NATIONAL', scopeKey: null, date: '2026-10-02', name: 'Gandhi Jayanti' },
-    { level: 'CLIENT', scopeKey: clients[D.CLIENT_HOLIDAY.client], date: D.CLIENT_HOLIDAY.date, name: D.CLIENT_HOLIDAY.name },
-  ];
+  // M14-HOL-01 AC2: the three national days exist for every year (2020..2060).
+  const holidays = [];
+  for (let y = 2020; y <= 2060; y++) {
+    holidays.push({ level: 'NATIONAL', scopeKey: null, date: `${y}-01-26`, name: 'Republic Day' });
+    holidays.push({ level: 'NATIONAL', scopeKey: null, date: `${y}-08-15`, name: 'Independence Day' });
+    holidays.push({ level: 'NATIONAL', scopeKey: null, date: `${y}-10-02`, name: 'Gandhi Jayanti' });
+  }
+  holidays.push({ level: 'CLIENT', scopeKey: clients[D.CLIENT_HOLIDAY.client], date: D.CLIENT_HOLIDAY.date, name: D.CLIENT_HOLIDAY.name });
   for (const h of holidays) {
-    await o.Holiday.create(row<Models.app_Holiday>({ ...h, date: date(h.date), paid: true, optional: false, createdBy: admin }));
+    await o.Holiday.create(row<Models.app_Holiday>({ ...h, date: date(h.date), year: Number(h.date.slice(0, 4)), paid: true, optional: false, half: false, createdBy: admin }));
   }
 
   // --- Employees --------------------------------------------------------------
