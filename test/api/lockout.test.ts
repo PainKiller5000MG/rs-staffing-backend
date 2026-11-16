@@ -23,7 +23,7 @@ async function newUser() {
   return { admin, mobile, id: created.body.id as string };
 }
 
-test(`${LOCKOUT.shortMax} wrong codes lock the number for 15 minutes, even for the right code`, async () => {
+test(`M1-SEC-06 AC1: ${LOCKOUT.shortMax} wrong codes lock the number for 15 minutes, even for the right code`, async () => {
   const { mobile } = await newUser();
   const since = Temporal.Now.instant();
   await request('POST', '/api/auth/phone-number/send-otp', { body: { phoneNumber: mobile } });
@@ -33,13 +33,13 @@ test(`${LOCKOUT.shortMax} wrong codes lock the number for 15 minutes, even for t
   expect(await verify(mobile, code)).toMatchObject({ status: 429, body: { code: 'TOO_MANY_ATTEMPTS' } });
 });
 
-test('an unregistered number is refused the same way (no hint that it exists)', async () => {
+test('M1-SEC-06 AC3: an unregistered number is refused the same way (no hint that it exists)', async () => {
   const mobile = freshMobile();
   for (let i = 0; i < LOCKOUT.shortMax; i++) await verify(mobile, '000000');
   expect(await verify(mobile, '123456')).toMatchObject({ status: 429, body: { code: 'TOO_MANY_ATTEMPTS' } });
 });
 
-test(`${LOCKOUT.longMax} failures in a day lock the user until an Admin re-enables them`, async () => {
+test(`M1-SEC-06 AC2 AC3: ${LOCKOUT.longMax} failures in a day lock the user until an Admin re-enables them`, async () => {
   const { admin, mobile, id } = await newUser();
   const lockout = container.cradle.otpLockout;
   for (let i = 0; i < LOCKOUT.longMax; i++) await (await lockout.begin(mobile, null)).fail();
@@ -52,7 +52,7 @@ test(`${LOCKOUT.longMax} failures in a day lock the user until an Admin re-enabl
   await login(mobile); // and they can sign in again
 });
 
-test('concurrent wrong guesses cannot all slip under the cap', async () => {
+test('M1-SEC-06 AC1: concurrent wrong guesses cannot all slip under the cap', async () => {
   const { mobile } = await newUser();
   const results = await Promise.all(Array.from({ length: 15 }, () => verify(mobile, '000000')));
   expect(results.filter((r) => r.status === 429).length).toBeGreaterThanOrEqual(15 - LOCKOUT.shortMax);

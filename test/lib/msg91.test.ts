@@ -20,7 +20,7 @@ function provider(response: Response) {
 }
 
 describe('Msg91Sms', () => {
-  test('sends the OTP as a template variable to the flow API', async () => {
+  test('M1-OTP-08 AC1: sends the OTP as a template variable to the flow API', async () => {
     const { sms, httpClient } = provider(reply(200, { type: 'success', message: '3567696d6b36373' }));
     await sms.sendOtp('+919000000001', '061682');
     const [url, init] = httpClient.mock.calls[0]!;

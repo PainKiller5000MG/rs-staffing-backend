@@ -24,7 +24,7 @@ test('the Users routes are in /openapi.json and need a session', async () => {
 });
 
 describe('create (M1-USR-01)', () => {
-  test('Admin creates an HQ user; the write is audited in the same transaction', async () => {
+  test('M1-USR-01 AC1 AC3: Admin creates an HQ user; the write is audited in the same transaction', async () => {
     const mobile = freshMobile();
     const res = await request('POST', '/users', { cookie: admin, body: { name: 'New Payroll Exec', mobile, email: `pe.${Date.now()}@rsstaffing.test`, role: 'PAYROLL' } });
     expect(res.status).toBe(201);
@@ -37,7 +37,7 @@ describe('create (M1-USR-01)', () => {
     expect((await request('GET', '/me', { cookie })).body.role).toBe('PAYROLL');
   });
 
-  test('duplicate mobile → 409 DUPLICATE', async () => {
+  test('M1-USR-01 AC2: duplicate mobile → 409 DUPLICATE', async () => {
     const res = await request('POST', '/users', { cookie: admin, body: { name: 'Dup', mobile: mobileOf('hr'), role: 'HR' } });
     expect(res).toMatchObject({ status: 409, body: { error: { code: 'DUPLICATE' } } });
   });
@@ -55,7 +55,7 @@ describe('create (M1-USR-01)', () => {
 });
 
 describe('list and get (M1-USR-04)', () => {
-  test('filters by role and pages with a cursor', async () => {
+  test('M1-USR-04 AC1: filters by role and pages with a cursor', async () => {
     const page1 = await request('GET', '/users?role=SUPERVISOR&limit=1', { cookie: hr });
     expect(page1.status).toBe(200);
     expect(page1.body.items).toHaveLength(1);
@@ -73,7 +73,7 @@ describe('list and get (M1-USR-04)', () => {
 });
 
 describe('site scopes are maker-checker (M1-SCP-06)', () => {
-  test('HR assigns; HR cannot approve their own; Admin approves; the supervisor gains the site', async () => {
+  test('M1-USR-07 AC1 AC3: HR assigns; HR cannot approve their own; Admin approves; the supervisor gains the site', async () => {
     const assigned = await request('POST', `/users/${supB.id}/site-scopes`, { cookie: hr, body: { siteId: siteId['NTX-MDP'] } });
     expect(assigned).toMatchObject({ status: 201, body: { status: 'PENDING' } });
 
@@ -98,7 +98,7 @@ describe('site scopes are maker-checker (M1-SCP-06)', () => {
 });
 
 describe('roles and deactivation (M1-USR-05, 06)', () => {
-  test('a user can be disabled, which ends their session, and re-enabled', async () => {
+  test('M1-USR-06 AC1: a user can be disabled, which ends their session, and re-enabled', async () => {
     const mobile = freshMobile();
     const created = await request('POST', '/users', { cookie: admin, body: { name: 'Temp HR', mobile, role: 'HR' } });
     const cookie = await login(mobile);
@@ -110,7 +110,7 @@ describe('roles and deactivation (M1-USR-05, 06)', () => {
     expect((await request('POST', `/users/${created.body.id}/enable`, { cookie: admin })).body.status).toBe('ACTIVE');
   });
 
-  test('role change is audited with old and new role', async () => {
+  test('M1-USR-05 AC3: role change is audited with old and new role', async () => {
     const created = await request('POST', '/users', { cookie: admin, body: { name: 'Role Test', mobile: freshMobile(), role: 'HR' } });
     const changed = await request('PATCH', `/users/${created.body.id}/role`, { cookie: admin, body: { role: 'ACCOUNTS' } });
     expect(changed.body.role).toBe('ACCOUNTS');

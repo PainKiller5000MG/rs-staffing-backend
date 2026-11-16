@@ -9,7 +9,7 @@ import { countOutbox, freshMobile, testApp } from '../helpers.ts';
 afterAll(() => db.close());
 const randomIp = () => `203.0.${randomInt(0, 255)}.${randomInt(1, 255)}`;
 
-test('per phone: the 6th send in an hour is dropped', async () => {
+test('M1-OTP-03 AC1: per phone: the 6th send in an hour is dropped', async () => {
   const mobile = freshMobile();
   await db.orm.app.User.create({ name: 'Limit Test', mobile, role: 'HR', status: 'ACTIVE' } as never);
   const gate = new OtpGate({ db, config: { OTP_MAX_PER_PHONE_HOUR: 5, OTP_MAX_PER_IP_HOUR: 1000 } });
@@ -18,7 +18,7 @@ test('per phone: the 6th send in an hour is dropped', async () => {
   expect(decisions).toEqual(['SEND', 'SEND', 'SEND', 'SEND', 'SEND', 'THROTTLED']);
 });
 
-test('concurrent sends for one phone still stop at the cap (no race)', async () => {
+test('M1-OTP-03 AC1: concurrent sends for one phone still stop at the cap (no race)', async () => {
   const mobile = freshMobile();
   await db.orm.app.User.create({ name: 'Race Test', mobile, role: 'HR', status: 'ACTIVE' } as never);
   const gate = new OtpGate({ db, config: { OTP_MAX_PER_PHONE_HOUR: 5, OTP_MAX_PER_IP_HOUR: 1000 } });
@@ -26,7 +26,7 @@ test('concurrent sends for one phone still stop at the cap (no race)', async () 
   expect(decisions.filter((d) => d === 'SEND')).toHaveLength(5);
 });
 
-test('per IP: attempts on unknown numbers count too', async () => {
+test('M1-OTP-03 AC1: per IP: attempts on unknown numbers count too', async () => {
   const gate = new OtpGate({ db, config: { OTP_MAX_PER_PHONE_HOUR: 5, OTP_MAX_PER_IP_HOUR: 20 } });
   const ip = randomIp();
   const decisions = [];
@@ -35,7 +35,7 @@ test('per IP: attempts on unknown numbers count too', async () => {
   expect(decisions[20]).toBe('THROTTLED');
 });
 
-test('over the limit, send-otp answers exactly like a successful send, and no SMS goes out', async () => {
+test('M1-OTP-03 AC1: over the limit, send-otp answers exactly like a successful send, and no SMS goes out', async () => {
   const { app, container } = testApp();
   const mobile = freshMobile();
   await db.orm.app.User.create({ name: 'Limit Test', mobile, role: 'HR', status: 'ACTIVE' } as never);

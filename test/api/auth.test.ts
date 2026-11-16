@@ -6,7 +6,7 @@ import { countOutbox, mobileOf, testApp } from '../helpers.ts';
 const { request, login } = testApp();
 afterAll(() => db.close());
 
-test('9000000001 logs in with the OTP from the outbox and gets a session', async () => {
+test('M1-OTP-08 AC1: 9000000001 logs in with the OTP from the outbox and gets a session', async () => {
   const cookie = await login(mobileOf('admin'));
   expect(cookie).toContain('better-auth.session_token=');
   const me = await request('GET', '/me', { cookie });

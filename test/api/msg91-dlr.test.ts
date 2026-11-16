@@ -47,7 +47,7 @@ describe('MSG91 delivery reports', () => {
     expect((await statusOf()).status).toBe('SUBMITTED');
   });
 
-  test('a delivered report updates the delivery once; a replay changes nothing', async () => {
+  test('M1-OTP-08 AC1: a delivered report updates the delivery once; a replay changes nothing', async () => {
     const event = { requestId, telNum: '919000000006', status: '1', eventName: 'delivered' };
     expect(await dlr(event)).toMatchObject({ status: 200, body: { received: 1, updated: 1, unmatched: 0 } });
     const after = await statusOf();

@@ -122,7 +122,7 @@ describe('role changes and disabling (M1-USR-05, 06)', () => {
     ctxSetup = setup();
   });
 
-  test('the last active Admin cannot be demoted', async () => {
+  test('M1-USR-05 AC2: the last active Admin cannot be demoted', async () => {
     const { service, repo, me } = ctxSetup;
     repo.users.set(me.id, makeUser({ id: me.id, role: 'ADMIN' }));
     await expect(service.changeRole(me.id, { role: 'HR' })).rejects.toMatchObject({ status: 422, code: 'LAST_ADMIN' });
@@ -154,7 +154,7 @@ describe('role changes and disabling (M1-USR-05, 06)', () => {
 });
 
 describe('site scopes: maker-checker (M1-SCP-06, M1-USR-07)', () => {
-  test('assigning creates a pending scope; only supervisors can have one', async () => {
+  test('M1-USR-07 AC1 AC2: assigning creates a pending scope; only supervisors can have one', async () => {
     const { service, repo } = setup();
     const sup = makeUser({ role: 'SUPERVISOR', employeeId: 'e1' });
     const hr = makeUser({ role: 'HR' });
@@ -177,7 +177,7 @@ describe('site scopes: maker-checker (M1-SCP-06, M1-USR-07)', () => {
     await expect(checker.service.approveScope(scope.id)).resolves.toMatchObject({ status: 'ACTIVE', approvedBy: checker.me.id });
   });
 
-  test('revoking ends a scope at once and cannot be repeated', async () => {
+  test('M1-USR-07 AC3: revoking ends a scope at once and cannot be repeated', async () => {
     const { service, repo } = setup();
     const sup = makeUser({ role: 'SUPERVISOR', employeeId: 'e1' });
     repo.users.set(sup.id, sup);

@@ -14,7 +14,7 @@ async function idleFor(cookie: string, minutes: number) {
   await db.orm.app.SessionActivity.where({ sessionId: session!.session.id as never }).update({ lastSeenAt: at as never });
 }
 
-test('HQ: 31 idle minutes end the session (and it stays ended)', async () => {
+test('M1-LOG-06 AC1: HQ: 31 idle minutes end the session (and it stays ended)', async () => {
   const cookie = await login(mobileOf('accounts'));
   expect((await request('GET', '/me', { cookie })).status).toBe(200);
   await idleFor(cookie, 31);
@@ -22,19 +22,19 @@ test('HQ: 31 idle minutes end the session (and it stays ended)', async () => {
   expect((await request('GET', '/me', { cookie })).status).toBe(401);
 });
 
-test('HQ: 29 idle minutes are fine', async () => {
+test('M1-LOG-06 AC1 AC2: HQ and auditor: 29 idle minutes are fine', async () => {
   const cookie = await login(mobileOf('auditor'));
   await idleFor(cookie, 29);
   expect((await request('GET', '/me', { cookie })).status).toBe(200);
 });
 
-test('supervisors have no idle timeout by default', async () => {
+test('M1-LOG-06 AC1: the timeout is per role: supervisors have none by default', async () => {
   const cookie = await login(mobileOf('supB'));
   await idleFor(cookie, 600);
   expect((await request('GET', '/me', { cookie })).status).toBe(200);
 });
 
-test('an idle session is dead on Better Auth endpoints too', async () => {
+test('M1-LOG-06 AC1: an idle session is dead on Better Auth endpoints too', async () => {
   const cookie = await login(mobileOf('hr'));
   await idleFor(cookie, 31);
   const res = await request('GET', '/api/auth/get-session', { cookie });
@@ -42,7 +42,7 @@ test('an idle session is dead on Better Auth endpoints too', async () => {
   expect((await request('GET', '/me', { cookie })).status).toBe(401);
 });
 
-test('a session with no activity row yet still times out (counted from its creation)', async () => {
+test('M1-LOG-06 AC1: a session with no activity row yet still times out (counted from its creation)', async () => {
   const cookie = await login(mobileOf('payroll'));
   const session = await container.cradle.auth.api.getSession({ headers: new Headers({ cookie }) });
   await db.orm.app.SessionActivity.where({ sessionId: session!.session.id as never }).delete();
