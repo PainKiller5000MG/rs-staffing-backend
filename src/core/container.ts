@@ -7,6 +7,7 @@ import type pg from 'pg';
 import { createAuth, createAuthPool, type Auth } from '../auth/auth.ts';
 import { OtpGate } from '../auth/otp-gate.ts';
 import { OtpLockout } from '../auth/lockout.ts';
+import { StubBankVerifier, type BankVerifier } from '../lib/bank-verifier.ts';
 import { MockSms, Msg91Sms, type SmsProvider } from '../lib/sms.ts';
 import { db } from '../prisma/db.ts';
 import type { Models } from '../prisma/contract.d.ts';
@@ -23,6 +24,7 @@ export type RootCradle = {
   executor: Db;
   sms: SmsProvider;
   storage: FileStorage;
+  bankVerifier: BankVerifier;
   authPool: pg.Pool;
   auth: Auth;
   otpGate: OtpGate;
@@ -68,6 +70,7 @@ export function createRootContainer(overrides: Partial<Record<keyof RootCradle, 
     db: asValue(db),
     executor: asValue(db),
     storage: asClass(LocalStorage).singleton(),
+    bankVerifier: asClass(StubBankVerifier).singleton(),
     sms: (cfg.SMS_PROVIDER === 'msg91' ? asClass(Msg91Sms) : asClass(MockSms)).singleton(),
     authPool: asFunction(() => createAuthPool(cfg.DATABASE_URL))
       .singleton()

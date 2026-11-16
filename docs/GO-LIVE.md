@@ -48,6 +48,18 @@ Work that must land before the first production payroll. Each item becomes an is
 - [ ] Photos and card images use `LocalStorage`; switch to the S3-compatible bucket with server-side encryption (M12-ENC-02) and confirm `aadhaar/` and `photos/` are private.
 - [ ] Decide whether HR may see the full date of birth (today only the year is returned).
 
+## Bank accounts (M3-BNK)
+- [ ] Penny-drop: `StubBankVerifier` (always "verified", echoes the entered name) is registered in `core/container.ts`.
+      Swap in the real provider (Razorpay / Cashfree / Decentro, still an open question) behind `BankVerifier`; the stub's
+      "account ending 0000 = not found" hook must not survive.
+- [ ] `ifsc_codes` holds 7 sample rows. Load the full Razorpay IFSC dataset and schedule the monthly refresh.
+- [ ] The "your bank account was changed" alert is the `employee.bank_changed` event; nothing listens yet. Add the SMS
+      (DLT template) / notification listener with M10.
+- [ ] M3-BNK-03 AC3 (sensitive-action re-check, M1-SEC-08) is not wired into `approve`; do it when M1-SEC-08 exists.
+- [ ] `BankAccountsService.requireForActivation` must be called by the employee-status story (M3-STA) before DRAFT → ACTIVE;
+      `accountOn(employeeId, date)` is for the payroll engine and bank-transfer sheet (M7/M9).
+- [ ] M3-BNK-05 (many bank changes in a day → alert) not built: needs M1-AUD-07.
+
 ## Logins
 
 - [ ] The 2 active Admins exist, on different phones (M1-SEC-04); the break-glass restore command documented for the operator.

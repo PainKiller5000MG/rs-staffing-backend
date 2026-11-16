@@ -3204,6 +3204,231 @@
         "required": [
           "aadhaarNumber"
         ]
+      },
+      "IfscLookup": {
+        "type": "object",
+        "properties": {
+          "ifsc": {
+            "type": "string"
+          },
+          "bankName": {
+            "type": "string"
+          },
+          "branch": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ifsc",
+          "bankName",
+          "branch"
+        ]
+      },
+      "BankAccountList": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BankAccount"
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "BankAccount": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "employeeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "status": {
+            "$ref": "#/components/schemas/BankAccountStatus"
+          },
+          "holderName": {
+            "type": "string"
+          },
+          "accountMasked": {
+            "type": "string",
+            "example": "XXXXXX4321"
+          },
+          "ifsc": {
+            "type": "string"
+          },
+          "bankName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "branch": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "accountType": {
+            "$ref": "#/components/schemas/BankAccountType"
+          },
+          "hasProof": {
+            "type": "boolean"
+          },
+          "verifyStatus": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "VERIFIED",
+              "NAME_MISMATCH",
+              "FAILED"
+            ]
+          },
+          "bankReturnedName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "nameMatchScore": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "mismatchReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "sharedOverrideReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "effectiveFrom": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "effectiveTo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "employeeId",
+          "status",
+          "holderName",
+          "accountMasked",
+          "ifsc",
+          "bankName",
+          "branch",
+          "accountType",
+          "hasProof",
+          "verifyStatus",
+          "bankReturnedName",
+          "nameMatchScore",
+          "mismatchReason",
+          "sharedOverrideReason",
+          "effectiveFrom",
+          "effectiveTo",
+          "createdAt"
+        ]
+      },
+      "BankAccountStatus": {
+        "type": "string",
+        "enum": [
+          "PENDING_VERIFICATION",
+          "NAME_MISMATCH",
+          "FAILED",
+          "AWAITING_APPROVAL",
+          "SCHEDULED",
+          "ACTIVE",
+          "INACTIVE"
+        ]
+      },
+      "BankAccountType": {
+        "type": "string",
+        "enum": [
+          "SAVINGS",
+          "CURRENT"
+        ]
+      },
+      "CreateBankAccountBody": {
+        "type": "object",
+        "properties": {
+          "holderName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "accountNumber": {
+            "type": "string",
+            "pattern": "^[0-9]{9,18}$"
+          },
+          "accountNumberConfirm": {
+            "type": "string"
+          },
+          "ifsc": {
+            "type": "string",
+            "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+            "example": "SBIN0030112"
+          },
+          "accountType": {
+            "$ref": "#/components/schemas/BankAccountType"
+          },
+          "proofImageBase64": {
+            "type": "string",
+            "minLength": 100,
+            "maxLength": 3000000,
+            "description": "Cancelled cheque or passbook image (JPEG/PNG), base64 (max 2 MB decoded)"
+          },
+          "sharedOverrideReason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
+            "description": "Admin only: allow an account number another active employee already uses"
+          }
+        },
+        "required": [
+          "holderName",
+          "accountNumber",
+          "accountNumberConfirm",
+          "ifsc",
+          "proofImageBase64"
+        ]
+      },
+      "BankReasonBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "reason"
+        ]
       }
     },
     "parameters": {}
@@ -7773,6 +7998,541 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AadhaarSaved"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/ifsc/{ifsc}": {
+      "get": {
+        "summary": "Look up a bank and branch from an IFSC (M3-BNK-01)",
+        "tags": [
+          "BankAccounts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Z]{4}0[A-Z0-9]{6}$",
+              "example": "SBIN0030112"
+            },
+            "required": true,
+            "name": "ifsc",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Look up a bank and branch from an IFSC (M3-BNK-01)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IfscLookup"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/bank-accounts": {
+      "get": {
+        "summary": "Bank accounts of an employee, newest first, number masked (M3-BNK-01)",
+        "tags": [
+          "BankAccounts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Bank accounts of an employee, newest first, number masked (M3-BNK-01)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BankAccountList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Enter a bank account; it grants nothing until verified and approved (M3-BNK-01)",
+        "tags": [
+          "BankAccounts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBankAccountBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Enter a bank account; it grants nothing until verified and approved (M3-BNK-01)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BankAccount"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bank-accounts/{id}/verify": {
+      "post": {
+        "summary": "Penny-drop verification and name match (M3-BNK-02)",
+        "tags": [
+          "BankAccounts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Penny-drop verification and name match (M3-BNK-02)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BankAccount"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bank-accounts/{id}/approve-mismatch": {
+      "post": {
+        "summary": "Admin accepts a name mismatch with a reason (M3-BNK-02)",
+        "tags": [
+          "BankAccounts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BankReasonBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Admin accepts a name mismatch with a reason (M3-BNK-02)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BankAccount"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/bank-accounts/{id}/approve": {
+      "post": {
+        "summary": "Checker approves the account; the previous one is closed (M3-BNK-03)",
+        "tags": [
+          "BankAccounts"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Checker approves the account; the previous one is closed (M3-BNK-03)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BankAccount"
                 }
               }
             }

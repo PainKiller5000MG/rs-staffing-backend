@@ -294,8 +294,8 @@ export class EmployeesRepository {
       .where({ employeeId: employeeId as never, isPrimary: true })
       .orderBy((b) => b.effectiveFrom.desc())
       .all();
-    const b = rows.find((r) => r.effectiveTo == null);
-    return b && { last4: b.accountLast4, ifsc: b.ifsc, holderName: b.holderName, verified: b.verifiedAt != null, approved: b.approvedBy != null };
+    const b = rows.find((r) => r.effectiveTo == null && r.approvedBy != null);
+    return b ? { last4: b.accountLast4, ifsc: b.ifsc, holderName: b.holderName, verified: b.verifyStatus === 'VERIFIED', approved: b.approvedBy != null } : null;
   }
 
   async documents(employeeId: string) {
