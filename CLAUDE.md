@@ -49,3 +49,12 @@ through `npm run model`.
 - A story is done only when `npm run story -- check <ID>` passes and `npm run check` is green. Commit `<ID>: <title>`, one per story. Don't push unless asked.
 
 To build stories use the `/story` skill (`.claude/skills/story/SKILL.md`).
+
+## Parallel lanes
+
+Several modules can be built at once, each in its own worktree with its own database:
+`node scripts/lane.ts add <name> <port>` (port 5433+) creates `../lanes/<name>` (branch `lane/<name>`); start Claude Code there.
+`node scripts/lane.ts rm <name>` removes it; `list` shows them. Inside a lane: commit only on the lane branch, never push.
+Don't touch files outside your module except the shared registries (`src/modules/index.ts`, `src/lib/permissions.ts`,
+`docs/DECISIONS.md`). A contract change in a lane is allowed only for tables your module owns; migrations form one chain,
+so when two branches both add one, the second to merge deletes its migration folder and re-runs `migration:plan` on top of main.
