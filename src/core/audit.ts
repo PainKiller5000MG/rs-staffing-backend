@@ -12,6 +12,7 @@ const MASK: Record<string, (v: string) => string> = {
   aadhaar: (v) => `XXXX XXXX ${v.slice(-4)}`,
   aadhaarNumber: (v) => `XXXX XXXX ${v.slice(-4)}`,
   accountNumber: (v) => `XXXXXX${v.slice(-4)}`,
+  dob: (v) => `${v.slice(0, 4)}-XX-XX`,
   pan: (v) => `${v.slice(0, 2)}XXXXX${v.slice(-2)}`,
 };
 const DROP = new Set(['password', 'otp', 'code', 'token', 'accountEnc', 'aadhaarEnc', 'lookupHmac']);

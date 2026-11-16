@@ -42,6 +42,12 @@ Work that must land before the first production payroll. Each item becomes an is
 - [ ] Golden set of real client sheets passes 100% on the production model + prompt version (M5-AI-06).
 - [ ] Monthly AI cost report reaches Admin, and the provider-down fallback (last layout / manual mapping) is tested. No budget cap (pay as you go).
 
+## Employee KYC (M3)
+
+- [ ] **Blocker (M3-PRF-05 AC3):** the Aadhaar card image is stored unmasked. Add masking of the first 8 digits (redaction or provider) and re-process stored images before launch; until then restrict the vault storage prefix `aadhaar/` to the KYC role.
+- [ ] Photos and card images use `LocalStorage`; switch to the S3-compatible bucket with server-side encryption (M12-ENC-02) and confirm `aadhaar/` and `photos/` are private.
+- [ ] Decide whether HR may see the full date of birth (today only the year is returned).
+
 ## Logins
 
 - [ ] The 2 active Admins exist, on different phones (M1-SEC-04); the break-glass restore command documented for the operator.

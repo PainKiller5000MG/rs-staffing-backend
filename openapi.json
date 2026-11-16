@@ -2428,6 +2428,782 @@
           "definition",
           "headerFingerprint"
         ]
+      },
+      "CreatedEmployee": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EmployeeProfile"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "warnings": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/DuplicateMatch"
+                }
+              }
+            },
+            "required": [
+              "warnings"
+            ]
+          }
+        ]
+      },
+      "EmployeeStatus": {
+        "type": "string",
+        "enum": [
+          "DRAFT",
+          "ACTIVE",
+          "ON_NOTICE",
+          "EXITED",
+          "ABSCONDED"
+        ]
+      },
+      "Gender": {
+        "type": "string",
+        "enum": [
+          "MALE",
+          "FEMALE",
+          "OTHER"
+        ]
+      },
+      "MaritalStatus": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "SINGLE",
+          "MARRIED",
+          "WIDOWED",
+          "DIVORCED",
+          null
+        ]
+      },
+      "StaffType": {
+        "type": "string",
+        "enum": [
+          "DEPLOYED",
+          "SUPERVISOR",
+          "HQ",
+          "CONTRACT"
+        ]
+      },
+      "SkillLevel": {
+        "type": "string",
+        "enum": [
+          "UNSKILLED",
+          "SEMI_SKILLED",
+          "SKILLED",
+          "HIGHLY_SKILLED"
+        ]
+      },
+      "Address": {
+        "type": [
+          "object",
+          "null"
+        ],
+        "properties": {
+          "line": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          },
+          "stateCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2,4}$"
+          },
+          "pin": {
+            "type": "string",
+            "pattern": "^[1-9][0-9]{5}$",
+            "example": "462023"
+          }
+        },
+        "required": [
+          "line",
+          "stateCode",
+          "pin"
+        ]
+      },
+      "DuplicateMatch": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "aadhaar",
+              "pan",
+              "uan",
+              "mobile",
+              "name_dob"
+            ]
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "EMPLOYEE",
+              "DAILY_WORKER"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "offer": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "enum": [
+              "REHIRE",
+              "CONVERT_DAILY_WORKER",
+              null
+            ]
+          },
+          "link": {
+            "type": "string"
+          },
+          "blocking": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "field",
+          "kind",
+          "id",
+          "code",
+          "name",
+          "status",
+          "offer",
+          "link",
+          "blocking"
+        ]
+      },
+      "EmployeeProfile": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/EmployeeStatus"
+          },
+          "name": {
+            "type": "string"
+          },
+          "dob": {
+            "type": "string",
+            "description": "Masked: only the year is shown (1992-XX-XX)"
+          },
+          "age": {
+            "type": "integer"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "mobile": {
+            "type": "string"
+          },
+          "altPhone": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "fatherName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "maritalStatus": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          },
+          "staffType": {
+            "$ref": "#/components/schemas/StaffType"
+          },
+          "designation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "skillLevel": {
+            "$ref": "#/components/schemas/SkillLevel"
+          },
+          "joinDate": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "exitDate": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "language": {
+            "type": "string"
+          },
+          "hasPhoto": {
+            "type": "boolean"
+          },
+          "currentAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "permanentAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pan": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Masked: ABXXXXX4F"
+          },
+          "aadhaar": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Masked: XXXX XXXX 1234"
+          },
+          "createdAt": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "status",
+          "name",
+          "dob",
+          "age",
+          "gender",
+          "mobile",
+          "altPhone",
+          "email",
+          "fatherName",
+          "maritalStatus",
+          "staffType",
+          "designation",
+          "skillLevel",
+          "joinDate",
+          "exitDate",
+          "language",
+          "hasPhoto",
+          "currentAddress",
+          "permanentAddress",
+          "pan",
+          "aadhaar",
+          "createdAt"
+        ]
+      },
+      "CreateEmployeeBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "dob": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "mobile": {
+            "type": "string",
+            "example": "9000000001"
+          },
+          "joinDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "staffType": {
+            "$ref": "#/components/schemas/StaffType"
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "skillLevel": {
+            "$ref": "#/components/schemas/SkillLevel"
+          },
+          "email": {
+            "type": "string",
+            "maxLength": 254,
+            "format": "email"
+          },
+          "fatherName": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "Father's or husband's name"
+          },
+          "maritalStatus": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          },
+          "altPhone": {
+            "type": "string",
+            "example": "9000000001"
+          },
+          "currentAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "permanentAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pan": {
+            "type": "string",
+            "example": "ABCPE1234F"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ]
+          }
+        },
+        "required": [
+          "name",
+          "dob",
+          "gender",
+          "mobile",
+          "joinDate"
+        ]
+      },
+      "DuplicateCheck": {
+        "type": "object",
+        "properties": {
+          "matches": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DuplicateMatch"
+            }
+          }
+        },
+        "required": [
+          "matches"
+        ]
+      },
+      "DuplicateCheckBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "dob": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "mobile": {
+            "type": "string",
+            "example": "9000000001"
+          },
+          "pan": {
+            "type": "string",
+            "example": "ABCPE1234F"
+          },
+          "uan": {
+            "type": "string",
+            "pattern": "^\\d{12}$"
+          },
+          "aadhaarNumber": {
+            "type": "string"
+          }
+        }
+      },
+      "EmployeeView": {
+        "type": "object",
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/EmployeeProfile"
+          },
+          "currentDeployment": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "siteId": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "siteCode": {
+                "type": "string"
+              },
+              "siteName": {
+                "type": "string"
+              },
+              "clientName": {
+                "type": "string"
+              },
+              "designation": {
+                "type": "string"
+              },
+              "effectiveFrom": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "siteId",
+              "siteCode",
+              "siteName",
+              "clientName",
+              "designation",
+              "effectiveFrom"
+            ]
+          },
+          "bank": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "accountMasked": {
+                "type": "string"
+              },
+              "ifsc": {
+                "type": "string"
+              },
+              "holderName": {
+                "type": "string"
+              },
+              "verified": {
+                "type": "boolean"
+              },
+              "approved": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "accountMasked",
+              "ifsc",
+              "holderName",
+              "verified",
+              "approved"
+            ]
+          },
+          "statutory": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "uan": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "esiIpNo": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "pfExempt": {
+                "type": "boolean"
+              },
+              "ptExempt": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "uan",
+              "esiIpNo",
+              "pfExempt",
+              "ptExempt"
+            ]
+          },
+          "documents": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "expiresOn": {
+                  "type": [
+                    "string",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "type",
+                "expiresOn"
+              ]
+            }
+          },
+          "leaveBalances": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "leaveTypeCode": {
+                  "type": "string"
+                },
+                "days": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "leaveTypeCode",
+                "days"
+              ]
+            }
+          }
+        },
+        "required": [
+          "profile",
+          "currentDeployment",
+          "bank",
+          "statutory",
+          "documents",
+          "leaveBalances"
+        ]
+      },
+      "SupervisorEmployeeView": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "code": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "designation": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mobile": {
+            "type": "string"
+          },
+          "hasPhoto": {
+            "type": "boolean"
+          },
+          "site": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "format": "uuid"
+              },
+              "code": {
+                "type": "string"
+              },
+              "name": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "code",
+              "name"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "code",
+          "name",
+          "designation",
+          "mobile",
+          "hasPhoto",
+          "site"
+        ]
+      },
+      "UpdateEmployeeBody": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "dob": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "gender": {
+            "$ref": "#/components/schemas/Gender"
+          },
+          "joinDate": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "skillLevel": {
+            "$ref": "#/components/schemas/SkillLevel"
+          },
+          "email": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 254,
+            "format": "email"
+          },
+          "fatherName": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 1,
+            "maxLength": 120,
+            "description": "Father's or husband's name"
+          },
+          "maritalStatus": {
+            "$ref": "#/components/schemas/MaritalStatus"
+          },
+          "altPhone": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "9000000001"
+          },
+          "currentAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "permanentAddress": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "pan": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "example": "ABCPE1234F"
+          },
+          "language": {
+            "type": "string",
+            "enum": [
+              "en",
+              "hi"
+            ]
+          }
+        },
+        "additionalProperties": false
+      },
+      "PhotoSaved": {
+        "type": "object",
+        "properties": {
+          "hasPhoto": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "hasPhoto"
+        ]
+      },
+      "PhotoBody": {
+        "type": "object",
+        "properties": {
+          "imageBase64": {
+            "type": "string",
+            "minLength": 100,
+            "maxLength": 3000000,
+            "description": "The file, base64 encoded (max 2 MB decoded)"
+          }
+        },
+        "required": [
+          "imageBase64"
+        ]
+      },
+      "AadhaarSaved": {
+        "type": "object",
+        "properties": {
+          "aadhaar": {
+            "type": "string"
+          },
+          "hasCardImage": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "aadhaar",
+          "hasCardImage"
+        ]
+      },
+      "AadhaarBody": {
+        "type": "object",
+        "properties": {
+          "aadhaarNumber": {
+            "type": "string"
+          },
+          "cardImageBase64": {
+            "type": "string",
+            "minLength": 100,
+            "maxLength": 3000000,
+            "description": "The file, base64 encoded (max 2 MB decoded)"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300,
+            "description": "Required when correcting an existing number (Admin only)"
+          }
+        },
+        "required": [
+          "aadhaarNumber"
+        ]
       }
     },
     "parameters": {}
@@ -6448,6 +7224,555 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/AttendanceLayout"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees": {
+      "post": {
+        "summary": "Create an employee profile and their OTP login (M3-PRF-01)",
+        "tags": [
+          "Employees"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateEmployeeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Create an employee profile and their OTP login (M3-PRF-01)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreatedEmployee"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/duplicate-check": {
+      "post": {
+        "summary": "Check whether this person already exists (M3-PRF-06)",
+        "tags": [
+          "Employees"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DuplicateCheckBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Check whether this person already exists (M3-PRF-06)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DuplicateCheck"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}": {
+      "get": {
+        "summary": "One page with everything about a person; supervisors get a reduced view (M3-PRF-07)",
+        "tags": [
+          "Employees"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "One page with everything about a person; supervisors get a reduced view (M3-PRF-07)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/EmployeeView"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SupervisorEmployeeView"
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Correct profile details; code, mobile and Aadhaar are not editable (M3-PRF-08)",
+        "tags": [
+          "Employees"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateEmployeeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Correct profile details; code, mobile and Aadhaar are not editable (M3-PRF-08)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EmployeeProfile"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/photo": {
+      "put": {
+        "summary": "Set the passport-style photo (M3-PRF-03)",
+        "tags": [
+          "Employees"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PhotoBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Set the passport-style photo (M3-PRF-03)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PhotoSaved"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/aadhaar": {
+      "put": {
+        "summary": "Save Aadhaar (HR once; Admin with a reason to correct) (M3-PRF-05)",
+        "tags": [
+          "Employees"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AadhaarBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Save Aadhaar (HR once; Admin with a reason to correct) (M3-PRF-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AadhaarSaved"
                 }
               }
             }

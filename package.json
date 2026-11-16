@@ -29,6 +29,7 @@
     "check": "node scripts/check.ts",
     "story": "node scripts/stories.ts",
     "new-module": "node scripts/new-module.ts",
+    "lane": "node scripts/lane.ts",
     "model": "node scripts/model.ts"
   },
   "dependencies": {
@@ -42,6 +43,7 @@
     "pg": "^8.22.0",
     "pg-boss": "^12.36.0",
     "pino": "^10.4.0",
+    "sharp": "^0.35.5",
     "temporal-polyfill": "^1.0.5",
     "zod": "^4.6.5"
   },

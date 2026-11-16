@@ -13,6 +13,7 @@ import type { Models } from '../prisma/contract.d.ts';
 import { config, type Config } from './config.ts';
 import type { Db } from './context.ts';
 import { EventBuffer, EventBus } from './events.ts';
+import { LocalStorage, type FileStorage } from '../lib/storage.ts';
 import { createLogger, type Logger } from './logger.ts';
 
 export type RootCradle = {
@@ -21,6 +22,7 @@ export type RootCradle = {
   db: Db;
   executor: Db;
   sms: SmsProvider;
+  storage: FileStorage;
   authPool: pg.Pool;
   auth: Auth;
   otpGate: OtpGate;
@@ -65,6 +67,7 @@ export function createRootContainer(overrides: Partial<Record<keyof RootCradle, 
     logger: asValue(createLogger()),
     db: asValue(db),
     executor: asValue(db),
+    storage: asClass(LocalStorage).singleton(),
     sms: (cfg.SMS_PROVIDER === 'msg91' ? asClass(Msg91Sms) : asClass(MockSms)).singleton(),
     authPool: asFunction(() => createAuthPool(cfg.DATABASE_URL))
       .singleton()
