@@ -117,6 +117,15 @@ function doneIds(): Set<string> {
       const to = b ? Number(b) : from;
       for (let n = from; n <= to; n++) done.add(`${prefix}${String(n).padStart(2, '0')}`);
     }
+    // "M2-SET-01..06, 09, 10: ..." (a range or number after a comma, same prefix as the first id)
+    const first = head.match(/^(M\d+-[A-Z]+-)/);
+    if (first) {
+      for (const m of head.matchAll(/,\s*(\d+)(?:\s*\.\.\s*(\d+))?/g)) {
+        const from = Number(m[1]);
+        const to = m[2] ? Number(m[2]) : from;
+        for (let n = from; n <= to; n++) done.add(`${first[1]}${String(n).padStart(2, '0')}`);
+      }
+    }
     // "M1-USR-01, 04, 05: ..."
     const list = head.match(/^(M\d+-[A-Z]+-)\d+(?:\s*,\s*\d+)+/);
     if (list) for (const n of head.slice(list[1]!.length).split(',')) done.add(`${list[1]}${n.trim().padStart(2, '0')}`);
