@@ -10,5 +10,6 @@ import { ClientsModule } from './clients/clients.module.ts';
 import { EmployeesModule } from './employees/employees.module.ts';
 import { DeploymentsModule } from './deployments/deployments.module.ts';
 import { BankAccountsModule } from './bank-accounts/bank-accounts.module.ts';
+import { AadhaarModule } from './aadhaar/aadhaar.module.ts';
 
-export const modules = [new UsersModule(), new SitesModule(), new LookupsModule(), new WebhooksModule(), new ClientsModule(), new SettingsModule(), new LayoutsModule(), new EmployeesModule(), new BankAccountsModule(), new DeploymentsModule(), new HolidaysModule()];
+export const modules = [new UsersModule(), new SitesModule(), new LookupsModule(), new WebhooksModule(), new ClientsModule(), new SettingsModule(), new LayoutsModule(), new EmployeesModule(), new BankAccountsModule(), new DeploymentsModule(), new HolidaysModule(), new AadhaarModule()];

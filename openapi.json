@@ -4245,6 +4245,48 @@
           "year",
           "items"
         ]
+      },
+      "AadhaarRevealed": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string"
+          },
+          "last4": {
+            "type": "string"
+          },
+          "displaySeconds": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "number",
+          "last4",
+          "displaySeconds"
+        ]
+      },
+      "AadhaarRevealBody": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "enum": [
+              "PF_KYC",
+              "ESIC_REGISTRATION",
+              "VERIFICATION",
+              "OTHER"
+            ]
+          },
+          "reasonText": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 300
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "additionalProperties": false
       }
     },
     "parameters": {}
@@ -10760,6 +10802,102 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SiteHolidays"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aadhaar/{ref}/reveal": {
+      "post": {
+        "summary": "Reveal a full Aadhaar number once, with a reason (M12-AAD-03)",
+        "tags": [
+          "Aadhaar"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "ref",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AadhaarRevealBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reveal a full Aadhaar number once, with a reason (M12-AAD-03)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AadhaarRevealed"
                 }
               }
             }

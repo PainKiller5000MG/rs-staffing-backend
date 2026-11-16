@@ -33,6 +33,11 @@ export function createApp({ modules, container }: { modules: readonly Module[]; 
     await next();
   });
   app.use(secureHeaders());
+  // M12-AAD-03 AC2: a revealed Aadhaar is never cached.
+  app.use('/aadhaar/*', async (c, next) => {
+    await next();
+    c.header('cache-control', 'no-store');
+  });
   app.use(
     cors({
       origin: config.WEB_ORIGINS,
