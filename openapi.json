@@ -3430,6 +3430,265 @@
           "reason"
         ]
       },
+      "DeploymentList": {
+        "type": "object",
+        "properties": {
+          "employeeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "staffType": {
+            "$ref": "#/components/schemas/StaffType"
+          },
+          "asOf": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Deployment"
+            }
+          }
+        },
+        "required": [
+          "employeeId",
+          "staffType",
+          "asOf",
+          "items"
+        ]
+      },
+      "Deployment": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "employeeId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "clientName": {
+            "type": "string"
+          },
+          "siteId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "siteCode": {
+            "type": "string"
+          },
+          "siteName": {
+            "type": "string"
+          },
+          "designation": {
+            "type": "string"
+          },
+          "skillLevel": {
+            "$ref": "#/components/schemas/SkillLevel"
+          },
+          "templateId": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "uuid"
+          },
+          "monthlyCtcPaise": {
+            "$ref": "#/components/schemas/Paise"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "DEPLOY",
+              "REDEPLOY",
+              "REVISION"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "effectiveTo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "SCHEDULED",
+              "ACTIVE",
+              "ENDED"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "employeeId",
+          "clientId",
+          "clientName",
+          "siteId",
+          "siteCode",
+          "siteName",
+          "designation",
+          "skillLevel",
+          "templateId",
+          "monthlyCtcPaise",
+          "kind",
+          "reason",
+          "effectiveFrom",
+          "effectiveTo",
+          "status"
+        ]
+      },
+      "Paise": {
+        "type": "string",
+        "pattern": "^-?\\d+$",
+        "description": "Integer paise as a string: \"1655000\" is ₹16,550.00",
+        "example": "1655000"
+      },
+      "DeployBody": {
+        "type": "object",
+        "properties": {
+          "siteId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "designation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "skillLevel": {
+            "$ref": "#/components/schemas/SkillLevel"
+          },
+          "templateId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Salary template; defaults from the client settings (M2-SET-04)"
+          },
+          "monthlyCtcPaise": {
+            "$ref": "#/components/schemas/Paise"
+          },
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          }
+        },
+        "required": [
+          "siteId",
+          "designation",
+          "skillLevel",
+          "monthlyCtcPaise",
+          "effectiveFrom"
+        ]
+      },
+      "RedeployResult": {
+        "type": "object",
+        "properties": {
+          "ended": {
+            "$ref": "#/components/schemas/Deployment"
+          },
+          "started": {
+            "$ref": "#/components/schemas/Deployment"
+          }
+        },
+        "required": [
+          "ended",
+          "started"
+        ]
+      },
+      "SalaryRevisionBody": {
+        "type": "object",
+        "properties": {
+          "effectiveFrom": {
+            "type": "string",
+            "format": "date",
+            "example": "2026-09-15"
+          },
+          "monthlyCtcPaise": {
+            "$ref": "#/components/schemas/Paise"
+          },
+          "templateId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "New salary structure; omit to keep the current one"
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          }
+        },
+        "required": [
+          "effectiveFrom",
+          "monthlyCtcPaise",
+          "reason"
+        ]
+      },
+      "StaffTypeResult": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "staffType": {
+            "$ref": "#/components/schemas/StaffType"
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "DEPLOYED",
+              "INTERNAL"
+            ]
+          },
+          "payrollCentre": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "staffType",
+          "category",
+          "payrollCentre"
+        ]
+      },
+      "StaffTypeBody": {
+        "type": "object",
+        "properties": {
+          "staffType": {
+            "$ref": "#/components/schemas/StaffType"
+          }
+        },
+        "required": [
+          "staffType"
+        ]
+      },
       "HolidayList": {
         "type": "object",
         "properties": {
@@ -9090,6 +9349,484 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/BankAccount"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/deployments": {
+      "get": {
+        "summary": "Where an employee has worked, newest first; asOf returns the one running that day (M3-DEP-03)",
+        "tags": [
+          "Deployments"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2026-09-15"
+            },
+            "required": false,
+            "name": "asOf",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Where an employee has worked, newest first; asOf returns the one running that day (M3-DEP-03)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeploymentList"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Deploy an employee to a client site (M3-DEP-01)",
+        "tags": [
+          "Deployments"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeployBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Deploy an employee to a client site (M3-DEP-01)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Deployment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/redeploy": {
+      "post": {
+        "summary": "Move an employee to another site in one step (M3-DEP-02)",
+        "tags": [
+          "Deployments"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeployBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Move an employee to another site in one step (M3-DEP-02)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RedeployResult"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/salary-revisions": {
+      "post": {
+        "summary": "Change pay from a date; back-dating is allowed (M3-DEP-05)",
+        "tags": [
+          "Deployments"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SalaryRevisionBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Change pay from a date; back-dating is allowed (M3-DEP-05)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Deployment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Not signed in",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Not allowed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict (duplicate, overlap, in use)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation failed or a business rule refused the request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/employees/{id}/staff-type": {
+      "put": {
+        "summary": "Mark an employee as deployed or internal staff (M3-DEP-04)",
+        "tags": [
+          "Deployments"
+        ],
+        "security": [
+          {
+            "session": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "required": true,
+            "name": "id",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StaffTypeBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Mark an employee as deployed or internal staff (M3-DEP-04)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StaffTypeResult"
                 }
               }
             }

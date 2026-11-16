@@ -41,7 +41,7 @@ async function newEmployee(siteId: string, from = `${Y}-01-01`) {
   const e = await db.orm.app.Employee.create({
     code: `HT${n}`.slice(0, 12), name: `Holiday Tester ${n}`, dob: Temporal.PlainDate.from('1990-01-01'), gender: 'MALE', mobile: freshMobile(), staffType: 'DEPLOYED', designation: 'Helper', status: 'ACTIVE',
   } as never);
-  await db.orm.app.Deployment.create({ employeeId: e.id, siteId, designation: 'Helper', effectiveFrom: Temporal.PlainDate.from(from) } as never);
+  await db.orm.app.Deployment.create({ employeeId: e.id, siteId, designation: 'Helper', skillLevel: 'UNSKILLED', monthlyCtcPaise: 1_300_000n, effectiveFrom: Temporal.PlainDate.from(from) } as never);
   return e.id as string;
 }
 async function newRun(clientId: string, siteId: string, employeeId: string, status: string, period = [d('10-01'), d('10-31')]) {

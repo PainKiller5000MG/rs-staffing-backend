@@ -53,7 +53,7 @@ describe('Postgres errors → the standard error shape', () => {
 
   test('23P01 exclusion → 409 OVERLAP (two deployments on the same days)', async () => {
     const err = await violation((tx) =>
-      tx.orm.app.Deployment.create({ employeeId, siteId: otherSiteId, designation: 'Helper', effectiveFrom: parseDate('2026-09-10'), effectiveTo: null } as never),
+      tx.orm.app.Deployment.create({ employeeId, siteId: otherSiteId, designation: 'Helper', skillLevel: 'UNSKILLED', monthlyCtcPaise: 1_300_000n, effectiveFrom: parseDate('2026-09-10'), effectiveTo: null } as never),
     );
     expect(mapError(err)).toMatchObject({ status: 409, code: 'OVERLAP', details: { constraint: 'deployments_no_overlap' } });
   });
@@ -120,6 +120,8 @@ describe('Postgres errors → the standard error shape', () => {
         employeeId: exitedEmployeeId,
         siteId: '01900000-0000-7000-8000-000000000000',
         designation: 'Helper',
+        skillLevel: 'UNSKILLED',
+        monthlyCtcPaise: 1_300_000n,
         effectiveFrom: parseDate('2031-01-01'),
         effectiveTo: null,
       } as never),
