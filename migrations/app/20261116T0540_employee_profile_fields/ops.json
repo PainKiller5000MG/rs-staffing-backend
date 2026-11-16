@@ -832,5 +832,56 @@
         ]
       }
     ]
+  },
+  {
+    "id": "employees.code_lock.function",
+    "label": "employees: code is never changed (M3-PRF-01 AC2)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "function app.forbid_employee_code_change",
+        "sql": "CREATE OR REPLACE FUNCTION app.forbid_employee_code_change() RETURNS trigger\nLANGUAGE plpgsql AS $$\nBEGIN\n  RAISE EXCEPTION 'employees.code cannot change'\n    USING ERRCODE = '23514', CONSTRAINT = 'employees_code_locked';\nEND;\n$$",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "employees.code_lock.trigger",
+    "label": "employees: trigger for the code lock",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "trigger employees_code_lock",
+        "sql": "CREATE TRIGGER employees_code_lock\n  BEFORE UPDATE OF code ON app.employees\n  FOR EACH ROW WHEN (OLD.code IS DISTINCT FROM NEW.code)\n  EXECUTE FUNCTION app.forbid_employee_code_change()",
+        "params": []
+      }
+    ],
+    "postcheck": []
+  },
+  {
+    "id": "employees.mobile_active_unique",
+    "label": "employees: one active person per mobile; exit releases the number (M1-OTP-04)",
+    "operationClass": "additive",
+    "target": {
+      "id": "postgres"
+    },
+    "precheck": [],
+    "execute": [
+      {
+        "description": "unique index employees_mobile_active_key",
+        "sql": "CREATE UNIQUE INDEX employees_mobile_active_key ON app.employees (mobile) WHERE status <> 'EXITED'",
+        "params": []
+      }
+    ],
+    "postcheck": []
   }
 ]
