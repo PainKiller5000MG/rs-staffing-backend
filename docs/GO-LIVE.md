@@ -84,3 +84,15 @@ Work that must land before the first production payroll. Each item becomes an is
       payroll runs exist if the API is ever bypassed.
 - [ ] M2-CLI-08 (client documents) not built yet.
 
+## Holidays (M14-HOL)
+
+- [ ] **Blocker:** a holiday change in an unlocked month must re-apply holiday codes to attendance days, rebuild monthly
+      summaries, flag computed runs "inputs changed" and recalculate approved leave (M14-HOL-05 AC2). The API refuses locked months
+      and previews the counts, and emits the `holiday.changed` event (action, dates, site ids) after commit, but **no listener
+      exists** until M5 (attendance), M6 (leave) and M8 (payroll) are built. Until then a holiday added to an open month does not
+      change pay by itself: HQ must recompute. Add the listeners, then test M14-HOL-05 AC2 (the n/a note in test/api/holidays.test.ts).
+- [ ] Load each state's holiday list for the launch years (open question: which states for 2026 and 2027, and whether RS follows each
+      state's list or each client's own). Until a state has a list, payroll should raise `MISSING_STATE_RULES` (M8-EXC-01).
+- [ ] The site calendar cache is per process (5-minute limit as a backstop). With more than one API instance, a holiday change
+      shows on the other instances after at most 5 minutes; use a shared invalidation (pg-boss/LISTEN) if that is not acceptable.
+- [ ] Holiday import is JSON rows today; the Excel upload (M11) must feed `POST /holidays/import`.

@@ -187,6 +187,21 @@ export default class M extends Migration<Start, End> {
         execute: [{ description: 'trigger holiday_replacements_state_only', sql: 'CREATE TRIGGER holiday_replacements_state_only BEFORE INSERT ON app.holiday_replacements FOR EACH ROW EXECUTE FUNCTION app.holiday_replacement_state_only()', params: [] }],
         postcheck: [],
       }),
+      rawSql({
+        id: 'holidays.national_seed',
+        label: 'national holidays for every year 2000..2100 (M14-HOL-01 AC2)',
+        operationClass: 'additive',
+        target: { id: 'postgres' },
+        precheck: [],
+        execute: [
+          {
+            description: 'insert 26 Jan, 15 Aug and 2 Oct for each year (idempotent)',
+            sql: "INSERT INTO app.holidays (id, level, scope_key, date, year, name, paid, optional, half) SELECT gen_random_uuid(), 'NATIONAL', NULL, make_date(y, m, d), y, n, true, false, false FROM generate_series(2000, 2100) AS y CROSS JOIN (VALUES (1, 26, 'Republic Day'), (8, 15, 'Independence Day'), (10, 2, 'Gandhi Jayanti')) AS t(m, d, n) WHERE NOT EXISTS (SELECT 1 FROM app.holidays h WHERE h.level = 'NATIONAL' AND h.date = make_date(y, m, d) AND h.removed_at IS NULL)",
+            params: [],
+          },
+        ],
+        postcheck: [],
+      }),
     ];
   }
 }

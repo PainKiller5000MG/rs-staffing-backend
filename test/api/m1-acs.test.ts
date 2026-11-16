@@ -34,7 +34,7 @@ test('M1-USR-04 AC2: the list and the detail show the last login time', async ()
   await login(mobile);
   const got = await request('GET', `/users/${created.body.id}`, { cookie: admin });
   expect(got.body.lastLoginAt).toEqual(expect.any(String));
-  const list = await request('GET', '/users?limit=100', { cookie: admin });
+  const list = await request('GET', `/users?q=${encodeURIComponent(mobile.slice(-10))}`, { cookie: admin });
   const row = list.body.items.find((u: { id: string }) => u.id === created.body.id);
   expect(row?.lastLoginAt).toEqual(expect.any(String));
 });

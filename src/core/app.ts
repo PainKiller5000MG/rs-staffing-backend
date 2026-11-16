@@ -1,6 +1,7 @@
 // createApp({ modules }) → the Hono app: request id, security headers, CORS,
 // request logging, Better Auth at /api/auth/*, /health, /ready, every
 // module's routes, /openapi.json, and the single error handler.
+import { calendarCache } from '../modules/holidays/calendar-cache.ts';
 import { createRoute, OpenAPIHono, z } from '@hono/zod-openapi';
 import { asClass, type AwilixContainer } from 'awilix';
 import { cors } from 'hono/cors';
@@ -23,6 +24,8 @@ export const openApiInfo = {
 export function createApp({ modules, container }: { modules: readonly Module[]; container: AwilixContainer<RootCradle> }) {
   const { config, logger, auth, db, bus, otpLockout } = container.cradle;
   const app = new OpenAPIHono({ defaultHook: validationHook });
+  // M14-HOL-03 AC3: any holiday change drops the cached site calendars (after the commit).
+  bus.on('holiday.changed', () => calendarCache.clear());
 
   app.use(requestId({ headerName: 'x-request-id' }));
   app.use(async (c, next) => {
