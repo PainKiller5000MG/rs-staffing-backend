@@ -30,6 +30,10 @@ Work that must land before the first production payroll. Each item becomes an is
       `SMS_PROVIDER=msg91` and the `MSG91_*` variables. Launch blocker. Template variables are
       case-sensitive and must be: OTP `##otp##`; PAYSLIP and PAYSLIP_REVISED `##name##`
       `##month##` `##link##`; FNF `##name##` `##link##`.
+- [ ] SMS cost and balance: set `OTP_SMS_COST_PAISE` to the real MSG91 rate (placeholder is 25 paise) and
+      `SMS_LOW_BALANCE_PAISE`. The balance call (`balance.php?type=4`, credit read as rupees) was written from
+      memory: confirm it against a live MSG91 account. The low-balance alert is only an error log line; wire it to
+      a real alert (M10 notification channel) before launch.
 - [ ] MSG91 webhook (SMS » Webhook (New) » Report Received) → `POST /webhooks/msg91/dlr` with the
       custom header `x-rs-webhook-secret: $MSG91_WEBHOOK_SECRET`; include requestId, telNum, status,
       failureReason. Send one test SMS and check the delivery row moves to DELIVERED.
