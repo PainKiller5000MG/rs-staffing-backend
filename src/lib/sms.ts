@@ -5,6 +5,7 @@
 //           registration are a launch blocker (docs/GO-LIVE.md)
 // Better Auth generates and verifies OTPs; providers only deliver the code.
 // The OTP is never logged, except printed by MockSms outside production.
+import { paiseFromRupees } from './money.ts';
 import type { Logger } from '../core/logger.ts';
 import type { Models } from '../prisma/contract.d.ts';
 import type { db as Db } from '../prisma/db.ts';
@@ -25,6 +26,8 @@ export type TemplateVars = {
 export type SendResult = { providerMsgId: string | null };
 
 export interface SmsProvider {
+  /** Remaining credit in paise, or null when the provider has no balance (the mock). */
+  balancePaise(): Promise<bigint | null>;
   sendOtp(mobile: string, code: string): Promise<void>;
   /** templateId overrides the provider's default for the kind (message_templates.provider_template_id). */
   sendTemplate<K extends TemplateKind>(kind: K, mobile: string, vars: TemplateVars[K], templateId?: string | null): Promise<SendResult>;
@@ -49,6 +52,10 @@ export class MockSms implements SmsProvider {
     this.#db = db;
     this.#logger = logger;
     this.#echoOtp = config.NODE_ENV !== 'production';
+  }
+
+  async balancePaise(): Promise<bigint | null> {
+    return null;
   }
 
   async sendOtp(mobile: string, code: string): Promise<void> {
@@ -101,6 +108,20 @@ export class Msg91Sms implements SmsProvider {
     this.#config = config as Required<Msg91Config>;
     this.#fetch = httpClient ?? fetch;
     this.#logger = logger;
+  }
+
+  /**
+   * GET https://control.msg91.com/api/balance.php?authkey=..&type=4 answers the
+   * promotional/transactional credit as plain text. UNVERIFIED against a live
+   * account: confirm the endpoint and unit with MSG91 before launch (docs/GO-LIVE.md).
+   * Credits are read as rupees.
+   */
+  async balancePaise(): Promise<bigint | null> {
+    const url = `https://control.msg91.com/api/balance.php?authkey=${encodeURIComponent(this.#config.MSG91_AUTH_KEY)}&type=4`;
+    const res = await this.#fetch(url, { signal: AbortSignal.timeout(10_000) });
+    const text = (await res.text()).trim();
+    if (!res.ok || !/^\d+(\.\d+)?$/.test(text)) throw new SmsProviderError(`MSG91 balance check failed (${res.status})`);
+    return paiseFromRupees(text) as unknown as bigint;
   }
 
   async sendOtp(mobile: string, code: string): Promise<void> {

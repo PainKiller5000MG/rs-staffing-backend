@@ -6,6 +6,7 @@ export const Queues = {
   payslipPdf: 'payslip-pdf',
   importExcel: 'import-excel',
   smsOutbox: 'sms-outbox',
+  smsDailyReport: 'sms-daily-report',
 } as const;
 
 export type QueueName = (typeof Queues)[keyof typeof Queues];
@@ -15,4 +16,5 @@ export type JobPayloads = {
   'payslip-pdf': { runId: string; employeeId?: string };
   'import-excel': { importId: string };
   'sms-outbox': { messageId: string };
+  'sms-daily-report': Record<string, never>;
 };

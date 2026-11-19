@@ -44,6 +44,9 @@ const schema = z
     IDLE_TIMEOUT_MIN_FIELD: z.coerce.number().int().min(0).default(0),
     /** Where uploaded files live: a local directory in dev/test; an S3-compatible bucket in an Indian region in production. */
     STORAGE_DIR: z.string().default('./.storage'),
+    /** M1-OTP-03: what one OTP SMS costs us (paise) and the provider balance below which HQ is alerted (paise; unset = no alert). */
+    OTP_SMS_COST_PAISE: z.coerce.number().int().nonnegative().default(25),
+    SMS_LOW_BALANCE_PAISE: z.coerce.number().int().nonnegative().optional(),
     OTP_MAX_PER_PHONE_HOUR: z.coerce.number().int().positive().default(5),
     OTP_MAX_PER_IP_HOUR: z.coerce.number().int().positive().default(20),
     /** true only behind our own reverse proxy: then the last X-Forwarded-For hop is the client. */
@@ -56,6 +59,8 @@ const schema = z
       }
     }
     if (env.NODE_ENV !== 'production') return;
+    // M1-OTP-08 AC2: the mock never sends, so a production box on it would silently lock everyone out.
+    if (env.SMS_PROVIDER === 'mock') ctx.addIssue({ code: 'custom', path: ['SMS_PROVIDER'], message: 'the mock SMS provider is not allowed in production; use msg91' });
     for (const key of ['BETTER_AUTH_SECRET', 'DATA_KEY', 'HMAC_KEY'] as const) {
       if (!env[key]) ctx.addIssue({ code: 'custom', path: [key], message: 'required in production' });
     }

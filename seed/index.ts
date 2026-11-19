@@ -47,7 +47,7 @@ export async function seed(): Promise<SeedResult> {
   const auth = createAuth({
     config: cfg,
     logger: { error: console.error } as never,
-    sms: { sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
+    sms: { balancePaise: async () => null, sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
     otpGate: { decide: async () => 'UNKNOWN' as const },
     pool,
   });

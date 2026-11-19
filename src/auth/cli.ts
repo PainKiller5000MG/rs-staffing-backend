@@ -6,6 +6,6 @@ import { createAuth } from './auth.ts';
 export const auth = createAuth({
   config: config(),
   logger: console as never,
-  sms: { sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
+  sms: { balancePaise: async () => null, sendOtp: async () => {}, sendTemplate: async () => ({ providerMsgId: null }) },
   otpGate: { decide: async () => 'UNKNOWN' as const },
 });
